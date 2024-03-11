@@ -1538,6 +1538,7 @@ void DrawRemoteControlMenu() {
         static uint16_t port = CVarGetInteger("gRemote.Port", 43384);
         static std::string AnchorName = CVarGetString("gRemote.AnchorName", "");
         static std::string anchorRoomId = CVarGetString("gRemote.AnchorRoomId", "");
+        static std::string AnchorTeam = CVarGetString("gRemote.AnchorTeam", "");
         bool isFormValid = !isStringEmpty(CVarGetString("gRemote.IP", "127.0.0.1")) && port > 1024 && port < 65535 && (
             CVarGetInteger("gRemote.Scheme", GI_SCHEME_SAIL) != GI_SCHEME_ANCHOR ||
             (
@@ -1653,11 +1654,27 @@ void DrawRemoteControlMenu() {
                 LUS::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesOnNextTick();
             }
             ImGui::Text("Room ID");
+            UIWidgets::InsertHelpHoverText(
+                "Identifier for your room that must match across all players. "
+                "Use something unique, this is basically your password."
+            );
             int flags = 0;
             if (GameInteractor::Instance->isRemoteInteractorEnabled) flags = ImGuiInputTextFlags_Password;
             ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
             if (ImGui::InputText("##gRemote.AnchorRoomId", (char*)anchorRoomId.c_str(), anchorRoomId.capacity() + 1, flags)) {
                 CVarSetString("gRemote.AnchorRoomId", anchorRoomId.c_str());
+                LUS::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesOnNextTick();
+            }
+            ImGui::Text("Team ID");
+            UIWidgets::InsertHelpHoverText(
+                "Identifier for your team. Players with matching Team IDs will share inventory and game state. "
+                "Items picked up by members of one team will not be shared with other teams.\n"
+                "\n"
+                "When joining an existing room, your inventory will be synced with anyone with a matching Team ID."
+            );
+            ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+            if (ImGui::InputText("##gRemote.AnchorTeam", (char*)AnchorTeam.c_str(), AnchorTeam.capacity() + 1, ImGuiInputTextFlags_None)) {
+                CVarSetString("gRemote.AnchorTeam", AnchorTeam.c_str());
                 LUS::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesOnNextTick();
             }
         }

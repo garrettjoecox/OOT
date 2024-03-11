@@ -14,6 +14,7 @@ typedef struct {
     std::string clientVersion;
     std::string name;
     Color_RGB8 color;
+    std::string team;
     uint32_t seed;
     uint8_t fileNum;
     bool gameComplete;

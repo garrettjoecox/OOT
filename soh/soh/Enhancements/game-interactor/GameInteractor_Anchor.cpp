@@ -165,6 +165,7 @@ void from_json(const json& j, AnchorClient& client) {
     j.contains("clientVersion") ? j.at("clientVersion").get_to(client.clientVersion) : client.clientVersion = "???";
     j.contains("name") ? j.at("name").get_to(client.name) : client.name = "???";
     j.contains("color") ? j.at("color").get_to(client.color) : client.color = {255, 255, 255};
+    j.contains("team") ? j.at("team").get_to(client.team) : client.team = "???";
     j.contains("seed") ? j.at("seed").get_to(client.seed) : client.seed = 0;
     j.contains("fileNum") ? j.at("fileNum").get_to(client.fileNum) : client.fileNum = 0xFF;
     j.contains("gameComplete") ? j.at("gameComplete").get_to(client.gameComplete) : client.gameComplete = false;
@@ -293,6 +294,7 @@ void Anchor_SendClientData() {
     nlohmann::json payload;
     payload["data"]["name"] = CVarGetString("gRemote.AnchorName", "");
     payload["data"]["color"] = CVarGetColor24("gRemote.AnchorColor", { 100, 255, 100 });
+    payload["data"]["team"] = CVarGetString("gRemote.AnchorTeam", "");
     payload["data"]["clientVersion"] = GameInteractorAnchor::clientVersion;
     payload["type"] = "UPDATE_CLIENT_DATA";
 
@@ -386,7 +388,17 @@ void GameInteractorAnchor::HandleRemoteJson(nlohmann::json payload) {
         }
     }
 
+    AnchorClient anchorClient;
+    bool from_teammate = true;
+    if (payload.contains("clientId")) {
+        anchorClient = GameInteractorAnchor::AnchorClients[payload["clientId"].get<uint32_t>()];
+        from_teammate = anchorClient.team == CVarGetString("gRemote.AnchorTeam", "");
+    }
+
     if (payload["type"] == "GIVE_ITEM") {
+        if (!from_teammate) {
+            return;
+        }
         auto effect = new GameInteractionEffect::GiveItem();
         effect->parameters[0] = payload["modId"].get<uint16_t>();
         effect->parameters[1] = payload["getItemId"].get<int16_t>();
@@ -395,7 +407,6 @@ void GameInteractorAnchor::HandleRemoteJson(nlohmann::json payload) {
         if (effect->Apply() == Possible) {
             GetItemEntry getItemEntry = ItemTableManager::Instance->RetrieveItemEntry(effect->parameters[0], effect->parameters[1]);
 
-            AnchorClient anchorClient = GameInteractorAnchor::AnchorClients[payload["clientId"].get<uint32_t>()];
             if (getItemEntry.getItemCategory != ITEM_CATEGORY_JUNK) {
                 if (getItemEntry.modIndex == MOD_NONE) {
                     Anchor_DisplayMessage({
@@ -417,6 +428,9 @@ void GameInteractorAnchor::HandleRemoteJson(nlohmann::json payload) {
         CVarClear("gFromGI");
     }
     if (payload["type"] == "SET_SCENE_FLAG") {
+        if (!from_teammate) {
+            return;
+        }
         auto effect = new GameInteractionEffect::SetSceneFlag();
         effect->parameters[0] = payload["sceneNum"].get<int16_t>();
         effect->parameters[1] = payload["flagType"].get<int16_t>();
@@ -424,6 +438,9 @@ void GameInteractorAnchor::HandleRemoteJson(nlohmann::json payload) {
         effect->Apply();
     }
     if (payload["type"] == "SET_FLAG") {
+        if (!from_teammate) {
+            return;
+        }
         auto effect = new GameInteractionEffect::SetFlag();
         effect->parameters[0] = payload["flagType"].get<int16_t>();
         effect->parameters[1] = payload["flag"].get<int16_t>();
@@ -439,6 +456,9 @@ void GameInteractorAnchor::HandleRemoteJson(nlohmann::json payload) {
         }
     }
     if (payload["type"] == "UNSET_SCENE_FLAG") {
+        if (!from_teammate) {
+            return;
+        }
         auto effect = new GameInteractionEffect::UnsetSceneFlag();
         effect->parameters[0] = payload["sceneNum"].get<int16_t>();
         effect->parameters[1] = payload["flagType"].get<int16_t>();
@@ -446,6 +466,9 @@ void GameInteractorAnchor::HandleRemoteJson(nlohmann::json payload) {
         effect->Apply();
     }
     if (payload["type"] == "UNSET_FLAG") {
+        if (!from_teammate) {
+            return;
+        }
         auto effect = new GameInteractionEffect::UnsetFlag();
         effect->parameters[0] = payload["flagType"].get<int16_t>();
         effect->parameters[1] = payload["flag"].get<int16_t>();
@@ -507,9 +530,15 @@ void GameInteractorAnchor::HandleRemoteJson(nlohmann::json payload) {
         }
     }
     if (payload["type"] == "PUSH_SAVE_STATE" && GameInteractor::IsSaveLoaded()) {
+        if (!from_teammate) {
+            return;
+        }
         Anchor_ParseSaveStateFromRemote(payload);
     }
     if (payload["type"] == "REQUEST_SAVE_STATE" && GameInteractor::IsSaveLoaded()) {
+        if (!from_teammate) {
+            return;
+        }
         Anchor_PushSaveStateToRemote();
     }
     if (payload["type"] == "ALL_CLIENT_DATA") {
@@ -523,6 +552,7 @@ void GameInteractorAnchor::HandleRemoteJson(nlohmann::json payload) {
                     client.clientVersion,
                     client.name,
                     client.color,
+                    client.team,
                     client.seed,
                     client.fileNum,
                     client.gameComplete,
@@ -566,6 +596,7 @@ void GameInteractorAnchor::HandleRemoteJson(nlohmann::json payload) {
             GameInteractorAnchor::AnchorClients[clientId].clientVersion = client.clientVersion;
             GameInteractorAnchor::AnchorClients[clientId].name = client.name;
             GameInteractorAnchor::AnchorClients[clientId].color = client.color;
+            GameInteractorAnchor::AnchorClients[clientId].team = client.team;
             GameInteractorAnchor::AnchorClients[clientId].seed = client.seed;
             GameInteractorAnchor::AnchorClients[clientId].fileNum = client.fileNum;
             GameInteractorAnchor::AnchorClients[clientId].gameComplete = client.gameComplete;
@@ -574,30 +605,51 @@ void GameInteractorAnchor::HandleRemoteJson(nlohmann::json payload) {
         }
     }
     if (payload["type"] == "UPDATE_CHECK_DATA" && GameInteractor::IsSaveLoaded()) {
+        if (!from_teammate) {
+            return;
+        }
         auto check = payload["locationIndex"].get<uint32_t>();
         auto data = payload["checkData"].get<RandomizerCheckTrackerData>();
         CheckTracker::UpdateCheck(check, data);
     }
     if (payload["type"] == "ENTRANCE_DISCOVERED") {
+        if (!from_teammate) {
+            return;
+        }
         auto entranceIndex = payload["entranceIndex"].get<uint16_t>();
         discoveredEntrances.push_back(entranceIndex);
         Entrance_SetEntranceDiscovered(entranceIndex, 1);
     }
     if (payload["type"] == "UPDATE_BEANS_BOUGHT" && GameInteractor::IsSaveLoaded()) {
+        if (!from_teammate) {
+            return;
+        }
         BEANS_BOUGHT = payload["amount"].get<uint8_t>();
     }
     if (payload["type"] == "UPDATE_BEANS_COUNT" && GameInteractor::IsSaveLoaded()) {
+        if (!from_teammate) {
+            return;
+        }
         AMMO(ITEM_BEAN) = payload["amount"].get<uint8_t>();
     }
     if (payload["type"] == "CONSUME_ADULT_TRADE_ITEM" && GameInteractor::IsSaveLoaded()) {
+        if (!from_teammate) {
+            return;
+        }
         uint8_t itemId = payload["itemId"].get<uint8_t>();
         gSaveContext.adultTradeItems &= ~ADULT_TRADE_FLAG(itemId);
 	    Inventory_ReplaceItem(gPlayState, itemId, Randomizer_GetNextAdultTradeItem());
     }
     if (payload["type"] == "UPDATE_KEY_COUNT" && GameInteractor::IsSaveLoaded()) {
+        if (!from_teammate) {
+            return;
+        }
         gSaveContext.inventory.dungeonKeys[payload["sceneNum"].get<int16_t>()] = payload["amount"].get<int8_t>();
     }
     if (payload["type"] == "GIVE_DUNGEON_ITEM" && GameInteractor::IsSaveLoaded()) {
+        if (!from_teammate) {
+            return;
+        }
         gSaveContext.inventory.dungeonItems[payload["sceneNum"].get<int16_t>()] |= gBitFlags[payload["itemId"].get<uint16_t>() - ITEM_KEY_BOSS];
     }
     if (payload["type"] == "GAME_COMPLETE") {
@@ -1174,6 +1226,15 @@ const char* heartTextureNames[16] = {
     "Heart_Three_Fourths", "Heart_Three_Fourths", "Heart_Three_Fourths", "Heart_Three_Fourths",
 };
 
+void DisplayNameAndTeam(const char* name, const char* team, bool gameComplete) {
+    if (team && !team[0]) {
+        // team is empty.
+        ImGui::TextColored(gameComplete ? GREEN : WHITE, "%s", name);
+    } else {
+        ImGui::TextColored(gSaveContext.sohStats.gameComplete ? GREEN : WHITE, "%s (%s)", name, team);
+    }
+}
+
 void DisplayLifeMeter(AnchorClient& client) {
     int currentHealth = client.playerData.playerHealth;
     int maxHealth = client.playerData.playerHealthCapacity;
@@ -1293,14 +1354,15 @@ void AnchorPlayerLocationWindow::DrawElement() {
         ImGuiWindowFlags_NoScrollbar
     );
 
-    ImGui::TextColored(gSaveContext.sohStats.gameComplete ? GREEN : WHITE, "%s", CVarGetString("gRemote.AnchorName", ""));
+    DisplayNameAndTeam(CVarGetString("gRemote.AnchorName", ""), CVarGetString("gRemote.AnchorTeam", ""), 
+                       gSaveContext.sohStats.gameComplete);
     if (GameInteractor::Instance->IsSaveLoaded()) {
         ImGui::SameLine();
         ImGui::TextColored(ImVec4(0.5, 0.5, 0.5, 1), "%s", SohUtils::GetSceneName(gPlayState->sceneNum).c_str());
     }
     for (auto& [clientId, client] : GameInteractorAnchor::AnchorClients) {
         ImGui::PushID(clientId);
-        ImGui::TextColored(client.gameComplete ? GREEN : WHITE, "%s", client.name.c_str());
+        DisplayNameAndTeam(client.name.c_str(), client.team.c_str(), client.gameComplete);
         if (client.clientVersion != GameInteractorAnchor::clientVersion) {
                     ImGui::SameLine();
                     ImGui::TextColored(ImVec4(1, 0, 0, 1), ICON_FA_EXCLAMATION_TRIANGLE);
