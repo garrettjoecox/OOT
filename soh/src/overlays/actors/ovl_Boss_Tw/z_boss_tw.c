@@ -5,6 +5,7 @@
 #include "overlays/actors/ovl_Door_Warp1/z_door_warp1.h"
 #include "soh/frame_interpolation.h"
 #include "soh/Enhancements/boss-rush/BossRush.h"
+#include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
 
 #include <string.h>
 
@@ -2364,223 +2365,210 @@ void BossTw_DeathCSMsgSfx(BossTw* this, PlayState* play) {
     koumeAnim = 0;
     sp35 = 0;
 
-    // Skip ahead to last part of the cutscene in rando
-    if (this->work[CS_TIMER_2] == 10 && (IS_RANDO || IS_BOSS_RUSH)) {
-        this->work[CS_TIMER_2] = 860;
-    }
-
-    if (this->work[CS_TIMER_2] == 80) {
-        koumeAnim = 1;
-    }
+    if (GameInteractor_Should(GI_VB_TWINROVA_DEATH_SCENE, true, this)) {
+        if (this->work[CS_TIMER_2] == 80) {
+            koumeAnim = 1;
+        }
     
-    if (this->work[CS_TIMER_2] == 80) {
-        msgId2 = 0x604B;
-        sp35 = 50;
-    }
-
-    if (this->work[CS_TIMER_2] == 140) {
-        kotakeAnim = koumeAnim = 2;
-    }
-
-    if (this->work[CS_TIMER_2] == 170) {
-        kotakeAnim = 3;
-        sKotakePtr->work[YAW_TGT] = -0x4000;
-        sKotakePtr->rotateSpeed = 0.0f;
-        Audio_PlayActorSound2(&sKotakePtr->actor, NA_SE_EN_TWINROBA_SENSE);
-        msgId2 = 0x604C;
-    }
-
-    if (this->work[CS_TIMER_2] == 210) {
-        D_8094C874 = 30;
-    }
-
-    if (this->work[CS_TIMER_2] == 270) {
-        koumeAnim = 3;
-        sKoumePtr->work[YAW_TGT] = 0x4000;
-        sKoumePtr->rotateSpeed = 0.0f;
-        Audio_PlayActorSound2(&sKoumePtr->actor, NA_SE_EN_TWINROBA_SENSE);
-    }
-
-    if (this->work[CS_TIMER_2] == 290) {
-        msgId2 = 0x604D;
-        sp35 = 35;
-    }
-
-    if (this->work[CS_TIMER_2] == 350) {
-        koumeAnim = kotakeAnim = 2;
-        sKoumePtr->work[YAW_TGT] = sKotakePtr->work[YAW_TGT] = 0;
-        sKoumePtr->rotateSpeed = sKotakePtr->rotateSpeed = 0.0f;
-    }
-
-    if (this->work[CS_TIMER_2] == 380) {
-        koumeAnim = kotakeAnim = 3;
-    }
-
-    if (this->work[CS_TIMER_2] == 400) {
-        koumeAnim = kotakeAnim = 2;
-    }
-
-    if (this->work[CS_TIMER_2] == 430) {
-        koumeAnim = 4;
-        D_8094C874 = 435;
-        D_8094C878 = 1;
-    }
-
-    if (this->work[CS_TIMER_2] > 440 && this->work[CS_TIMER_2] < 860) {
-        func_80078884(NA_SE_EN_TWINROBA_FIGHT - SFX_FLAG);
-    }
-
-    if (this->work[CS_TIMER_2] == 430) {
-        msgId2 = 0x604E;
-    }
-
-    if (this->work[CS_TIMER_2] == 480) {
-        kotakeAnim = 4;
-        sKotakePtr->work[YAW_TGT] = -0x4000;
-    }
-
-    if (this->work[CS_TIMER_2] == 500) {
-        koumeAnim = 2;
-    }
-
-    if (this->work[CS_TIMER_2] == 480) {
-        msgId1 = 0x604F;
-    }
-
-    if (this->work[CS_TIMER_2] == 530) {
-        koumeAnim = 4;
-        sKoumePtr->work[YAW_TGT] = 0x4000;
-        D_8094C87A = 335;
-        D_8094C87E = 1;
-    }
-
-    if (this->work[CS_TIMER_2] == 530) {
-        msgId2 = 0x6050;
-    }
-
-    if (this->work[CS_TIMER_2] == 580) {
-        msgId1 = 0x6051;
-    }
-
-    if (this->work[CS_TIMER_2] == 620) {
-        msgId2 = 0x6052;
-    }
-
-    if (this->work[CS_TIMER_2] == 660) {
-        msgId1 = 0x6053;
-    }
-
-    if (this->work[CS_TIMER_2] == 700) {
-        msgId2 = 0x6054;
-    }
-
-    if (this->work[CS_TIMER_2] == 740) {
-        msgId1 = 0x6055;
-    }
-
-    if (this->work[CS_TIMER_2] == 780) {
-        msgId2 = 0x6056;
-    }
-
-    if (this->work[CS_TIMER_2] == 820) {
-        msgId1 = 0x6057;
-        Audio_QueueSeqCmd(0x1 << 28 | SEQ_PLAYER_BGM_MAIN << 24 | 0x5000FF);
-    }
-
-    if (this->work[CS_TIMER_2] == 860) {
-        koumeAnim = kotakeAnim = 3;
-    }
-
-    if (this->work[CS_TIMER_2] == 900) {
-        Audio_PlayActorSound2(&sKoumePtr->actor, NA_SE_EN_TWINROBA_DIE);
-        Audio_PlayActorSound2(&sKotakePtr->actor, NA_SE_EN_TWINROBA_DIE);
-    }
-
-    if (this->work[CS_TIMER_2] == 930) {
-        msgId2 = 0x6058;
-    }
-
-    if (msgId2 != 0) {
-        Message_StartTextbox(play, msgId2, NULL);
-
-        if (sp35) {
-            D_8094C876 = 10;
-            D_8094C874 = sp35;
-            D_8094C878 = 0;
+        if (this->work[CS_TIMER_2] == 80) {
+            msgId2 = 0x604B;
+            sp35 = 50;
         }
-    }
 
-    if (msgId1 != 0) {
-        Message_StartTextbox(play, msgId1, NULL);
-    }
-
-    switch (kotakeAnim) {
-        case 1:
-            Animation_MorphToLoop(&sKotakePtr->skelAnime, &gTwinrovaKotakeKoumeShakeHandAnim, -5.0f);
-            break;
-        case 2:
-            Animation_MorphToLoop(&sKotakePtr->skelAnime, &gTwinrovaKotakeKoumeFloatLookForwardAnim, -5.0f);
-            break;
-        case 3:
-            Animation_MorphToLoop(&sKotakePtr->skelAnime, &gTwinrovaKotakeKoumeFloatLookUpAnim, -5.0f);
-            break;
-        case 4:
-            Animation_MorphToLoop(&sKotakePtr->skelAnime, &gTwinrovaKotakeKoumeBickerAnim, -5.0f);
-            break;
-    }
-
-    switch (koumeAnim) {
-        case 1:
-            Animation_MorphToLoop(&sKoumePtr->skelAnime, &gTwinrovaKotakeKoumeShakeHandAnim, -5.0f);
-            break;
-        case 2:
-            Animation_MorphToLoop(&sKoumePtr->skelAnime, &gTwinrovaKotakeKoumeFloatLookForwardAnim, -5.0f);
-            break;
-        case 3:
-            Animation_MorphToLoop(&sKoumePtr->skelAnime, &gTwinrovaKotakeKoumeFloatLookUpAnim, -5.0f);
-            break;
-        case 4:
-            Animation_MorphToLoop(&sKoumePtr->skelAnime, &gTwinrovaKotakeKoumeBickerAnim, -5.0f);
-            break;
-    }
-
-    if (this->work[CS_TIMER_2] >= 120 && this->work[CS_TIMER_2] < 500) {
-        Math_ApproachF(&this->workf[UNK_F18], 255.0f, 0.1f, 5.0f);
-    }
-
-    // Add separate timings for the "beam" that opens and closes around the sisters
-    // Needed because we skip ahead in cutscene timer value so it never gets called otherwise
-    if (IS_RANDO || IS_BOSS_RUSH) {
-        if (this->work[CS_TIMER_2] < 900) {
-            Math_ApproachF(&this->workf[UNK_F18], 255.0f, 0.1f, 5.0f);
-        } else if (this->work[CS_TIMER_2] > 910) {
-            Math_ApproachF(&this->workf[UNK_F18], 0.0f, 1.0f, 3.0f);
+        if (this->work[CS_TIMER_2] == 140) {
+            kotakeAnim = koumeAnim = 2;
         }
-    }
 
-    if (this->work[CS_TIMER_2] >= 150) {
-        Math_ApproachF(&sKoumePtr->workf[UNK_F17], (Math_SinS(this->work[CS_TIMER_1] * 2000) * 0.05f) + 0.4f, 0.1f,
-                       0.01f);
-        Math_ApproachF(&sKotakePtr->workf[UNK_F17], (Math_CosS(this->work[CS_TIMER_1] * 1700) * 0.05f) + 0.4f, 0.1f,
-                       0.01f);
+        if (this->work[CS_TIMER_2] == 170) {
+            kotakeAnim = 3;
+            sKotakePtr->work[YAW_TGT] = -0x4000;
+            sKotakePtr->rotateSpeed = 0.0f;
+            Audio_PlayActorSound2(&sKotakePtr->actor, NA_SE_EN_TWINROBA_SENSE);
+            msgId2 = 0x604C;
+        }
 
-        if (this->work[CS_TIMER_2] >= 880) {
-            Math_ApproachF(&sKotakePtr->actor.world.pos.y, 2000.0f, 1.0f, this->actor.speedXZ);
-            Math_ApproachF(&sKoumePtr->actor.world.pos.y, 2000.0f, 1.0f, this->actor.speedXZ);
-            Math_ApproachF(&this->actor.speedXZ, 10.0f, 1.0f, 0.25f);
+        if (this->work[CS_TIMER_2] == 210) {
+            D_8094C874 = 30;
+        }
 
-            if (this->work[CS_TIMER_2] >= 930) {
-                Math_ApproachF(&this->workf[UNK_F19], 5.0f, 1.0f, 0.05f);
-                Math_ApproachF(&this->workf[UNK_F18], 0.0f, 1.0f, 3.0f);
+        if (this->work[CS_TIMER_2] == 270) {
+            koumeAnim = 3;
+            sKoumePtr->work[YAW_TGT] = 0x4000;
+            sKoumePtr->rotateSpeed = 0.0f;
+            Audio_PlayActorSound2(&sKoumePtr->actor, NA_SE_EN_TWINROBA_SENSE);
+        }
+
+        if (this->work[CS_TIMER_2] == 290) {
+            msgId2 = 0x604D;
+            sp35 = 35;
+        }
+
+        if (this->work[CS_TIMER_2] == 350) {
+            koumeAnim = kotakeAnim = 2;
+            sKoumePtr->work[YAW_TGT] = sKotakePtr->work[YAW_TGT] = 0;
+            sKoumePtr->rotateSpeed = sKotakePtr->rotateSpeed = 0.0f;
+        }
+
+        if (this->work[CS_TIMER_2] == 380) {
+            koumeAnim = kotakeAnim = 3;
+        }
+
+        if (this->work[CS_TIMER_2] == 400) {
+            koumeAnim = kotakeAnim = 2;
+        }
+
+        if (this->work[CS_TIMER_2] == 430) {
+            koumeAnim = 4;
+            D_8094C874 = 435;
+            D_8094C878 = 1;
+        }
+
+        if (this->work[CS_TIMER_2] > 440 && this->work[CS_TIMER_2] < 860) {
+            func_80078884(NA_SE_EN_TWINROBA_FIGHT - SFX_FLAG);
+        }
+
+        if (this->work[CS_TIMER_2] == 430) {
+            msgId2 = 0x604E;
+        }
+
+        if (this->work[CS_TIMER_2] == 480) {
+            kotakeAnim = 4;
+            sKotakePtr->work[YAW_TGT] = -0x4000;
+        }
+
+        if (this->work[CS_TIMER_2] == 500) {
+            koumeAnim = 2;
+        }
+
+        if (this->work[CS_TIMER_2] == 480) {
+            msgId1 = 0x604F;
+        }
+
+        if (this->work[CS_TIMER_2] == 530) {
+            koumeAnim = 4;
+            sKoumePtr->work[YAW_TGT] = 0x4000;
+            D_8094C87A = 335;
+            D_8094C87E = 1;
+        }
+
+        if (this->work[CS_TIMER_2] == 530) {
+            msgId2 = 0x6050;
+        }
+
+        if (this->work[CS_TIMER_2] == 580) {
+            msgId1 = 0x6051;
+        }
+
+        if (this->work[CS_TIMER_2] == 620) {
+            msgId2 = 0x6052;
+        }
+
+        if (this->work[CS_TIMER_2] == 660) {
+            msgId1 = 0x6053;
+        }
+
+        if (this->work[CS_TIMER_2] == 700) {
+            msgId2 = 0x6054;
+        }
+
+        if (this->work[CS_TIMER_2] == 740) {
+            msgId1 = 0x6055;
+        }
+
+        if (this->work[CS_TIMER_2] == 780) {
+            msgId2 = 0x6056;
+        }
+
+        if (this->work[CS_TIMER_2] == 820) {
+            msgId1 = 0x6057;
+            Audio_QueueSeqCmd(0x1 << 28 | SEQ_PLAYER_BGM_MAIN << 24 | 0x5000FF);
+        }
+
+        if (this->work[CS_TIMER_2] == 860) {
+            koumeAnim = kotakeAnim = 3;
+        }
+
+        if (this->work[CS_TIMER_2] == 900) {
+            Audio_PlayActorSound2(&sKoumePtr->actor, NA_SE_EN_TWINROBA_DIE);
+            Audio_PlayActorSound2(&sKotakePtr->actor, NA_SE_EN_TWINROBA_DIE);
+        }
+
+        if (this->work[CS_TIMER_2] == 930) {
+            msgId2 = 0x6058;
+        }
+
+        if (msgId2 != 0) {
+            Message_StartTextbox(play, msgId2, NULL);
+
+            if (sp35) {
+                D_8094C876 = 10;
+                D_8094C874 = sp35;
+                D_8094C878 = 0;
             }
+        }
 
-            Audio_PlayActorSound2(&this->actor, NA_SE_EV_GOTO_HEAVEN - SFX_FLAG);
-        } else {
-            f32 yTarget = Math_CosS(this->work[CS_TIMER_2] * 1700) * 4.0f;
-            Math_ApproachF(&sKotakePtr->actor.world.pos.y, 20.0f + (263.0f + yTarget), 0.1f, this->actor.speedXZ);
-            yTarget = Math_SinS(this->work[CS_TIMER_2] * 1500) * 4.0f;
-            Math_ApproachF(&sKoumePtr->actor.world.pos.y, 20.0f + (263.0f + yTarget), 0.1f, this->actor.speedXZ);
-            Math_ApproachF(&this->actor.speedXZ, 1.0f, 1.0f, 0.05f);
+        if (msgId1 != 0) {
+            Message_StartTextbox(play, msgId1, NULL);
+        }
+
+        switch (kotakeAnim) {
+            case 1:
+                Animation_MorphToLoop(&sKotakePtr->skelAnime, &gTwinrovaKotakeKoumeShakeHandAnim, -5.0f);
+                break;
+            case 2:
+                Animation_MorphToLoop(&sKotakePtr->skelAnime, &gTwinrovaKotakeKoumeFloatLookForwardAnim, -5.0f);
+                break;
+            case 3:
+                Animation_MorphToLoop(&sKotakePtr->skelAnime, &gTwinrovaKotakeKoumeFloatLookUpAnim, -5.0f);
+                break;
+            case 4:
+                Animation_MorphToLoop(&sKotakePtr->skelAnime, &gTwinrovaKotakeKoumeBickerAnim, -5.0f);
+                break;
+        }
+
+        switch (koumeAnim) {
+            case 1:
+                Animation_MorphToLoop(&sKoumePtr->skelAnime, &gTwinrovaKotakeKoumeShakeHandAnim, -5.0f);
+                break;
+            case 2:
+                Animation_MorphToLoop(&sKoumePtr->skelAnime, &gTwinrovaKotakeKoumeFloatLookForwardAnim, -5.0f);
+                break;
+            case 3:
+                Animation_MorphToLoop(&sKoumePtr->skelAnime, &gTwinrovaKotakeKoumeFloatLookUpAnim, -5.0f);
+                break;
+            case 4:
+                Animation_MorphToLoop(&sKoumePtr->skelAnime, &gTwinrovaKotakeKoumeBickerAnim, -5.0f);
+                break;
+        }
+
+        if (this->work[CS_TIMER_2] >= 120 && this->work[CS_TIMER_2] < 500) {
+            Math_ApproachF(&this->workf[UNK_F18], 255.0f, 0.1f, 5.0f);
+        }
+
+        if (this->work[CS_TIMER_2] >= 150) {
+            Math_ApproachF(&sKoumePtr->workf[UNK_F17], (Math_SinS(this->work[CS_TIMER_1] * 2000) * 0.05f) + 0.4f, 0.1f,
+                        0.01f);
+            Math_ApproachF(&sKotakePtr->workf[UNK_F17], (Math_CosS(this->work[CS_TIMER_1] * 1700) * 0.05f) + 0.4f, 0.1f,
+                        0.01f);
+
+            if (this->work[CS_TIMER_2] >= 880) {
+                Math_ApproachF(&sKotakePtr->actor.world.pos.y, 2000.0f, 1.0f, this->actor.speedXZ);
+                Math_ApproachF(&sKoumePtr->actor.world.pos.y, 2000.0f, 1.0f, this->actor.speedXZ);
+                Math_ApproachF(&this->actor.speedXZ, 10.0f, 1.0f, 0.25f);
+
+                if (this->work[CS_TIMER_2] >= 930) {
+                    Math_ApproachF(&this->workf[UNK_F19], 5.0f, 1.0f, 0.05f);
+                    Math_ApproachF(&this->workf[UNK_F18], 0.0f, 1.0f, 3.0f);
+                }
+
+                Audio_PlayActorSound2(&this->actor, NA_SE_EV_GOTO_HEAVEN - SFX_FLAG);
+            } else {
+                f32 yTarget = Math_CosS(this->work[CS_TIMER_2] * 1700) * 4.0f;
+                Math_ApproachF(&sKotakePtr->actor.world.pos.y, 20.0f + (263.0f + yTarget), 0.1f, this->actor.speedXZ);
+                yTarget = Math_SinS(this->work[CS_TIMER_2] * 1500) * 4.0f;
+                Math_ApproachF(&sKoumePtr->actor.world.pos.y, 20.0f + (263.0f + yTarget), 0.1f, this->actor.speedXZ);
+                Math_ApproachF(&this->actor.speedXZ, 1.0f, 1.0f, 0.05f);
+            }
         }
     }
 }
