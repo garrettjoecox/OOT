@@ -72,6 +72,15 @@ void GameInteractor_ExecuteOnShopSlotChangeHooks(uint8_t cursorIndex, int16_t pr
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnShopSlotChange>(cursorIndex, price);
 }
 
+bool GameInteractor_ShouldActorInit(void* actor) {
+    bool result = true;
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::ShouldActorInit>(actor, &result);
+    GameInteractor::Instance->ExecuteHooksForID<GameInteractor::ShouldActorInit>(((Actor*)actor)->id, actor, &result);
+    GameInteractor::Instance->ExecuteHooksForPtr<GameInteractor::ShouldActorInit>((uintptr_t)actor, actor, &result);
+    GameInteractor::Instance->ExecuteHooksForFilter<GameInteractor::ShouldActorInit>(actor, &result);
+    return result;
+}
+
 void GameInteractor_ExecuteOnActorInit(void* actor) {
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnActorInit>(actor);
     GameInteractor::Instance->ExecuteHooksForID<GameInteractor::OnActorInit>(((Actor*)actor)->id, actor);
