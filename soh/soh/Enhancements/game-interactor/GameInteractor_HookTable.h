@@ -20,6 +20,7 @@ DEFINE_HOOK(OnSceneSpawnActors, ());
 DEFINE_HOOK(OnPlayerUpdate, ());
 DEFINE_HOOK(OnOcarinaSongAction, ());
 DEFINE_HOOK(OnShopSlotChange, (uint8_t cursorIndex, int16_t price));
+DEFINE_HOOK(ShouldActorInit, (void* actor, bool* result));
 DEFINE_HOOK(OnActorInit, (void* actor));
 DEFINE_HOOK(OnActorUpdate, (void* actor));
 DEFINE_HOOK(OnActorKill, (void* actor));
@@ -56,3 +57,6 @@ DEFINE_HOOK(OnSetGameLanguage, ());
 DEFINE_HOOK(OnFileDropped, (std::string filePath));
 DEFINE_HOOK(OnAssetAltChange, ());
 DEFINE_HOOK(OnKaleidoUpdate, ());
+
+DEFINE_HOOK(OnRandoSetCheckStatus, (RandomizerCheck rc, RandomizerCheckStatus status));
+DEFINE_HOOK(OnRandoSetIsSkipped, (RandomizerCheck rc, bool isSkipped));
