@@ -64,12 +64,25 @@ void GameInteractor_ExecuteOnPlayerUpdate() {
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnPlayerUpdate>();
 }
 
+void GameInteractor_ExecuteOnPlayerSfx(u16 sfxId) {
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnPlayerSfx>(sfxId);
+}
+
 void GameInteractor_ExecuteOnOcarinaSongAction() {
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnOcarinaSongAction>();
 }
 
 void GameInteractor_ExecuteOnShopSlotChangeHooks(uint8_t cursorIndex, int16_t price) {
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnShopSlotChange>(cursorIndex, price);
+}
+
+bool GameInteractor_ShouldActorInit(void* actor) {
+    bool result = true;
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::ShouldActorInit>(actor, &result);
+    GameInteractor::Instance->ExecuteHooksForID<GameInteractor::ShouldActorInit>(((Actor*)actor)->id, actor, &result);
+    GameInteractor::Instance->ExecuteHooksForPtr<GameInteractor::ShouldActorInit>((uintptr_t)actor, actor, &result);
+    GameInteractor::Instance->ExecuteHooksForFilter<GameInteractor::ShouldActorInit>(actor, &result);
+    return result;
 }
 
 void GameInteractor_ExecuteOnActorInit(void* actor) {
@@ -242,4 +255,9 @@ void GameInteractor_RegisterOnAssetAltChange(void (*fn)(void)) {
 
 void GameInteractor_ExecuteOnKaleidoUpdate() {
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnKaleidoUpdate>();
+}
+
+// MARK: - Rando
+void GameInteractor_ExecuteOnRandoEntranceDiscovered(u16 entranceIndex, u8 isReversedEntrance) {
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnRandoEntranceDiscovered>(entranceIndex, isReversedEntrance);
 }
