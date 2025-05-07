@@ -1238,6 +1238,18 @@ typedef struct {
     /* 0x01 */ u8 room;
 } EntranceEntry;
 
+typedef struct {
+    /* 0x0 */ s16 sceneId;
+    /* 0x1 */ s8 spawnNum;
+    /* 0x2 */ u16 flags;
+} MMEntranceTableEntry; // size = 0x4
+
+typedef struct {
+    /* 0x0 */ u32 tableCount : 8; // unused
+    /* 0x4 */ MMEntranceTableEntry** table;
+    /* 0x8 */ char* name; // unused
+} SceneMMEntranceTableEntry; // size = 0xC
+
 #define SRAM_SIZE 0x8000
 #define SRAM_HEADER_SIZE 0x10
 
@@ -1637,7 +1649,7 @@ typedef struct {
 } AnimationMinimalInfo; // size = 0xC
 
 typedef struct {
-    /* 0x00 */ s8  scene;
+    /* 0x00 */ s16  scene;
     /* 0x01 */ s8  spawn;
     /* 0x02 */ u16 field;
 } EntranceInfo; // size = 0x4

@@ -365,6 +365,9 @@ OTRGlobals::OTRGlobals() {
 
     auto versions = context->GetResourceManager()->GetArchive()->GetGameVersions();
 
+    hasOriginal = true;
+    return;
+
     for (uint32_t version : versions) {
         if (!ValidHashes.contains(version)) {
 #if defined(__SWITCH__)

@@ -90,10 +90,13 @@ void SceneFactoryV0::ParseFileBinary(std::shared_ptr<BinaryReader> reader,
 
 void SceneFactoryV0::ParseSceneCommands(std::shared_ptr<Scene> scene, std::shared_ptr<BinaryReader> reader) {
     uint32_t commandCount = reader->ReadUInt32();
-    scene->commands.reserve(commandCount);
+    // scene->commands.reserve(commandCount);
 
     for (uint32_t i = 0; i < commandCount; i++) {
-        scene->commands.push_back(ParseSceneCommand(scene, reader, i));
+        auto command = ParseSceneCommand(scene, reader, i);
+        if (command != nullptr) {
+            scene->commands.push_back(command);
+        }
     }
 }
 

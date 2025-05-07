@@ -11,6 +11,7 @@ extern "C" void Play_InitScene(PlayState * play, s32 spawn);
 extern "C" void Play_InitEnvironment(PlayState * play, s16 skyboxId);
 void OTRPlay_InitScene(PlayState* play, s32 spawn);
 s32 OTRScene_ExecuteCommands(PlayState* play, LUS::Scene* scene);
+void MMEntrance_PrintAll(void);
 
 //LUS::OTRResource* OTRPlay_LoadFile(PlayState* play, RomFile* file) {
 LUS::IResource* OTRPlay_LoadFile(PlayState* play, const char* fileName)
@@ -31,7 +32,8 @@ extern "C" void OTRPlay_SpawnScene(PlayState* play, s32 sceneNum, s32 spawn) {
 
     // Scenes considered "dungeon" with a MQ variant
     int16_t inNonSharedScene = (sceneNum >= SCENE_DEKU_TREE && sceneNum <= SCENE_ICE_CAVERN) ||
-                               sceneNum == SCENE_GERUDO_TRAINING_GROUND || sceneNum == SCENE_INSIDE_GANONS_CASTLE;
+                               sceneNum == SCENE_GERUDO_TRAINING_GROUND || sceneNum == SCENE_INSIDE_GANONS_CASTLE || 
+                               (sceneNum >= SCENE_20SICHITAI2 && sceneNum <= SCENE_ALLEY);
 
     std::string sceneVersion = "shared";
     if (inNonSharedScene) {
@@ -61,6 +63,7 @@ extern "C" void OTRPlay_SpawnScene(PlayState* play, s32 sceneNum, s32 spawn) {
 }
 
 void OTRPlay_InitScene(PlayState* play, s32 spawn) {
+    MMEntrance_PrintAll();
     play->curSpawn = spawn;
     play->linkActorEntry = nullptr;
     play->unk_11DFC = nullptr;

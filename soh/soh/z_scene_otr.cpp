@@ -71,8 +71,8 @@ bool Scene_CommandActorList(PlayState* play, LUS::ISceneCommand* cmd) {
     // LUS::SetActorList* cmdActor = std::static_pointer_cast<LUS::SetActorList>(cmd);
     LUS::SetActorList* cmdActor = (LUS::SetActorList*)cmd;
 
-    play->numSetupActors = cmdActor->numActors;
-    play->setupActorList = (ActorEntry*)cmdActor->GetRawPointer();
+    // play->numSetupActors = cmdActor->numActors;
+    // play->setupActorList = (ActorEntry*)cmdActor->GetRawPointer();
 
     return false;
 }
@@ -501,7 +501,8 @@ extern "C" s32 OTRfunc_800973FC(PlayState* play, RoomContext* roomCtx) {
 
             OTRScene_ExecuteCommands(play, (LUS::Scene*)roomCtx->roomToLoad);
             Player_SetBootData(play, GET_PLAYER(play));
-            Actor_SpawnTransitionActors(play, &play->actorCtx);
+            // Sometimes crashes
+            // Actor_SpawnTransitionActors(play, &play->actorCtx);
 
             return 1;
         }
