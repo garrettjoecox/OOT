@@ -28,6 +28,7 @@ void GameInteractor_ExecuteOnPlayerUpdate();
 void GameInteractor_ExecuteOnSetDoAction(uint16_t action);
 void GameInteractor_ExecuteOnOcarinaSongAction();
 void GameInteractor_ExecuteOnCuccoOrChickenHatch();
+bool GameInteractor_ShouldActorInit(void* actor);
 void GameInteractor_ExecuteOnActorInit(void* actor);
 void GameInteractor_ExecuteOnActorSpawn(void* actor);
 void GameInteractor_ExecuteOnActorUpdate(void* actor);
@@ -47,6 +48,7 @@ void GameInteractor_ExecuteOnShopSlotChangeHooks(uint8_t cursorIndex, int16_t pr
 void GameInteractor_ExecuteOnPlayDestroy();
 void GameInteractor_ExecuteOnPlayDrawBegin();
 void GameInteractor_ExecuteOnPlayDrawEnd();
+void GameInteractor_ExecuteOnOpenText(u16* textId, bool* loadFromMessageTable);
 bool GameInteractor_Should(GIVanillaBehavior flag, uint32_t result, ...);
 
 // MARK: -  Save Files
