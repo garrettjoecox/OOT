@@ -19,6 +19,9 @@ void GameInteractor_ExecuteOnExitGame(int32_t fileNum) {
 }
 
 void GameInteractor_ExecuteOnGameStateMainStart() {
+    // Cleanup all hooks at the start of each frame
+    GameInteractor::Instance->RemoveAllQueuedHooks();
+
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnGameStateMainStart>();
 }
 
@@ -42,10 +45,16 @@ void GameInteractor_ExecuteOnTransitionEndHooks(int16_t sceneNum) {
     GameInteractor::Instance->ExecuteHooksForFilter<GameInteractor::OnTransitionEnd>(sceneNum);
 }
 
-void GameInteractor_ExecuteOnSceneInitHooks(int16_t sceneNum) {
+void GameInteractor_ExecuteOnSceneInit(int16_t sceneNum) {
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnSceneInit>(sceneNum);
     GameInteractor::Instance->ExecuteHooksForID<GameInteractor::OnSceneInit>(sceneNum, sceneNum);
     GameInteractor::Instance->ExecuteHooksForFilter<GameInteractor::OnSceneInit>(sceneNum);
+}
+
+void GameInteractor_ExecuteAfterSceneCommands(int16_t sceneNum) {
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::AfterSceneCommands>(sceneNum);
+    GameInteractor::Instance->ExecuteHooksForID<GameInteractor::AfterSceneCommands>(sceneNum, sceneNum);
+    GameInteractor::Instance->ExecuteHooksForFilter<GameInteractor::AfterSceneCommands>(sceneNum);
 }
 
 void GameInteractor_ExecuteOnSceneFlagSet(int16_t sceneNum, int16_t flagType, int16_t flag) {
@@ -80,6 +89,10 @@ void GameInteractor_ExecuteOnPlayerSfx(u16 sfxId) {
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnPlayerSfx>(sfxId);
 }
 
+void GameInteractor_ExecuteOnSetDoAction(uint16_t action) {
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnSetDoAction>(action);
+}
+
 void GameInteractor_ExecuteOnOcarinaSongAction() {
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnOcarinaSongAction>();
 }
@@ -112,6 +125,13 @@ void GameInteractor_ExecuteOnActorInit(void* actor) {
     GameInteractor::Instance->ExecuteHooksForFilter<GameInteractor::OnActorInit>(actor);
 }
 
+void GameInteractor_ExecuteOnActorSpawn(void* actor) {
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnActorSpawn>(actor);
+    GameInteractor::Instance->ExecuteHooksForID<GameInteractor::OnActorSpawn>(((Actor*)actor)->id, actor);
+    GameInteractor::Instance->ExecuteHooksForPtr<GameInteractor::OnActorSpawn>((uintptr_t)actor, actor);
+    GameInteractor::Instance->ExecuteHooksForFilter<GameInteractor::OnActorSpawn>(actor);
+}
+
 void GameInteractor_ExecuteOnActorUpdate(void* actor) {
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnActorUpdate>(actor);
     GameInteractor::Instance->ExecuteHooksForID<GameInteractor::OnActorUpdate>(((Actor*)actor)->id, actor);
@@ -124,6 +144,13 @@ void GameInteractor_ExecuteOnActorKill(void* actor) {
     GameInteractor::Instance->ExecuteHooksForID<GameInteractor::OnActorKill>(((Actor*)actor)->id, actor);
     GameInteractor::Instance->ExecuteHooksForPtr<GameInteractor::OnActorKill>((uintptr_t)actor, actor);
     GameInteractor::Instance->ExecuteHooksForFilter<GameInteractor::OnActorKill>(actor);
+}
+
+void GameInteractor_ExecuteOnActorDestroy(void* actor) {
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnActorDestroy>(actor);
+    GameInteractor::Instance->ExecuteHooksForID<GameInteractor::OnActorDestroy>(((Actor*)actor)->id, actor);
+    GameInteractor::Instance->ExecuteHooksForPtr<GameInteractor::OnActorDestroy>((uintptr_t)actor, actor);
+    GameInteractor::Instance->ExecuteHooksForFilter<GameInteractor::OnActorDestroy>(actor);
 }
 
 void GameInteractor_ExecuteOnEnemyDefeat(void* actor) {
@@ -140,7 +167,7 @@ void GameInteractor_ExecuteOnBossDefeat(void* actor) {
     GameInteractor::Instance->ExecuteHooksForFilter<GameInteractor::OnBossDefeat>(actor);
 }
 
-void GameInteractor_ExecuteOnTimestamp (u8 item) {
+void GameInteractor_ExecuteOnTimestamp(u8 item) {
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnTimestamp>(item);
 }
 
@@ -154,6 +181,22 @@ void GameInteractor_ExecuteOnPlayerHealthChange(int16_t amount) {
 
 void GameInteractor_ExecuteOnPlayerBottleUpdate(int16_t contents) {
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnPlayerBottleUpdate>(contents);
+}
+
+void GameInteractor_ExecuteOnPlayerHoldUpShield() {
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnPlayerHoldUpShield>();
+}
+
+void GameInteractor_ExecuteOnPlayerFirstPersonControl(Player* player) {
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnPlayerFirstPersonControl>(player);
+}
+
+void GameInteractor_ExecuteOnPlayerShieldControl(float_t* sp50, float_t* sp54) {
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnPlayerShieldControl>(sp50, sp54);
+}
+
+void GameInteractor_ExecuteOnPlayerProcessStick() {
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnPlayerProcessStick>();
 }
 
 void GameInteractor_ExecuteOnPlayDestroy() {
@@ -264,11 +307,20 @@ void GameInteractor_ExecuteOnUpdateFileQuestSelection(uint8_t questIndex) {
 }
 
 void GameInteractor_ExecuteOnUpdateFileBossRushOptionSelection(uint8_t optionIndex, uint8_t optionValue) {
-    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnUpdateFileBossRushOptionSelection>(optionIndex, optionValue);
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnUpdateFileBossRushOptionSelection>(optionIndex,
+                                                                                                optionValue);
+}
+
+void GameInteractor_ExecuteOnUpdateFileRandomizerOptionSelection(uint8_t optionIndex) {
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnUpdateFileRandomizerOptionSelection>(optionIndex);
 }
 
 void GameInteractor_ExecuteOnUpdateFileNameSelection(int16_t charCode) {
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnUpdateFileNameSelection>(charCode);
+}
+
+void GameInteractor_ExecuteOnFileChooseMain(void* gameState) {
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnFileChooseMain>(gameState);
 }
 
 // MARK: - Game
@@ -283,7 +335,7 @@ void GameInteractor_RegisterOnAssetAltChange(void (*fn)(void)) {
     GameInteractor::Instance->RegisterGameHook<GameInteractor::OnAssetAltChange>(fn);
 }
 
-//MARK: Pause Menu
+// MARK: Pause Menu
 
 void GameInteractor_ExecuteOnKaleidoUpdate() {
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnKaleidoUpdate>();
