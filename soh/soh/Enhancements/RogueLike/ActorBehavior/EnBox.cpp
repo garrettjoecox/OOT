@@ -19,6 +19,8 @@ void Player_Action_8084E6D4_overridden(Player* player, PlayState* play) {
         func_8084DFAC(play, player);
 
         EnBox* enBox = (EnBox*)player->interactRangeActor;
+
+        Sfx_PlaySfxCentered(NA_SE_EV_HIT_SOUND);
        
         // Spawn 1-5 rupees, sending them flying in random directions
         s32 rupeeCount = (Rand_ZeroOne() * 5.0f) + 2.0f;
@@ -29,17 +31,37 @@ void Player_Action_8084E6D4_overridden(Player* player, PlayState* play) {
                 CustomItem::STOP_BOBBING, GID_RUPEE_GREEN,
                 [](Actor* actor, PlayState* play) {
                     gSaveContext.ship.quest.data.rogueLike.experiencePoints += 1;
+                    Sfx_PlaySfxCentered(NA_SE_SY_RUPY_COUNT);
                 }, [](Actor* actor, PlayState* play) {
-                    Matrix_Scale(10.0f, 10.0f, 10.0f, MTXMODE_APPLY);
-                    Matrix_Translate(0.0f, -100.0f, 0.0f, MTXMODE_APPLY);
+                    Matrix_Scale(15.0f, 15.0f, 15.0f, MTXMODE_APPLY);
+                    Matrix_Translate(0.0f, -40.0f, 0.0f, MTXMODE_APPLY);
                     GetItem_Draw(play, CUSTOM_ITEM_PARAM);
 
-                    // Don't let the item get picked up till it hits the ground
-                    if (actor->bgCheckFlags & 1) {
-                        CUSTOM_ITEM_FLAGS |= CustomItem::KILL_ON_TOUCH;
+                    // Slowly move towards the player
+                    Player* player = GET_PLAYER(play);
+
+                    // Don't magnet till it hits the ground
+                    if (actor->bgCheckFlags & 1 && !Player_InBlockingCsMode(gPlayState, player)) {
+                        if (actor->xzDistToPlayer < 100.0f) {
+                            s16 targetYaw = Actor_WorldYawTowardActor(actor, &player->actor);
+                            actor->world.rot.y = targetYaw;
+    
+                            const f32 desiredSpeed = 3.0f;
+                            Math_ApproachF(&actor->speedXZ, desiredSpeed, 0.2f, 0.2f);
+    
+                            Actor_MoveXZGravity(actor);
+    
+                            if (Actor_WorldDistXZToActor(actor, &player->actor) < 50.0f) {
+                                Math_ApproachF(&actor->speedXZ, 0.0f, 0.3f, 0.5f);
+                            }
+                        }
+
+                        if (actor->xzDistToPlayer < 10.0f) {
+                            CUSTOM_ITEM_FLAGS |= CustomItem::KILL_ON_TOUCH;
+                        }
                     }
                 });
-           
+
             item->actor.velocity.y = 8.0f;
             item->actor.speedXZ = (Rand_ZeroOne() * 4.0f) + 1.0f;
             item->actor.gravity = -0.9f;
