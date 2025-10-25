@@ -18,4 +18,10 @@ As you continue playing, the idea is you would very slowly gain a currency to gr
 - ImGui Prompt to randomly roll an item (slot machine-like interface)
 - ImGui Prompt to select between 3 different buffs
 - Unified way to scale incoming/outgoing damage and enemy health across all enemies in the game (bosses separate cause they are finicky)
-- Weighted list of XP amounts to grant for every check and enemy. For instance you shouldn't get that much XP for opening chests in Mido's house, but doing frog song minigame is huge. 
+- Weighted list of XP amounts to grant for every check and enemy. For instance you shouldn't get that much XP for opening chests in Mido's house, but doing frog song minigame is huge.
+
+## Discussion Points:
+- Lock the player in certain areas to spawn specified waves of enemies before the player can proceed? i.e Hyrule Field or places without a Clear Room
+- Utilize the trick from MM to hide/unhide Inventory Items based on what is earned?
+- UI Prompt when leveling up (pause the game and wait for selection of Perks, Items, etc.)?
+- Apply ColorFilter "Plating" to enemies and enable Rare Spawns where the enemy is Hyper or just hits harder etc.?
