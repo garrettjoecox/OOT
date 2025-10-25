@@ -20,6 +20,18 @@ class StartingSelectionWindow final : public Ship::GuiWindow {
     void UpdateElement() override {};
 };
 
+class HUDWindow final : public Ship::GuiWindow {
+  public:
+    using GuiWindow::GuiWindow;
+    void Draw() override;
+    ~HUDWindow(){};
+
+  protected:
+    void InitElement() override {};
+    void DrawElement() override {};
+    void UpdateElement() override {};
+};
+
 void Init();
 void OnLoadGame();
 

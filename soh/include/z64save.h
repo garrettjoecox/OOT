@@ -162,6 +162,11 @@ typedef struct ShipRandomizerSaveContextData {
     u8 triforcePiecesCollected;
 } ShipRandomizerSaveContextData;
 
+typedef struct ShipRogueLikeSaveContextData {
+    u32 experiencePoints;
+    u32 level;
+} ShipRogueLikeSaveContextData;
+
 typedef struct ShipBossRushSaveContextData {
     u32 isPaused;
     u8 options[BR_OPTIONS_MAX];
@@ -170,6 +175,7 @@ typedef struct ShipBossRushSaveContextData {
 typedef union ShipQuestSpecificSaveContextData {
     ShipRandomizerSaveContextData randomizer;
     ShipBossRushSaveContextData bossRush;
+    ShipRogueLikeSaveContextData rogueLike;
 } ShipQuestSpecificSaveContextData;
 
 typedef struct ShipQuestSaveContextData {
