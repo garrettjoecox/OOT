@@ -17,3 +17,5 @@ As you continue playing, the idea is you would very slowly gain a currency to gr
 - ImGui Overlay to place persistent UI elements (XP bar, difficulty timer, etc)
 - ImGui Prompt to randomly roll an item (slot machine-like interface)
 - ImGui Prompt to select between 3 different buffs
+- Unified way to scale incoming/outgoing damage and enemy health across all enemies in the game (bosses separate cause they are finicky)
+- Weighted list of XP amounts to grant for every check and enemy. For instance you shouldn't get that much XP for opening chests in Mido's house, but doing frog song minigame is huge. 
