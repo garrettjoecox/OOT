@@ -501,6 +501,11 @@ void SaveManager::InitMeta(int fileNum) {
     fileMetaInfo[fileNum].requiresOriginal =
         !IS_MASTER_QUEST && (!IS_RANDO || randoContext->GetDungeons()->CountMQ() < 12);
 
+    if (IS_ROGUELIKE) { // IDK
+        fileMetaInfo[fileNum].requiresMasterQuest = false;
+        fileMetaInfo[fileNum].requiresOriginal = false;
+    }
+
     fileMetaInfo[fileNum].buildVersionMajor = gSaveContext.ship.stats.buildVersionMajor;
     fileMetaInfo[fileNum].buildVersionMinor = gSaveContext.ship.stats.buildVersionMinor;
     fileMetaInfo[fileNum].buildVersionPatch = gSaveContext.ship.stats.buildVersionPatch;
@@ -2084,6 +2089,9 @@ void SaveManager::LoadBaseVersion4() {
     SaveManager::Instance->LoadData("dogParams", gSaveContext.dogParams);
     SaveManager::Instance->LoadData("filenameLanguage", gSaveContext.ship.filenameLanguage);
     SaveManager::Instance->LoadData("maskMemory", gSaveContext.ship.maskMemory);
+
+    // Ugh..
+    SaveManager::Instance->LoadData("questId", gSaveContext.ship.quest.id);
 }
 
 void SaveManager::SaveBase(SaveContext* saveContext, int sectionID, bool fullSave) {
@@ -2253,6 +2261,9 @@ void SaveManager::SaveBase(SaveContext* saveContext, int sectionID, bool fullSav
     SaveManager::Instance->SaveData("dogParams", saveContext->dogParams);
     SaveManager::Instance->SaveData("filenameLanguage", saveContext->ship.filenameLanguage);
     SaveManager::Instance->SaveData("maskMemory", saveContext->ship.maskMemory);
+
+    // Ugh..
+    SaveManager::Instance->SaveData("questId", gSaveContext.ship.quest.id);
 }
 
 // Load a string into a char array based on size and ensuring it is null terminated when overflowed
