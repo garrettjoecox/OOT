@@ -30,6 +30,7 @@ void RogueLike::ActorBehavior::Init() {
 
 void RogueLike::ActorBehavior::OnLoadGame() {
     RogueLike::ActorBehavior::InitEnBoxBehavior();
+    RogueLike::ActorBehavior::InitEnDnsBehavior();
     RogueLike::ActorBehavior::InitEnIshiBehavior();
     RogueLike::ActorBehavior::InitEnKusaBehavior();
     RogueLike::ActorBehavior::InitEnWood02Behavior();

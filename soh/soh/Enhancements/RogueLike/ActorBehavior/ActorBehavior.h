@@ -11,6 +11,7 @@ void Init();
 void OnLoadGame();
 
 void InitEnBoxBehavior();
+void InitEnDnsBehavior();
 void InitEnIshiBehavior();
 void InitEnKusaBehavior();
 void InitEnWood02Behavior();
