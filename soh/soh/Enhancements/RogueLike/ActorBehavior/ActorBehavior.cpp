@@ -14,6 +14,16 @@ static void MiscVanillaBehaviorHandler(GIVanillaBehavior id, bool* should, va_li
     }
 }
 
+static void OnEnemyDefeatHandler(void* actorRef) {
+    Actor* actor = static_cast<Actor*>(actorRef);
+
+    switch (actor->id) {
+        default:
+            RogueLike::SpawnXPGroup(actor->world.pos, 50);
+            break;
+    }
+}
+
 // Entry point for the module, run once on game boot
 void RogueLike::ActorBehavior::Init() {
 }
@@ -25,5 +35,6 @@ void RogueLike::ActorBehavior::OnLoadGame() {
     RogueLike::ActorBehavior::InitEnWood02Behavior();
     RogueLike::ActorBehavior::InitObjTsuboBehavior();
 
+    COND_HOOK(OnEnemyDefeat, IS_ROGUELIKE, OnEnemyDefeatHandler);
     COND_HOOK(OnVanillaBehavior, IS_ROGUELIKE, MiscVanillaBehaviorHandler);
 }
