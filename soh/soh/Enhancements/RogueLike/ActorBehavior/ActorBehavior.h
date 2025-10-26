@@ -11,6 +11,10 @@ void Init();
 void OnLoadGame();
 
 void InitEnBoxBehavior();
+void InitEnIshiBehavior();
+void InitEnKusaBehavior();
+void InitEnWood02Behavior();
+void InitObjTsuboBehavior();
 
 } // namespace ActorBehavior
 

@@ -1747,6 +1747,14 @@ typedef enum {
 
     // #### `result`
     // ```c
+    // actor.params & 1) == ROCK_SMALL
+    // ```
+    // #### `args`
+    // - `*EnIshi`
+    VB_ROCK_DROP_ITEM,
+
+    // #### `result`
+    // ```c
     // true
     // ```
     // #### `args`
