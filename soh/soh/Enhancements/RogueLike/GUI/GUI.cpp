@@ -52,7 +52,8 @@ void RogueLike::GUI::HUDWindow::Draw() {
     ImGui::SetNextWindowSize(viewport->Size);
     ImGui::SetNextWindowViewport(viewport->ID);
 
-    ImGui::Begin("RogueLike HUD", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBackground);
+    ImGui::Begin("RogueLike HUD", nullptr,
+                 ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBackground);
 
     // Progress bar based on experience points
     float experience = gSaveContext.ship.quest.data.rogueLike.experiencePoints;
@@ -65,7 +66,8 @@ void RogueLike::GUI::HUDWindow::Draw() {
     if (ImGui::BeginChild("StatsWindow")) {
         if (ImGui::BeginTable("StatsList", 3, ImGuiTableFlags_SizingFixedFit)) {
             for (auto& stat : rogueLikeStatMap) {
-                ImTextureID textureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(stat.second.second);
+                ImTextureID textureId =
+                    Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(stat.second.second);
                 std::string statValueStr = gSaveContext.ship.quest.data.rogueLike.stats[stat.first] >= 0 ? "+" : "-";
                 statValueStr += std::to_string(gSaveContext.ship.quest.data.rogueLike.stats[stat.first]).c_str();
 
@@ -99,7 +101,8 @@ void RogueLike::GUI::Init() {
 
     auto gui = Ship::Context::GetInstance()->GetWindow()->GetGui();
 
-    mStartingSelectionWindow = std::make_shared<RogueLike::GUI::StartingSelectionWindow>(CVAR_WINDOW("RogueLikeStartingSelection"), "RogueLike Starting Selection");
+    mStartingSelectionWindow = std::make_shared<RogueLike::GUI::StartingSelectionWindow>(
+        CVAR_WINDOW("RogueLikeStartingSelection"), "RogueLike Starting Selection");
     gui->AddGuiWindow(mStartingSelectionWindow);
 
     mHUDWindow = std::make_shared<RogueLike::GUI::HUDWindow>(CVAR_WINDOW("RogueLikeHUD"), "RogueLike HUD");

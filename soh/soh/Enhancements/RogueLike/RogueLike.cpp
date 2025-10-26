@@ -35,11 +35,13 @@ void RogueLike::Init() {
 }
 
 void RogueLike::SpawnXPOrb(Vec3f spawnPos, int32_t amount) {
-    CustomItem::Spawn(spawnPos.x, spawnPos.y + 10.0f, spawnPos.z, 0, CustomItem::STOP_BOBBING | CustomItem::TOSS_ON_SPAWN, amount, 
+    CustomItem::Spawn(
+        spawnPos.x, spawnPos.y + 10.0f, spawnPos.z, 0, CustomItem::STOP_BOBBING | CustomItem::TOSS_ON_SPAWN, amount,
         [](Actor* actor, PlayState* play) {
             gSaveContext.ship.quest.data.rogueLike.experiencePoints += CUSTOM_ITEM_PARAM;
             Sfx_PlaySfxCentered(NA_SE_SY_RUPY_COUNT);
-        }, [](Actor* actor, PlayState* play) {
+        },
+        [](Actor* actor, PlayState* play) {
             Matrix_Scale(15.0f, 15.0f, 15.0f, MTXMODE_APPLY);
             Matrix_Translate(0.0f, -40.0f, 0.0f, MTXMODE_APPLY);
 
@@ -85,10 +87,14 @@ void RogueLike::SpawnXPGroup(Vec3f spawnPos, int32_t amount) {
     while (remainingAmount > 0) {
         std::vector<int32_t> orbSizes = { 1 };
 
-        if (remainingAmount >= 200) orbSizes.push_back(200);
-        if (remainingAmount >= 50) orbSizes.push_back(50);
-        if (remainingAmount >= 20) orbSizes.push_back(20);
-        if (remainingAmount >= 5) orbSizes.push_back(5);
+        if (remainingAmount >= 200)
+            orbSizes.push_back(200);
+        if (remainingAmount >= 50)
+            orbSizes.push_back(50);
+        if (remainingAmount >= 20)
+            orbSizes.push_back(20);
+        if (remainingAmount >= 5)
+            orbSizes.push_back(5);
 
         int32_t orbAmount = orbSizes[Rand_ZeroOne() * orbSizes.size()];
 

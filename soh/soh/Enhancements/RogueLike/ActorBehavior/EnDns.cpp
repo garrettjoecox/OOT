@@ -20,7 +20,7 @@ void RogueLike::ActorBehavior::InitEnDnsBehavior() {
         int16_t actorIndex = GetActorListIndex((Actor*)scrubActor);
 
         *should = false;
-        
+
         if (actorIndex == -1) {
             actorIndex = scrubActor->actor.home.pos.x + scrubActor->actor.home.pos.z;
         }

@@ -20,7 +20,7 @@ void RogueLike::ActorBehavior::InitEnKusaBehavior() {
         int16_t actorIndex = GetActorListIndex((Actor*)grassActor);
 
         *should = false;
-        
+
         if (actorIndex == -1) {
             actorIndex = grassActor->actor.home.pos.x + grassActor->actor.home.pos.z;
         }
