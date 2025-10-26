@@ -8,6 +8,18 @@ extern "C" {
 extern PlayState* gPlayState;
 }
 
+std::map<RoguelikeStats, std::pair<std::string, std::string>> rogueLikeStatMap = {
+    { RL_ATTACK, { "Attack", "ITEM_SWORD_MASTER" } },
+    { RL_DEFENSE, { "Defense", "ITEM_SHIELD_HYLIAN" } },
+};
+
+void TableCellCenteredText(ImVec4 color, const char* text) {
+    float textHeight = ImGui::GetTextLineHeight();
+    float offsetY = (32.0f - textHeight + 10.0f) * 0.5f;
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + offsetY);
+    ImGui::TextColored(color, text);
+}
+
 void RogueLike::GUI::StartingSelectionWindow::Draw() {
     if (!IsVisible()) {
         return;
@@ -40,13 +52,41 @@ void RogueLike::GUI::HUDWindow::Draw() {
     ImGui::SetNextWindowSize(viewport->Size);
     ImGui::SetNextWindowViewport(viewport->ID);
 
-    ImGui::Begin("RogueLike HUD", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBackground);
+    ImGui::Begin("RogueLike HUD", nullptr,
+                 ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBackground);
 
     // Progress bar based on experience points
     float experience = gSaveContext.ship.quest.data.rogueLike.experiencePoints;
     float nextLevelExp = 100;
     float progress = experience / nextLevelExp;
     ImGui::ProgressBar(progress, ImVec2(-1, 0));
+
+    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0, 0, 0, 0));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 4.0f);
+    if (ImGui::BeginChild("StatsWindow")) {
+        if (ImGui::BeginTable("StatsList", 3, ImGuiTableFlags_SizingFixedFit)) {
+            for (auto& stat : rogueLikeStatMap) {
+                ImTextureID textureId =
+                    Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(stat.second.second);
+                std::string statValueStr = gSaveContext.ship.quest.data.rogueLike.stats[stat.first] >= 0 ? "+" : "-";
+                statValueStr += std::to_string(gSaveContext.ship.quest.data.rogueLike.stats[stat.first]).c_str();
+
+                ImGui::TableNextColumn();
+                ImGui::Image(textureId, ImVec2(46.0f, 46.0f));
+
+                ImGui::TableNextColumn();
+                TableCellCenteredText(ImVec4(1, 1, 1, 1), stat.second.first.c_str());
+
+                ImGui::TableNextColumn();
+                TableCellCenteredText(ImVec4(0, 1, 0, 1), statValueStr.c_str());
+            }
+
+            ImGui::EndTable();
+        }
+        ImGui::EndChild();
+    }
+    ImGui::PopStyleColor(1);
+    ImGui::PopStyleVar(1);
 
     ImGui::End();
 }
@@ -61,7 +101,8 @@ void RogueLike::GUI::Init() {
 
     auto gui = Ship::Context::GetInstance()->GetWindow()->GetGui();
 
-    mStartingSelectionWindow = std::make_shared<RogueLike::GUI::StartingSelectionWindow>(CVAR_WINDOW("RogueLikeStartingSelection"), "RogueLike Starting Selection");
+    mStartingSelectionWindow = std::make_shared<RogueLike::GUI::StartingSelectionWindow>(
+        CVAR_WINDOW("RogueLikeStartingSelection"), "RogueLike Starting Selection");
     gui->AddGuiWindow(mStartingSelectionWindow);
 
     mHUDWindow = std::make_shared<RogueLike::GUI::HUDWindow>(CVAR_WINDOW("RogueLikeHUD"), "RogueLike HUD");

@@ -20,7 +20,7 @@ void RogueLike::ActorBehavior::InitEnWood02Behavior() {
         int16_t actorIndex = GetActorListIndex((Actor*)treeActor);
 
         *should = false;
-        
+
         if (actorIndex == -1) {
             actorIndex = treeActor->actor.home.pos.x + treeActor->actor.home.pos.z;
         }

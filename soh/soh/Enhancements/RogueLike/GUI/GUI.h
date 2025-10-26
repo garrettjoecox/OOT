@@ -15,9 +15,9 @@ class StartingSelectionWindow final : public Ship::GuiWindow {
     ~StartingSelectionWindow(){};
 
   protected:
-    void InitElement() override {};
-    void DrawElement() override {};
-    void UpdateElement() override {};
+    void InitElement() override{};
+    void DrawElement() override{};
+    void UpdateElement() override{};
 };
 
 class HUDWindow final : public Ship::GuiWindow {
@@ -27,9 +27,9 @@ class HUDWindow final : public Ship::GuiWindow {
     ~HUDWindow(){};
 
   protected:
-    void InitElement() override {};
-    void DrawElement() override {};
-    void UpdateElement() override {};
+    void InitElement() override{};
+    void DrawElement() override{};
+    void UpdateElement() override{};
 };
 
 void Init();

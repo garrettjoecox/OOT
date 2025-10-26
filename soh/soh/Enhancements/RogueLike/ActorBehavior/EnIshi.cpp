@@ -20,7 +20,7 @@ void RogueLike::ActorBehavior::InitEnIshiBehavior() {
         int16_t actorIndex = GetActorListIndex((Actor*)rockActor);
 
         *should = false;
-        
+
         if (actorIndex == -1) {
             actorIndex = rockActor->actor.home.pos.x + rockActor->actor.home.pos.z;
         }
