@@ -1,8 +1,6 @@
-#include "ActorBehavior.h"
-#include "soh/ShipInit.hpp"
+#include "soh/Enhancements/RogueLike/RogueLike.h"
 #include "soh/Enhancements/game-interactor/vanilla-behavior/GIVanillaBehavior.h"
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
-#include "soh/Enhancements/custom-item/CustomItem.h"
 #include "soh/ObjectExtension/ActorListIndex.h"
 
 extern "C" {
@@ -28,7 +26,7 @@ void RogueLike::ActorBehavior::InitEnIshiBehavior() {
         auto tupleKey = std::make_tuple(gPlayState->sceneNum, gPlayState->roomCtx.curRoom.num, actorIndex);
 
         if (brokenRocks.find(tupleKey) == brokenRocks.end()) {
-            RogueLike::SpawnXPGroup(rockActor->actor.world.pos, 20);
+            RogueLike::XP::SpawnXPGroup(rockActor->actor.world.pos, 20);
             brokenRocks.insert(tupleKey);
         }
     });

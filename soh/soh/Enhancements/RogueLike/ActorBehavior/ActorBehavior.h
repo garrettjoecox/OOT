@@ -1,8 +1,6 @@
 #ifndef ROGUELIKE_ACTOR_BEHAVIOR_H
 #define ROGUELIKE_ACTOR_BEHAVIOR_H
 
-#include "soh/Enhancements/RogueLike/RogueLike.h"
-
 namespace RogueLike {
 
 namespace ActorBehavior {

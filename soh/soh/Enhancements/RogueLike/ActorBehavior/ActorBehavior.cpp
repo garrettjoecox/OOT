@@ -1,4 +1,4 @@
-#include "ActorBehavior.h"
+#include "soh/Enhancements/RogueLike/RogueLike.h"
 #include "soh/Enhancements/game-interactor/vanilla-behavior/GIVanillaBehavior.h"
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
 
@@ -19,7 +19,7 @@ static void OnEnemyDefeatHandler(void* actorRef) {
 
     switch (actor->id) {
         default:
-            RogueLike::SpawnXPGroup(actor->world.pos, 50);
+            RogueLike::XP::SpawnXPGroup(actor->world.pos, 50);
             break;
     }
 }

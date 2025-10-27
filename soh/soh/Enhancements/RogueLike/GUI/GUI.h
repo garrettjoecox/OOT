@@ -1,7 +1,6 @@
 #ifndef ROGUELIKE_GUI_H
 #define ROGUELIKE_GUI_H
 
-#include "soh/Enhancements/RogueLike/RogueLike.h"
 #include <libultraship/libultraship.h>
 
 namespace RogueLike {
