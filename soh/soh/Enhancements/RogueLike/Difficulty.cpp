@@ -57,12 +57,14 @@ void RogueLike::Difficulty::IncrementDifficulty(u32 amount) {
     }
 }
 
-void RogueLike::Difficulty::OnLoadGame() {
-    RogueLike::Difficulty::IndicateActivity();
+static void OnLoadGame() {
+    if (IS_ROGUELIKE) {
+        RogueLike::Difficulty::IndicateActivity();
+    }
 
     COND_HOOK(OnPlayerUpdate, IS_ROGUELIKE, []() {
         if (GetUnixTimestamp() - gSaveContext.ship.quest.data.rogueLike.lastActivity >= 10 * 1000) {
-            IncrementDifficulty(1);
+            RogueLike::Difficulty::IncrementDifficulty(1);
         }
     });
 
@@ -99,4 +101,4 @@ void RogueLike::Difficulty::OnLoadGame() {
     });
 }
 
-static RegisterShipInitFunc initFunc(RogueLike::Difficulty::OnLoadGame, { "IS_ROGUELIKE" });
+static RegisterShipInitFunc initFunc(OnLoadGame, { "IS_ROGUELIKE" });

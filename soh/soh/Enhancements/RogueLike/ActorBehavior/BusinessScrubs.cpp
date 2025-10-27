@@ -2,6 +2,7 @@
 #include "soh/Enhancements/game-interactor/vanilla-behavior/GIVanillaBehavior.h"
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
 #include "soh/ObjectExtension/ActorListIndex.h"
+#include "soh/ShipInit.hpp"
 
 extern "C" {
 #include "variables.h"
@@ -12,7 +13,9 @@ extern PlayState* gPlayState;
 
 std::set<std::tuple<s16, s8, int16_t>> killedScrubs;
 
-void RogueLike::ActorBehavior::InitEnDnsBehavior() {
+static void InitBusinessScrubsBehavior() {
+    killedScrubs.clear();
+
     COND_ID_HOOK(ShouldActorInit, ACTOR_EN_DNS, IS_ROGUELIKE, [](void* actor, bool* should) {
         EnDns* scrubActor = static_cast<EnDns*>(actor);
         int16_t actorIndex = GetActorListIndex((Actor*)scrubActor);
@@ -31,3 +34,5 @@ void RogueLike::ActorBehavior::InitEnDnsBehavior() {
         }
     });
 }
+
+static RegisterShipInitFunc initFunc(InitBusinessScrubsBehavior, { "IS_ROGUELIKE" });

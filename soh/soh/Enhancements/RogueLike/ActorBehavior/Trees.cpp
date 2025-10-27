@@ -2,6 +2,7 @@
 #include "soh/Enhancements/game-interactor/vanilla-behavior/GIVanillaBehavior.h"
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
 #include "soh/ObjectExtension/ActorListIndex.h"
+#include "soh/ShipInit.hpp"
 
 extern "C" {
 #include "variables.h"
@@ -12,7 +13,9 @@ extern PlayState* gPlayState;
 
 std::set<std::tuple<s16, s8, int16_t>> bonkedTrees;
 
-void RogueLike::ActorBehavior::InitEnWood02Behavior() {
+static void InitTreesBehavior() {
+    bonkedTrees.clear();
+
     COND_VB_SHOULD(VB_TREE_DROP_ITEM, IS_ROGUELIKE, {
         EnWood02* treeActor = va_arg(args, EnWood02*);
         int16_t actorIndex = GetActorListIndex((Actor*)treeActor);
@@ -31,3 +34,5 @@ void RogueLike::ActorBehavior::InitEnWood02Behavior() {
         }
     });
 }
+
+static RegisterShipInitFunc initFunc(InitTreesBehavior, { "IS_ROGUELIKE" });

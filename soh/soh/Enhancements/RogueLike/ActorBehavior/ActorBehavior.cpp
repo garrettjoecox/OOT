@@ -1,6 +1,7 @@
 #include "soh/Enhancements/RogueLike/RogueLike.h"
 #include "soh/Enhancements/game-interactor/vanilla-behavior/GIVanillaBehavior.h"
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
+#include "soh/ShipInit.hpp"
 
 extern "C" {
 #include "variables.h"
@@ -28,18 +29,9 @@ static void OnEnemyDefeatHandler(void* actorRef) {
     }
 }
 
-// Entry point for the module, run once on game boot
-void RogueLike::ActorBehavior::Init() {
-}
-
-void RogueLike::ActorBehavior::OnLoadGame() {
-    RogueLike::ActorBehavior::InitEnBoxBehavior();
-    RogueLike::ActorBehavior::InitEnDnsBehavior();
-    RogueLike::ActorBehavior::InitEnIshiBehavior();
-    RogueLike::ActorBehavior::InitEnKusaBehavior();
-    RogueLike::ActorBehavior::InitEnWood02Behavior();
-    RogueLike::ActorBehavior::InitObjTsuboBehavior();
-
+static void InitActorBehavior() {
     COND_HOOK(OnEnemyDefeat, IS_ROGUELIKE, OnEnemyDefeatHandler);
     COND_HOOK(OnVanillaBehavior, IS_ROGUELIKE, MiscVanillaBehaviorHandler);
 }
+
+static RegisterShipInitFunc initFunc(InitActorBehavior, { "IS_ROGUELIKE" });

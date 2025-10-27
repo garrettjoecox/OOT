@@ -2,6 +2,7 @@
 #include "soh/Enhancements/game-interactor/vanilla-behavior/GIVanillaBehavior.h"
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
 #include "soh/ObjectExtension/ActorListIndex.h"
+#include "soh/ShipInit.hpp"
 
 extern "C" {
 #include "variables.h"
@@ -32,7 +33,7 @@ void func_8083A434_overridden(PlayState* play, Player* player) {
 
 // This simply prevents the player from getting an item from the chest, but still
 // plays the chest opening animation and ensure the treasure chest flag is set
-void RogueLike::ActorBehavior::InitEnBoxBehavior() {
+static void InitChestsBehavior() {
     COND_VB_SHOULD(VB_GIVE_ITEM_FROM_CHEST, IS_ROGUELIKE, {
         EnBox* enBox = va_arg(args, EnBox*);
         Actor* actor = (Actor*)enBox;
@@ -46,3 +47,5 @@ void RogueLike::ActorBehavior::InitEnBoxBehavior() {
     //     actor->params = ((actor->params & ~(0x7F << 5)) | ((GI_HEART & 0x7F) << 5));
     // });
 }
+
+static RegisterShipInitFunc initFunc(InitChestsBehavior, { "IS_ROGUELIKE" });

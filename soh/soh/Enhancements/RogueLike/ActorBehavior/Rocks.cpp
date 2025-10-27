@@ -2,6 +2,7 @@
 #include "soh/Enhancements/game-interactor/vanilla-behavior/GIVanillaBehavior.h"
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
 #include "soh/ObjectExtension/ActorListIndex.h"
+#include "soh/ShipInit.hpp"
 
 extern "C" {
 #include "variables.h"
@@ -12,7 +13,9 @@ extern PlayState* gPlayState;
 
 std::set<std::tuple<s16, s8, int16_t>> brokenRocks;
 
-void RogueLike::ActorBehavior::InitEnIshiBehavior() {
+static void InitRocksBehavior() {
+    brokenRocks.clear();
+
     COND_VB_SHOULD(VB_ROCK_DROP_ITEM, IS_ROGUELIKE, {
         EnIshi* rockActor = va_arg(args, EnIshi*);
         int16_t actorIndex = GetActorListIndex((Actor*)rockActor);
@@ -31,3 +34,5 @@ void RogueLike::ActorBehavior::InitEnIshiBehavior() {
         }
     });
 }
+
+static RegisterShipInitFunc initFunc(InitRocksBehavior, { "IS_ROGUELIKE" });

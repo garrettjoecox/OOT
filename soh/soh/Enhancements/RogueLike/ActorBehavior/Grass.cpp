@@ -2,6 +2,7 @@
 #include "soh/Enhancements/game-interactor/vanilla-behavior/GIVanillaBehavior.h"
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
 #include "soh/ObjectExtension/ActorListIndex.h"
+#include "soh/ShipInit.hpp"
 
 extern "C" {
 #include "variables.h"
@@ -12,7 +13,9 @@ extern PlayState* gPlayState;
 
 std::set<std::tuple<s16, s8, int16_t>> brokenGrass;
 
-void RogueLike::ActorBehavior::InitEnKusaBehavior() {
+static void InitGrassBehavior() {
+    brokenGrass.clear();
+
     COND_VB_SHOULD(VB_GRASS_DROP_ITEM, IS_ROGUELIKE, {
         EnKusa* grassActor = va_arg(args, EnKusa*);
         int16_t actorIndex = GetActorListIndex((Actor*)grassActor);
@@ -31,3 +34,5 @@ void RogueLike::ActorBehavior::InitEnKusaBehavior() {
         }
     });
 }
+
+static RegisterShipInitFunc initFunc(InitGrassBehavior, { "IS_ROGUELIKE" });

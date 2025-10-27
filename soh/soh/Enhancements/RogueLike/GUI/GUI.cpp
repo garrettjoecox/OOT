@@ -1,5 +1,6 @@
 #include "soh/Enhancements/RogueLike/RogueLike.h"
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
+#include "soh/ShipInit.hpp"
 
 extern "C" {
 #include "variables.h"
@@ -112,7 +113,7 @@ std::shared_ptr<RogueLike::GUI::StartingSelectionWindow> mStartingSelectionWindo
 std::shared_ptr<RogueLike::GUI::HUDWindow> mHUDWindow;
 
 // Entry point for the module, run once on game boot
-void RogueLike::GUI::Init() {
+static void InitRogueLikeGUI() {
     CVarClear(CVAR_WINDOW("RogueLikeStartingSelection"));
     CVarClear(CVAR_WINDOW("RogueLikeHUD"));
 
@@ -131,7 +132,7 @@ void RogueLike::GUI::Init() {
     });
 }
 
-void RogueLike::GUI::OnLoadGame() {
+static void OnLoadGame() {
     if (IS_ROGUELIKE) {
         mStartingSelectionWindow->Show();
         mHUDWindow->Show();
@@ -150,3 +151,6 @@ void RogueLike::GUI::OnLoadGame() {
         }
     });
 }
+
+static RegisterShipInitFunc initFunc(InitRogueLikeGUI, {});
+static RegisterShipInitFunc initFunc2(OnLoadGame, { "IS_ROGUELIKE" });

@@ -2,6 +2,7 @@
 #include "soh/Enhancements/game-interactor/vanilla-behavior/GIVanillaBehavior.h"
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
 #include "soh/ObjectExtension/ActorListIndex.h"
+#include "soh/ShipInit.hpp"
 
 extern "C" {
 #include "variables.h"
@@ -12,7 +13,9 @@ extern PlayState* gPlayState;
 
 std::set<std::tuple<s16, s8, int16_t>> brokenPots;
 
-void RogueLike::ActorBehavior::InitObjTsuboBehavior() {
+static void InitPotsBehavior() {
+    brokenPots.clear();
+
     COND_VB_SHOULD(VB_POT_DROP_ITEM, IS_ROGUELIKE, {
         ObjTsubo* potActor = va_arg(args, ObjTsubo*);
         int16_t actorIndex = GetActorListIndex((Actor*)potActor);
@@ -27,3 +30,5 @@ void RogueLike::ActorBehavior::InitObjTsuboBehavior() {
         }
     });
 }
+
+static RegisterShipInitFunc initFunc(InitPotsBehavior, { "IS_ROGUELIKE" });

@@ -31,9 +31,6 @@ class HUDWindow final : public Ship::GuiWindow {
     void UpdateElement() override{};
 };
 
-void Init();
-void OnLoadGame();
-
 } // namespace GUI
 
 } // namespace RogueLike
