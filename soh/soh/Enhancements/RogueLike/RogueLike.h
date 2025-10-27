@@ -6,8 +6,6 @@
 #include "Difficulty.h"
 #include "Types.h"
 
-namespace RogueLike {
-
-} // namespace RogueLike
+namespace RogueLike {} // namespace RogueLike
 
 #endif // ROGUELIKE_H

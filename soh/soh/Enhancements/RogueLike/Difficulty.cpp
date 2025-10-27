@@ -25,7 +25,8 @@ float RogueLike::Difficulty::GetProgressToNextLevel() {
     u32 difficultyForCurrentLevel = ConvertLevelToDifficulty(currentLevel);
     u32 difficultyForNextLevel = ConvertLevelToDifficulty(currentLevel + 1);
 
-    return static_cast<float>(currentDifficulty - difficultyForCurrentLevel) / static_cast<float>(difficultyForNextLevel - difficultyForCurrentLevel);
+    return static_cast<float>(currentDifficulty - difficultyForCurrentLevel) /
+           static_cast<float>(difficultyForNextLevel - difficultyForCurrentLevel);
 }
 
 u32 RogueLike::Difficulty::GetCurrentLevel() {
@@ -50,7 +51,8 @@ void RogueLike::Difficulty::IncrementDifficulty(u32 amount) {
 
         Actor* actor = gPlayState->actorCtx.actorLists[ACTORCAT_ENEMY].head;
         while (actor != NULL) {
-            actor->colChkInfo.health = (actor->colChkInfo.health / (oldLevel + 1)) * (newLevel + 1);;
+            actor->colChkInfo.health = (actor->colChkInfo.health / (oldLevel + 1)) * (newLevel + 1);
+            ;
             SetActorMaximumHealth(actor, (GetActorMaximumHealth(actor) / (oldLevel + 1)) * (newLevel + 1));
             actor = actor->next;
         }

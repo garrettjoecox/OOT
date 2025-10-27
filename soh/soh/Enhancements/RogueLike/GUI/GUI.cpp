@@ -63,7 +63,8 @@ void RogueLike::GUI::HUDWindow::Draw() {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 4.0f);
     if (ImGui::BeginChild("StatsWindow")) {
         if (ImGui::BeginTable("StatsList", 3, ImGuiTableFlags_SizingFixedFit)) {
-            ImTextureID textureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName("ITEM_RUPEE_GREEN");
+            ImTextureID textureId =
+                Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName("ITEM_RUPEE_GREEN");
             ImGui::TableNextColumn();
             ImGui::Image(textureId, ImVec2(46.0f, 46.0f));
 
@@ -73,7 +74,8 @@ void RogueLike::GUI::HUDWindow::Draw() {
             ImGui::TableNextColumn();
             TableCellCenteredText(ImVec4(0, 1, 0, 1), std::to_string(RogueLike::XP::GetCurrentLevel()).c_str());
 
-            ImTextureID textureId2 = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName("ITEM_MASK_SKULL");
+            ImTextureID textureId2 =
+                Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName("ITEM_MASK_SKULL");
             ImGui::TableNextColumn();
             ImGui::Image(textureId2, ImVec2(46.0f, 46.0f));
 

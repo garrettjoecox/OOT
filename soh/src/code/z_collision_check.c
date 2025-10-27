@@ -3032,7 +3032,9 @@ void CollisionCheck_ApplyDamage(PlayState* play, CollisionCheckContext* colChkCt
         collider->actor->colChkInfo.damage *= GET_PLAYER(play)->ivanDamageMultiplier;
     }
 
-    if (!GameInteractor_Should(VB_APPLY_DAMAGE_TO_ACTOR, true, collider->actor, collider->actor->colChkInfo.damageEffect, collider->actor->colChkInfo.damage, info->acHitInfo->toucher.dmgFlags)) {
+    if (!GameInteractor_Should(VB_APPLY_DAMAGE_TO_ACTOR, true, collider->actor,
+                               collider->actor->colChkInfo.damageEffect, collider->actor->colChkInfo.damage,
+                               info->acHitInfo->toucher.dmgFlags)) {
         collider->actor->colChkInfo.damageEffect = 0;
         collider->actor->colChkInfo.damage = 0;
     }
