@@ -34,3 +34,14 @@ DamageTable rogueLikeEnemyDamageTable = {
     /* Hammer jump   */ DMG_ENTRY(0, DMGEFF_HAMMER_JUMP),
     /* Unknown 2     */ DMG_ENTRY(0, DMGEFF_UNKNOWN_2),
 };
+
+DamageTable GetModifiedDamageTable(Actor* refActor) {
+    DamageTable baseDamageTable = rogueLikeEnemyDamageTable;
+    switch (refActor->id) {
+        case ACTOR_EN_DEKUBABA:
+            baseDamageTable.table[DMGEFF_DEKU_STICK] = DMG_ENTRY(2, DMGEFF_DEKU_STICK);
+        default:
+            break;
+    }
+    return baseDamageTable;
+};

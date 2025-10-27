@@ -153,44 +153,44 @@ typedef enum {
 static DamageTable sDekuBabaDamageTable;
 static DamageTable sBigDekuBabaDamageTable;
 
-//static DamageTable sDekuBabaDamageTable = {
-//    /* Deku nut      */ DMG_ENTRY(0, DEKUBABA_DMGEFF_DEKUNUT),
-//    /* Deku stick    */ DMG_ENTRY(2, DEKUBABA_DMGEFF_NONE),
-//    /* Slingshot     */ DMG_ENTRY(1, DEKUBABA_DMGEFF_NONE),
-//    /* Explosive     */ DMG_ENTRY(2, DEKUBABA_DMGEFF_NONE),
-//    /* Boomerang     */ DMG_ENTRY(2, DEKUBABA_DMGEFF_BOOMERANG),
-//    /* Normal arrow  */ DMG_ENTRY(2, DEKUBABA_DMGEFF_NONE),
-//    /* Hammer swing  */ DMG_ENTRY(2, DEKUBABA_DMGEFF_NONE),
-//    /* Hookshot      */ DMG_ENTRY(2, DEKUBABA_DMGEFF_NONE),
-//    /* Kokiri sword  */ DMG_ENTRY(1, DEKUBABA_DMGEFF_SWORD),
-//    /* Master sword  */ DMG_ENTRY(2, DEKUBABA_DMGEFF_SWORD),
-//    /* Giant's Knife */ DMG_ENTRY(4, DEKUBABA_DMGEFF_SWORD),
-//    /* Fire arrow    */ DMG_ENTRY(4, DEKUBABA_DMGEFF_FIRE),
-//    /* Ice arrow     */ DMG_ENTRY(2, DEKUBABA_DMGEFF_NONE),
-//    /* Light arrow   */ DMG_ENTRY(2, DEKUBABA_DMGEFF_NONE),
-//    /* Unk arrow 1   */ DMG_ENTRY(2, DEKUBABA_DMGEFF_NONE),
-//    /* Unk arrow 2   */ DMG_ENTRY(2, DEKUBABA_DMGEFF_NONE),
-//    /* Unk arrow 3   */ DMG_ENTRY(2, DEKUBABA_DMGEFF_NONE),
-//    /* Fire magic    */ DMG_ENTRY(4, DEKUBABA_DMGEFF_FIRE),
-//    /* Ice magic     */ DMG_ENTRY(0, DEKUBABA_DMGEFF_NONE),
-//    /* Light magic   */ DMG_ENTRY(0, DEKUBABA_DMGEFF_NONE),
-//    /* Shield        */ DMG_ENTRY(0, DEKUBABA_DMGEFF_NONE),
-//    /* Mirror Ray    */ DMG_ENTRY(0, DEKUBABA_DMGEFF_NONE),
-//    /* Kokiri spin   */ DMG_ENTRY(1, DEKUBABA_DMGEFF_SWORD),
-//    /* Giant spin    */ DMG_ENTRY(4, DEKUBABA_DMGEFF_SWORD),
-//    /* Master spin   */ DMG_ENTRY(2, DEKUBABA_DMGEFF_SWORD),
-//    /* Kokiri jump   */ DMG_ENTRY(2, DEKUBABA_DMGEFF_SWORD),
-//    /* Giant jump    */ DMG_ENTRY(8, DEKUBABA_DMGEFF_SWORD),
-//    /* Master jump   */ DMG_ENTRY(4, DEKUBABA_DMGEFF_SWORD),
-//    /* Unknown 1     */ DMG_ENTRY(0, DEKUBABA_DMGEFF_NONE),
-//    /* Unblockable   */ DMG_ENTRY(0, DEKUBABA_DMGEFF_NONE),
-//    /* Hammer jump   */ DMG_ENTRY(4, DEKUBABA_DMGEFF_NONE),
-//    /* Unknown 2     */ DMG_ENTRY(0, DEKUBABA_DMGEFF_NONE),
-//};
+// static DamageTable sDekuBabaDamageTable = {
+//     /* Deku nut      */ DMG_ENTRY(0, DEKUBABA_DMGEFF_DEKUNUT),
+//     /* Deku stick    */ DMG_ENTRY(2, DEKUBABA_DMGEFF_NONE),
+//     /* Slingshot     */ DMG_ENTRY(1, DEKUBABA_DMGEFF_NONE),
+//     /* Explosive     */ DMG_ENTRY(2, DEKUBABA_DMGEFF_NONE),
+//     /* Boomerang     */ DMG_ENTRY(2, DEKUBABA_DMGEFF_BOOMERANG),
+//     /* Normal arrow  */ DMG_ENTRY(2, DEKUBABA_DMGEFF_NONE),
+//     /* Hammer swing  */ DMG_ENTRY(2, DEKUBABA_DMGEFF_NONE),
+//     /* Hookshot      */ DMG_ENTRY(2, DEKUBABA_DMGEFF_NONE),
+//     /* Kokiri sword  */ DMG_ENTRY(1, DEKUBABA_DMGEFF_SWORD),
+//     /* Master sword  */ DMG_ENTRY(2, DEKUBABA_DMGEFF_SWORD),
+//     /* Giant's Knife */ DMG_ENTRY(4, DEKUBABA_DMGEFF_SWORD),
+//     /* Fire arrow    */ DMG_ENTRY(4, DEKUBABA_DMGEFF_FIRE),
+//     /* Ice arrow     */ DMG_ENTRY(2, DEKUBABA_DMGEFF_NONE),
+//     /* Light arrow   */ DMG_ENTRY(2, DEKUBABA_DMGEFF_NONE),
+//     /* Unk arrow 1   */ DMG_ENTRY(2, DEKUBABA_DMGEFF_NONE),
+//     /* Unk arrow 2   */ DMG_ENTRY(2, DEKUBABA_DMGEFF_NONE),
+//     /* Unk arrow 3   */ DMG_ENTRY(2, DEKUBABA_DMGEFF_NONE),
+//     /* Fire magic    */ DMG_ENTRY(4, DEKUBABA_DMGEFF_FIRE),
+//     /* Ice magic     */ DMG_ENTRY(0, DEKUBABA_DMGEFF_NONE),
+//     /* Light magic   */ DMG_ENTRY(0, DEKUBABA_DMGEFF_NONE),
+//     /* Shield        */ DMG_ENTRY(0, DEKUBABA_DMGEFF_NONE),
+//     /* Mirror Ray    */ DMG_ENTRY(0, DEKUBABA_DMGEFF_NONE),
+//     /* Kokiri spin   */ DMG_ENTRY(1, DEKUBABA_DMGEFF_SWORD),
+//     /* Giant spin    */ DMG_ENTRY(4, DEKUBABA_DMGEFF_SWORD),
+//     /* Master spin   */ DMG_ENTRY(2, DEKUBABA_DMGEFF_SWORD),
+//     /* Kokiri jump   */ DMG_ENTRY(2, DEKUBABA_DMGEFF_SWORD),
+//     /* Giant jump    */ DMG_ENTRY(8, DEKUBABA_DMGEFF_SWORD),
+//     /* Master jump   */ DMG_ENTRY(4, DEKUBABA_DMGEFF_SWORD),
+//     /* Unknown 1     */ DMG_ENTRY(0, DEKUBABA_DMGEFF_NONE),
+//     /* Unblockable   */ DMG_ENTRY(0, DEKUBABA_DMGEFF_NONE),
+//     /* Hammer jump   */ DMG_ENTRY(4, DEKUBABA_DMGEFF_NONE),
+//     /* Unknown 2     */ DMG_ENTRY(0, DEKUBABA_DMGEFF_NONE),
+// };
 
 // The only difference is that for Big Deku Babas, Hookshot will act the same as Deku Nuts: i.e. it will stun, but
 // cannot kill.
-//static DamageTable sBigDekuBabaDamageTable = {
+// static DamageTable sBigDekuBabaDamageTable = {
 //    /* Deku nut      */ DMG_ENTRY(0, DEKUBABA_DMGEFF_DEKUNUT),
 //    /* Deku stick    */ DMG_ENTRY(2, DEKUBABA_DMGEFF_NONE),
 //    /* Slingshot     */ DMG_ENTRY(1, DEKUBABA_DMGEFF_NONE),
@@ -231,8 +231,8 @@ static InitChainEntry sInitChain[] = {
 
 void EnDekubaba_Init(Actor* thisx, PlayState* play) {
     // RogueLike DamageTable Overrride
-    memcpy(&sDekuBabaDamageTable, &rogueLikeEnemyDamageTable, sizeof(DamageTable));
-    memcpy(&sBigDekuBabaDamageTable, &rogueLikeEnemyDamageTable, sizeof(DamageTable));
+    sDekuBabaDamageTable = GetModifiedDamageTable(thisx);
+    sBigDekuBabaDamageTable = GetModifiedDamageTable(thisx);
 
     EnDekubaba* this = (EnDekubaba*)thisx;
     s32 i;
