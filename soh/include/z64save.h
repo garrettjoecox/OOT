@@ -8,7 +8,7 @@
 #include "soh/Enhancements/gameplaystats.h"
 #include "soh/Enhancements/randomizer/randomizer_entrance.h"
 #include "soh/Enhancements/boss-rush/BossRush.h"
-#include "soh/Enhancements/RogueLike/RogueLike.h"
+#include "soh/Enhancements/RogueLike/Types.h"
 
 typedef enum {
     /* 0x0 */ MAGIC_STATE_IDLE, // Regular gameplay
@@ -165,8 +165,7 @@ typedef struct ShipRandomizerSaveContextData {
 
 typedef struct ShipRogueLikeSaveContextData {
     u32 stats[RL_MAX];
-    u32 experiencePoints;
-    u32 level;
+    u32 xp;
 } ShipRogueLikeSaveContextData;
 
 typedef struct ShipBossRushSaveContextData {

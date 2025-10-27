@@ -1,5 +1,4 @@
-#include "GUI.h"
-#include "soh/Enhancements/game-interactor/vanilla-behavior/GIVanillaBehavior.h"
+#include "soh/Enhancements/RogueLike/RogueLike.h"
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
 
 extern "C" {
@@ -56,15 +55,22 @@ void RogueLike::GUI::HUDWindow::Draw() {
                  ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBackground);
 
     // Progress bar based on experience points
-    float experience = gSaveContext.ship.quest.data.rogueLike.experiencePoints;
-    float nextLevelExp = 100;
-    float progress = experience / nextLevelExp;
-    ImGui::ProgressBar(progress, ImVec2(-1, 0));
+    ImGui::ProgressBar(RogueLike::XP::GetProgressToNextLevel(), ImVec2(-1, 0));
 
     ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0, 0, 0, 0));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 4.0f);
     if (ImGui::BeginChild("StatsWindow")) {
         if (ImGui::BeginTable("StatsList", 3, ImGuiTableFlags_SizingFixedFit)) {
+            ImTextureID textureId = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName("ITEM_RUPEE_GREEN");
+            ImGui::TableNextColumn();
+            ImGui::Image(textureId, ImVec2(46.0f, 46.0f));
+
+            ImGui::TableNextColumn();
+            TableCellCenteredText(ImVec4(1, 1, 1, 1), "Level");
+
+            ImGui::TableNextColumn();
+            TableCellCenteredText(ImVec4(0, 1, 0, 1), std::to_string(RogueLike::XP::GetCurrentLevel()).c_str());
+
             for (auto& stat : rogueLikeStatMap) {
                 ImTextureID textureId =
                     Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(stat.second.second);
@@ -125,8 +131,10 @@ void RogueLike::GUI::OnLoadGame() {
 
     COND_HOOK(OnPlayerUpdate, IS_ROGUELIKE, [] {
         if (mStartingSelectionWindow->IsVisible()) {
+            mHUDWindow->Hide();
             gPlayState->frameAdvCtx.enabled = true;
         } else {
+            mHUDWindow->Show();
             gPlayState->frameAdvCtx.enabled = false;
         }
     });

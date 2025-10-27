@@ -1,8 +1,7 @@
-#include "ActorBehavior.h"
-#include "soh/ShipInit.hpp"
+#include "soh/Enhancements/RogueLike/RogueLike.h"
 #include "soh/Enhancements/game-interactor/vanilla-behavior/GIVanillaBehavior.h"
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
-#include "soh/Enhancements/custom-item/CustomItem.h"
+#include "soh/ObjectExtension/ActorListIndex.h"
 
 extern "C" {
 #include "variables.h"
@@ -20,7 +19,7 @@ void Player_Action_8084E6D4_overridden(Player* player, PlayState* play) {
 
         EnBox* enBox = (EnBox*)player->interactRangeActor;
 
-        RogueLike::SpawnXPGroup(enBox->dyna.actor.world.pos, 50);
+        RogueLike::XP::SpawnXPGroup(enBox->dyna.actor.world.pos, 50);
 
         Sfx_PlaySfxCentered(NA_SE_SY_GET_RUPY);
     }

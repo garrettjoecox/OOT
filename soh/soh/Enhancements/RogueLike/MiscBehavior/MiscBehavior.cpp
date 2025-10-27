@@ -1,6 +1,4 @@
-#include "MiscBehavior.h"
-#include "soh/Enhancements/game-interactor/vanilla-behavior/GIVanillaBehavior.h"
-#include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
+#include "soh/Enhancements/RogueLike/RogueLike.h"
 
 extern "C" {
 #include "variables.h"
