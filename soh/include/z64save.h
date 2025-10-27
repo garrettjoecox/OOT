@@ -166,6 +166,8 @@ typedef struct ShipRandomizerSaveContextData {
 typedef struct ShipRogueLikeSaveContextData {
     u32 stats[RL_MAX];
     u32 xp;
+    u32 difficulty;
+    uint64_t lastActivity;
 } ShipRogueLikeSaveContextData;
 
 typedef struct ShipBossRushSaveContextData {

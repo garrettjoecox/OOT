@@ -5,6 +5,7 @@
 #include "MiscBehavior/MiscBehavior.h"
 #include "GUI/GUI.h"
 #include "XP.h"
+#include "Difficulty.h"
 #include "Types.h"
 
 namespace RogueLike {

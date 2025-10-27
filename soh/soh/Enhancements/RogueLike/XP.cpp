@@ -38,10 +38,13 @@ void RogueLike::XP::GrantXP(u32 amount) {
 
     u32 oldLevel = GetCurrentLevel();
     gSaveContext.ship.quest.data.rogueLike.xp += amount;
+    RogueLike::Difficulty::IndicateActivity();
     u32 newLevel = GetCurrentLevel();
 
     if (newLevel != oldLevel) {
         Sfx_PlaySfxCentered(NA_SE_SY_CORRECT_CHIME);
+        // TODO: Temporary, simply just increase attack for now
+        gSaveContext.ship.quest.data.rogueLike.stats[RL_ATTACK]++;
     }
 }
 

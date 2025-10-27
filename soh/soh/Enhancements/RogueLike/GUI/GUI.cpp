@@ -56,6 +56,7 @@ void RogueLike::GUI::HUDWindow::Draw() {
 
     // Progress bar based on experience points
     ImGui::ProgressBar(RogueLike::XP::GetProgressToNextLevel(), ImVec2(-1, 0));
+    ImGui::ProgressBar(RogueLike::Difficulty::GetProgressToNextLevel(), ImVec2(-1, 0));
 
     ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0, 0, 0, 0));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 4.0f);
@@ -70,6 +71,16 @@ void RogueLike::GUI::HUDWindow::Draw() {
 
             ImGui::TableNextColumn();
             TableCellCenteredText(ImVec4(0, 1, 0, 1), std::to_string(RogueLike::XP::GetCurrentLevel()).c_str());
+
+            ImTextureID textureId2 = Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName("ITEM_MASK_SKULL");
+            ImGui::TableNextColumn();
+            ImGui::Image(textureId2, ImVec2(46.0f, 46.0f));
+
+            ImGui::TableNextColumn();
+            TableCellCenteredText(ImVec4(1, 1, 1, 1), "Difficulty");
+
+            ImGui::TableNextColumn();
+            TableCellCenteredText(ImVec4(0, 1, 0, 1), std::to_string(RogueLike::Difficulty::GetCurrentLevel()).c_str());
 
             for (auto& stat : rogueLikeStatMap) {
                 ImTextureID textureId =

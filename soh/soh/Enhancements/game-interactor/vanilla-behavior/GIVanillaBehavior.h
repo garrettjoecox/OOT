@@ -2249,6 +2249,16 @@ typedef enum {
     // true
     // ```
     // #### `args`
+    // - `*Actor`
+    // - `u8` (damageEffect)
+    // - `u8` (damage)
+    VB_APPLY_DAMAGE_TO_ACTOR,
+
+    // #### `result`
+    // ```c
+    // true
+    // ```
+    // #### `args`
     // - `*EnRr`
     VB_LIKE_LIKE_GRAB_PLAYER,
 

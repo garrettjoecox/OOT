@@ -9,6 +9,10 @@ extern "C" {
 // This is kind of a catch-all for things that are simple enough to not need their own file.
 static void MiscVanillaBehaviorHandler(GIVanillaBehavior id, bool* should, va_list optionalArg) {
     switch (id) {
+        case VB_OPEN_KOKIRI_FOREST: {
+            *should = true;
+            break;
+        }
         default:
             break;
     }
