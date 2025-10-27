@@ -38,8 +38,21 @@ DamageTable rogueLikeEnemyDamageTable = {
 DamageTable GetModifiedDamageTable(Actor* refActor) {
     DamageTable baseDamageTable = rogueLikeEnemyDamageTable;
     switch (refActor->id) {
-        case ACTOR_EN_DEKUBABA:
+        case ACTOR_EN_DEKUBABA: /* Deku Baba */
             baseDamageTable.table[DMGEFF_DEKU_STICK] = DMG_ENTRY(2, DMGEFF_DEKU_STICK);
+        case ACTOR_EN_AM: /* Armos */ 
+        case ACTOR_EN_ANUBICE: /* Anubis */
+        case ACTOR_EN_BB: /* Floating Skulls */
+            if (refActor->params == -1) {} // Blue & Green
+            if (refActor->params == -2) {} // Red
+            if (refActor->params == -3) {} // White
+        case ACTOR_EN_BILI: /* Biri Jellyfish */
+        case ACTOR_EN_BW: /* Torch Slug */
+        case ACTOR_EN_CROW: /* Guay */
+        case ACTOR_EN_DODONGO: /* Dodongo */
+        case ACTOR_EN_EIYER: /* ?? */
+        case ACTOR_EN_FIREFLY: /* Keese */
+        case ACTOR_EN_FLOORMAS: /* Floormaster */
         default:
             break;
     }

@@ -10,6 +10,8 @@
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
 #include "soh/ResourceManagerHelpers.h"
 
+#include "soh/Enhancements/RogueLike/PlayerInteractions/DamageTable.h"
+
 #define FLAGS                                                                                 \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
      ACTOR_FLAG_CAN_PRESS_SWITCHES)
@@ -125,40 +127,42 @@ typedef enum {
     /* 15 */ AM_DMGEFF_KILL // any damage source that can kill the armos (and isnt a special case)
 } ArmosDamageEffect;
 
-static DamageTable sDamageTable = {
-    /* Deku nut      */ DMG_ENTRY(0, AM_DMGEFF_NUT),
-    /* Deku stick    */ DMG_ENTRY(2, AM_DMGEFF_NONE),
-    /* Slingshot     */ DMG_ENTRY(1, AM_DMGEFF_NONE),
-    /* Explosive     */ DMG_ENTRY(2, AM_DMGEFF_KILL),
-    /* Boomerang     */ DMG_ENTRY(0, AM_DMGEFF_STUN),
-    /* Normal arrow  */ DMG_ENTRY(2, AM_DMGEFF_KILL),
-    /* Hammer swing  */ DMG_ENTRY(2, AM_DMGEFF_KILL),
-    /* Hookshot      */ DMG_ENTRY(0, AM_DMGEFF_STUN),
-    /* Kokiri sword  */ DMG_ENTRY(1, AM_DMGEFF_NONE),
-    /* Master sword  */ DMG_ENTRY(2, AM_DMGEFF_KILL),
-    /* Giant's Knife */ DMG_ENTRY(4, AM_DMGEFF_KILL),
-    /* Fire arrow    */ DMG_ENTRY(2, AM_DMGEFF_KILL),
-    /* Ice arrow     */ DMG_ENTRY(4, AM_DMGEFF_ICE),
-    /* Light arrow   */ DMG_ENTRY(2, AM_DMGEFF_KILL),
-    /* Unk arrow 1   */ DMG_ENTRY(2, AM_DMGEFF_NONE),
-    /* Unk arrow 2   */ DMG_ENTRY(2, AM_DMGEFF_NONE),
-    /* Unk arrow 3   */ DMG_ENTRY(2, AM_DMGEFF_NONE),
-    /* Fire magic    */ DMG_ENTRY(0, AM_DMGEFF_MAGIC_FIRE_LIGHT),
-    /* Ice magic     */ DMG_ENTRY(3, AM_DMGEFF_ICE),
-    /* Light magic   */ DMG_ENTRY(0, AM_DMGEFF_MAGIC_FIRE_LIGHT),
-    /* Shield        */ DMG_ENTRY(0, AM_DMGEFF_NONE),
-    /* Mirror Ray    */ DMG_ENTRY(0, AM_DMGEFF_NONE),
-    /* Kokiri spin   */ DMG_ENTRY(1, AM_DMGEFF_NONE),
-    /* Giant spin    */ DMG_ENTRY(4, AM_DMGEFF_KILL),
-    /* Master spin   */ DMG_ENTRY(2, AM_DMGEFF_KILL),
-    /* Kokiri jump   */ DMG_ENTRY(2, AM_DMGEFF_NONE),
-    /* Giant jump    */ DMG_ENTRY(8, AM_DMGEFF_KILL),
-    /* Master jump   */ DMG_ENTRY(4, AM_DMGEFF_KILL),
-    /* Unknown 1     */ DMG_ENTRY(0, AM_DMGEFF_NONE),
-    /* Unblockable   */ DMG_ENTRY(0, AM_DMGEFF_NONE),
-    /* Hammer jump   */ DMG_ENTRY(4, AM_DMGEFF_KILL),
-    /* Unknown 2     */ DMG_ENTRY(0, AM_DMGEFF_NONE),
-};
+static DamageTable sDamageTable;
+
+//static DamageTable sDamageTable = {
+//    /* Deku nut      */ DMG_ENTRY(0, AM_DMGEFF_NUT),
+//    /* Deku stick    */ DMG_ENTRY(2, AM_DMGEFF_NONE),
+//    /* Slingshot     */ DMG_ENTRY(1, AM_DMGEFF_NONE),
+//    /* Explosive     */ DMG_ENTRY(2, AM_DMGEFF_KILL),
+//    /* Boomerang     */ DMG_ENTRY(0, AM_DMGEFF_STUN),
+//    /* Normal arrow  */ DMG_ENTRY(2, AM_DMGEFF_KILL),
+//    /* Hammer swing  */ DMG_ENTRY(2, AM_DMGEFF_KILL),
+//    /* Hookshot      */ DMG_ENTRY(0, AM_DMGEFF_STUN),
+//    /* Kokiri sword  */ DMG_ENTRY(1, AM_DMGEFF_NONE),
+//    /* Master sword  */ DMG_ENTRY(2, AM_DMGEFF_KILL),
+//    /* Giant's Knife */ DMG_ENTRY(4, AM_DMGEFF_KILL),
+//    /* Fire arrow    */ DMG_ENTRY(2, AM_DMGEFF_KILL),
+//    /* Ice arrow     */ DMG_ENTRY(4, AM_DMGEFF_ICE),
+//    /* Light arrow   */ DMG_ENTRY(2, AM_DMGEFF_KILL),
+//    /* Unk arrow 1   */ DMG_ENTRY(2, AM_DMGEFF_NONE),
+//    /* Unk arrow 2   */ DMG_ENTRY(2, AM_DMGEFF_NONE),
+//    /* Unk arrow 3   */ DMG_ENTRY(2, AM_DMGEFF_NONE),
+//    /* Fire magic    */ DMG_ENTRY(0, AM_DMGEFF_MAGIC_FIRE_LIGHT),
+//    /* Ice magic     */ DMG_ENTRY(3, AM_DMGEFF_ICE),
+//    /* Light magic   */ DMG_ENTRY(0, AM_DMGEFF_MAGIC_FIRE_LIGHT),
+//    /* Shield        */ DMG_ENTRY(0, AM_DMGEFF_NONE),
+//    /* Mirror Ray    */ DMG_ENTRY(0, AM_DMGEFF_NONE),
+//    /* Kokiri spin   */ DMG_ENTRY(1, AM_DMGEFF_NONE),
+//    /* Giant spin    */ DMG_ENTRY(4, AM_DMGEFF_KILL),
+//    /* Master spin   */ DMG_ENTRY(2, AM_DMGEFF_KILL),
+//    /* Kokiri jump   */ DMG_ENTRY(2, AM_DMGEFF_NONE),
+//    /* Giant jump    */ DMG_ENTRY(8, AM_DMGEFF_KILL),
+//    /* Master jump   */ DMG_ENTRY(4, AM_DMGEFF_KILL),
+//    /* Unknown 1     */ DMG_ENTRY(0, AM_DMGEFF_NONE),
+//    /* Unblockable   */ DMG_ENTRY(0, AM_DMGEFF_NONE),
+//    /* Hammer jump   */ DMG_ENTRY(4, AM_DMGEFF_KILL),
+//    /* Unknown 2     */ DMG_ENTRY(0, AM_DMGEFF_NONE),
+//};
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_S8(naviEnemyId, 0x13, ICHAIN_CONTINUE),
@@ -209,6 +213,9 @@ s32 EnAm_CanMove(EnAm* this, PlayState* play, f32 distance, s16 yaw) {
 }
 
 void EnAm_Init(Actor* thisx, PlayState* play) {
+    // RogueLike DamageTable Overrride
+    sDamageTable = GetModifiedDamageTable(thisx);
+
     CollisionHeader* colHeader = NULL;
     s32 pad;
     EnAm* this = (EnAm*)thisx;

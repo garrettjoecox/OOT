@@ -10,6 +10,8 @@
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
 #include "soh/ResourceManagerHelpers.h"
 
+#include "soh/Enhancements/RogueLike/PlayerInteractions/DamageTable.h"
+
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void EnBw_Init(Actor* thisx, PlayState* play);
@@ -89,40 +91,42 @@ static ColliderCylinderInit sCylinderInit2 = {
     { 30, 35, 0, { 0, 0, 0 } },
 };
 
-static DamageTable sDamageTable = {
-    /* Deku nut      */ DMG_ENTRY(0, 0x1),
-    /* Deku stick    */ DMG_ENTRY(0, 0x0),
-    /* Slingshot     */ DMG_ENTRY(0, 0x0),
-    /* Explosive     */ DMG_ENTRY(2, 0xF),
-    /* Boomerang     */ DMG_ENTRY(0, 0x0),
-    /* Normal arrow  */ DMG_ENTRY(2, 0xF),
-    /* Hammer swing  */ DMG_ENTRY(2, 0xF),
-    /* Hookshot      */ DMG_ENTRY(0, 0x1),
-    /* Kokiri sword  */ DMG_ENTRY(0, 0x0),
-    /* Master sword  */ DMG_ENTRY(2, 0xF),
-    /* Giant's Knife */ DMG_ENTRY(4, 0xF),
-    /* Fire arrow    */ DMG_ENTRY(2, 0xF),
-    /* Ice arrow     */ DMG_ENTRY(4, 0xE),
-    /* Light arrow   */ DMG_ENTRY(2, 0xF),
-    /* Unk arrow 1   */ DMG_ENTRY(2, 0xF),
-    /* Unk arrow 2   */ DMG_ENTRY(2, 0xF),
-    /* Unk arrow 3   */ DMG_ENTRY(2, 0xF),
-    /* Fire magic    */ DMG_ENTRY(0, 0x6),
-    /* Ice magic     */ DMG_ENTRY(3, 0xE),
-    /* Light magic   */ DMG_ENTRY(0, 0x6),
-    /* Shield        */ DMG_ENTRY(0, 0x0),
-    /* Mirror Ray    */ DMG_ENTRY(0, 0x0),
-    /* Kokiri spin   */ DMG_ENTRY(1, 0xF),
-    /* Giant spin    */ DMG_ENTRY(4, 0xF),
-    /* Master spin   */ DMG_ENTRY(2, 0xF),
-    /* Kokiri jump   */ DMG_ENTRY(2, 0xF),
-    /* Giant jump    */ DMG_ENTRY(8, 0xF),
-    /* Master jump   */ DMG_ENTRY(4, 0xF),
-    /* Unknown 1     */ DMG_ENTRY(0, 0x0),
-    /* Unblockable   */ DMG_ENTRY(0, 0x0),
-    /* Hammer jump   */ DMG_ENTRY(4, 0xF),
-    /* Unknown 2     */ DMG_ENTRY(0, 0x0),
-};
+static DamageTable sDamageTable;
+
+//static DamageTable sDamageTable = {
+//    /* Deku nut      */ DMG_ENTRY(0, 0x1),
+//    /* Deku stick    */ DMG_ENTRY(0, 0x0),
+//    /* Slingshot     */ DMG_ENTRY(0, 0x0),
+//    /* Explosive     */ DMG_ENTRY(2, 0xF),
+//    /* Boomerang     */ DMG_ENTRY(0, 0x0),
+//    /* Normal arrow  */ DMG_ENTRY(2, 0xF),
+//    /* Hammer swing  */ DMG_ENTRY(2, 0xF),
+//    /* Hookshot      */ DMG_ENTRY(0, 0x1),
+//    /* Kokiri sword  */ DMG_ENTRY(0, 0x0),
+//    /* Master sword  */ DMG_ENTRY(2, 0xF),
+//    /* Giant's Knife */ DMG_ENTRY(4, 0xF),
+//    /* Fire arrow    */ DMG_ENTRY(2, 0xF),
+//    /* Ice arrow     */ DMG_ENTRY(4, 0xE),
+//    /* Light arrow   */ DMG_ENTRY(2, 0xF),
+//    /* Unk arrow 1   */ DMG_ENTRY(2, 0xF),
+//    /* Unk arrow 2   */ DMG_ENTRY(2, 0xF),
+//    /* Unk arrow 3   */ DMG_ENTRY(2, 0xF),
+//    /* Fire magic    */ DMG_ENTRY(0, 0x6),
+//    /* Ice magic     */ DMG_ENTRY(3, 0xE),
+//    /* Light magic   */ DMG_ENTRY(0, 0x6),
+//    /* Shield        */ DMG_ENTRY(0, 0x0),
+//    /* Mirror Ray    */ DMG_ENTRY(0, 0x0),
+//    /* Kokiri spin   */ DMG_ENTRY(1, 0xF),
+//    /* Giant spin    */ DMG_ENTRY(4, 0xF),
+//    /* Master spin   */ DMG_ENTRY(2, 0xF),
+//    /* Kokiri jump   */ DMG_ENTRY(2, 0xF),
+//    /* Giant jump    */ DMG_ENTRY(8, 0xF),
+//    /* Master jump   */ DMG_ENTRY(4, 0xF),
+//    /* Unknown 1     */ DMG_ENTRY(0, 0x0),
+//    /* Unblockable   */ DMG_ENTRY(0, 0x0),
+//    /* Hammer jump   */ DMG_ENTRY(4, 0xF),
+//    /* Unknown 2     */ DMG_ENTRY(0, 0x0),
+//};
 
 s32 sSlugGroup = 0;
 
@@ -131,6 +135,9 @@ void EnBw_SetupAction(EnBw* this, EnBwActionFunc actionFunc) {
 }
 
 void EnBw_Init(Actor* thisx, PlayState* play) {
+    // RogueLike DamageTable Overrride
+    sDamageTable = GetModifiedDamageTable(thisx);
+
     EnBw* this = (EnBw*)thisx;
 
     Actor_SetScale(&this->actor, 0.012999999f);

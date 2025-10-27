@@ -9,6 +9,8 @@
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
 #include "soh/ResourceManagerHelpers.h"
 
+#include "soh/Enhancements/RogueLike/PlayerInteractions/DamageTable.h"
+
 #define FLAGS \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_IGNORE_QUAKE | ACTOR_FLAG_CAN_ATTACH_TO_ARROW)
 
@@ -75,40 +77,42 @@ typedef enum {
     /* 0xF */ BIRI_DMGEFF_SWORD
 } BiriDamageEffect;
 
-static DamageTable sDamageTable = {
-    /* Deku nut      */ DMG_ENTRY(0, BIRI_DMGEFF_DEKUNUT),
-    /* Deku stick    */ DMG_ENTRY(2, BIRI_DMGEFF_NONE),
-    /* Slingshot     */ DMG_ENTRY(0, BIRI_DMGEFF_SLINGSHOT),
-    /* Explosive     */ DMG_ENTRY(2, BIRI_DMGEFF_NONE),
-    /* Boomerang     */ DMG_ENTRY(1, BIRI_DMGEFF_NONE),
-    /* Normal arrow  */ DMG_ENTRY(2, BIRI_DMGEFF_NONE),
-    /* Hammer swing  */ DMG_ENTRY(2, BIRI_DMGEFF_NONE),
-    /* Hookshot      */ DMG_ENTRY(2, BIRI_DMGEFF_NONE),
-    /* Kokiri sword  */ DMG_ENTRY(1, BIRI_DMGEFF_SWORD),
-    /* Master sword  */ DMG_ENTRY(2, BIRI_DMGEFF_SWORD),
-    /* Giant's Knife */ DMG_ENTRY(4, BIRI_DMGEFF_SWORD),
-    /* Fire arrow    */ DMG_ENTRY(4, BIRI_DMGEFF_FIRE),
-    /* Ice arrow     */ DMG_ENTRY(4, BIRI_DMGEFF_ICE),
-    /* Light arrow   */ DMG_ENTRY(2, BIRI_DMGEFF_NONE),
-    /* Unk arrow 1   */ DMG_ENTRY(2, BIRI_DMGEFF_NONE),
-    /* Unk arrow 2   */ DMG_ENTRY(2, BIRI_DMGEFF_NONE),
-    /* Unk arrow 3   */ DMG_ENTRY(2, BIRI_DMGEFF_NONE),
-    /* Fire magic    */ DMG_ENTRY(4, BIRI_DMGEFF_FIRE),
-    /* Ice magic     */ DMG_ENTRY(4, BIRI_DMGEFF_ICE),
-    /* Light magic   */ DMG_ENTRY(0, BIRI_DMGEFF_NONE),
-    /* Shield        */ DMG_ENTRY(0, BIRI_DMGEFF_NONE),
-    /* Mirror Ray    */ DMG_ENTRY(0, BIRI_DMGEFF_NONE),
-    /* Kokiri spin   */ DMG_ENTRY(1, BIRI_DMGEFF_NONE),
-    /* Giant spin    */ DMG_ENTRY(4, BIRI_DMGEFF_NONE),
-    /* Master spin   */ DMG_ENTRY(2, BIRI_DMGEFF_NONE),
-    /* Kokiri jump   */ DMG_ENTRY(2, BIRI_DMGEFF_NONE),
-    /* Giant jump    */ DMG_ENTRY(8, BIRI_DMGEFF_NONE),
-    /* Master jump   */ DMG_ENTRY(4, BIRI_DMGEFF_NONE),
-    /* Unknown 1     */ DMG_ENTRY(0, BIRI_DMGEFF_NONE),
-    /* Unblockable   */ DMG_ENTRY(0, BIRI_DMGEFF_NONE),
-    /* Hammer jump   */ DMG_ENTRY(4, BIRI_DMGEFF_NONE),
-    /* Unknown 2     */ DMG_ENTRY(0, BIRI_DMGEFF_NONE),
-};
+static DamageTable sDamageTable;
+
+//static DamageTable sDamageTable = {
+//    /* Deku nut      */ DMG_ENTRY(0, BIRI_DMGEFF_DEKUNUT),
+//    /* Deku stick    */ DMG_ENTRY(2, BIRI_DMGEFF_NONE),
+//    /* Slingshot     */ DMG_ENTRY(0, BIRI_DMGEFF_SLINGSHOT),
+//    /* Explosive     */ DMG_ENTRY(2, BIRI_DMGEFF_NONE),
+//    /* Boomerang     */ DMG_ENTRY(1, BIRI_DMGEFF_NONE),
+//    /* Normal arrow  */ DMG_ENTRY(2, BIRI_DMGEFF_NONE),
+//    /* Hammer swing  */ DMG_ENTRY(2, BIRI_DMGEFF_NONE),
+//    /* Hookshot      */ DMG_ENTRY(2, BIRI_DMGEFF_NONE),
+//    /* Kokiri sword  */ DMG_ENTRY(1, BIRI_DMGEFF_SWORD),
+//    /* Master sword  */ DMG_ENTRY(2, BIRI_DMGEFF_SWORD),
+//    /* Giant's Knife */ DMG_ENTRY(4, BIRI_DMGEFF_SWORD),
+//    /* Fire arrow    */ DMG_ENTRY(4, BIRI_DMGEFF_FIRE),
+//    /* Ice arrow     */ DMG_ENTRY(4, BIRI_DMGEFF_ICE),
+//    /* Light arrow   */ DMG_ENTRY(2, BIRI_DMGEFF_NONE),
+//    /* Unk arrow 1   */ DMG_ENTRY(2, BIRI_DMGEFF_NONE),
+//    /* Unk arrow 2   */ DMG_ENTRY(2, BIRI_DMGEFF_NONE),
+//    /* Unk arrow 3   */ DMG_ENTRY(2, BIRI_DMGEFF_NONE),
+//    /* Fire magic    */ DMG_ENTRY(4, BIRI_DMGEFF_FIRE),
+//    /* Ice magic     */ DMG_ENTRY(4, BIRI_DMGEFF_ICE),
+//    /* Light magic   */ DMG_ENTRY(0, BIRI_DMGEFF_NONE),
+//    /* Shield        */ DMG_ENTRY(0, BIRI_DMGEFF_NONE),
+//    /* Mirror Ray    */ DMG_ENTRY(0, BIRI_DMGEFF_NONE),
+//    /* Kokiri spin   */ DMG_ENTRY(1, BIRI_DMGEFF_NONE),
+//    /* Giant spin    */ DMG_ENTRY(4, BIRI_DMGEFF_NONE),
+//    /* Master spin   */ DMG_ENTRY(2, BIRI_DMGEFF_NONE),
+//    /* Kokiri jump   */ DMG_ENTRY(2, BIRI_DMGEFF_NONE),
+//    /* Giant jump    */ DMG_ENTRY(8, BIRI_DMGEFF_NONE),
+//    /* Master jump   */ DMG_ENTRY(4, BIRI_DMGEFF_NONE),
+//    /* Unknown 1     */ DMG_ENTRY(0, BIRI_DMGEFF_NONE),
+//    /* Unblockable   */ DMG_ENTRY(0, BIRI_DMGEFF_NONE),
+//    /* Hammer jump   */ DMG_ENTRY(4, BIRI_DMGEFF_NONE),
+//    /* Unknown 2     */ DMG_ENTRY(0, BIRI_DMGEFF_NONE),
+//};
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_S8(naviEnemyId, 0x17, ICHAIN_CONTINUE),
@@ -116,6 +120,9 @@ static InitChainEntry sInitChain[] = {
 };
 
 void EnBili_Init(Actor* thisx, PlayState* play) {
+    // RogueLike DamageTable Overrride
+    sDamageTable = GetModifiedDamageTable(thisx);
+
     EnBili* this = (EnBili*)thisx;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);

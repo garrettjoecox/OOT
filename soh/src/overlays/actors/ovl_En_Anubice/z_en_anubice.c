@@ -12,6 +12,8 @@
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
 #include "soh/ResourceManagerHelpers.h"
 
+#include "soh/Enhancements/RogueLike/PlayerInteractions/DamageTable.h"
+
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 void EnAnubice_Init(Actor* thisx, PlayState* play);
@@ -66,40 +68,42 @@ typedef enum {
     /* 0xF */ ANUBICE_DMGEFF_0xF = 0xF // Treated the same as ANUBICE_DMGEFF_NONE in code
 } AnubiceDamageEffect;
 
-static DamageTable sDamageTable[] = {
-    /* Deku nut      */ DMG_ENTRY(0, ANUBICE_DMGEFF_NONE),
-    /* Deku stick    */ DMG_ENTRY(0, ANUBICE_DMGEFF_0xF),
-    /* Slingshot     */ DMG_ENTRY(0, ANUBICE_DMGEFF_0xF),
-    /* Explosive     */ DMG_ENTRY(0, ANUBICE_DMGEFF_0xF),
-    /* Boomerang     */ DMG_ENTRY(0, ANUBICE_DMGEFF_0xF),
-    /* Normal arrow  */ DMG_ENTRY(0, ANUBICE_DMGEFF_0xF),
-    /* Hammer swing  */ DMG_ENTRY(1, ANUBICE_DMGEFF_0xF),
-    /* Hookshot      */ DMG_ENTRY(2, ANUBICE_DMGEFF_0xF),
-    /* Kokiri sword  */ DMG_ENTRY(0, ANUBICE_DMGEFF_0xF),
-    /* Master sword  */ DMG_ENTRY(2, ANUBICE_DMGEFF_0xF),
-    /* Giant's Knife */ DMG_ENTRY(6, ANUBICE_DMGEFF_0xF),
-    /* Fire arrow    */ DMG_ENTRY(2, ANUBICE_DMGEFF_FIRE),
-    /* Ice arrow     */ DMG_ENTRY(0, ANUBICE_DMGEFF_0xF),
-    /* Light arrow   */ DMG_ENTRY(0, ANUBICE_DMGEFF_0xF),
-    /* Unk arrow 1   */ DMG_ENTRY(0, ANUBICE_DMGEFF_0xF),
-    /* Unk arrow 2   */ DMG_ENTRY(0, ANUBICE_DMGEFF_0xF),
-    /* Unk arrow 3   */ DMG_ENTRY(0, ANUBICE_DMGEFF_0xF),
-    /* Fire magic    */ DMG_ENTRY(3, ANUBICE_DMGEFF_FIRE),
-    /* Ice magic     */ DMG_ENTRY(0, ANUBICE_DMGEFF_NONE),
-    /* Light magic   */ DMG_ENTRY(0, ANUBICE_DMGEFF_NONE),
-    /* Shield        */ DMG_ENTRY(0, ANUBICE_DMGEFF_NONE),
-    /* Mirror Ray    */ DMG_ENTRY(0, ANUBICE_DMGEFF_NONE),
-    /* Kokiri spin   */ DMG_ENTRY(0, ANUBICE_DMGEFF_0xF),
-    /* Giant spin    */ DMG_ENTRY(6, ANUBICE_DMGEFF_0xF),
-    /* Master spin   */ DMG_ENTRY(2, ANUBICE_DMGEFF_0xF),
-    /* Kokiri jump   */ DMG_ENTRY(0, ANUBICE_DMGEFF_0xF),
-    /* Giant jump    */ DMG_ENTRY(12, ANUBICE_DMGEFF_0xF),
-    /* Master jump   */ DMG_ENTRY(4, ANUBICE_DMGEFF_0xF),
-    /* Unknown 1     */ DMG_ENTRY(0, ANUBICE_DMGEFF_NONE),
-    /* Unblockable   */ DMG_ENTRY(0, ANUBICE_DMGEFF_NONE),
-    /* Hammer jump   */ DMG_ENTRY(0, ANUBICE_DMGEFF_NONE),
-    /* Unknown 2     */ DMG_ENTRY(0, ANUBICE_DMGEFF_NONE),
-};
+static DamageTable sDamageTable;
+
+//static DamageTable sDamageTable[] = {
+//    /* Deku nut      */ DMG_ENTRY(0, ANUBICE_DMGEFF_NONE),
+//    /* Deku stick    */ DMG_ENTRY(0, ANUBICE_DMGEFF_0xF),
+//    /* Slingshot     */ DMG_ENTRY(0, ANUBICE_DMGEFF_0xF),
+//    /* Explosive     */ DMG_ENTRY(0, ANUBICE_DMGEFF_0xF),
+//    /* Boomerang     */ DMG_ENTRY(0, ANUBICE_DMGEFF_0xF),
+//    /* Normal arrow  */ DMG_ENTRY(0, ANUBICE_DMGEFF_0xF),
+//    /* Hammer swing  */ DMG_ENTRY(1, ANUBICE_DMGEFF_0xF),
+//    /* Hookshot      */ DMG_ENTRY(2, ANUBICE_DMGEFF_0xF),
+//    /* Kokiri sword  */ DMG_ENTRY(0, ANUBICE_DMGEFF_0xF),
+//    /* Master sword  */ DMG_ENTRY(2, ANUBICE_DMGEFF_0xF),
+//    /* Giant's Knife */ DMG_ENTRY(6, ANUBICE_DMGEFF_0xF),
+//    /* Fire arrow    */ DMG_ENTRY(2, ANUBICE_DMGEFF_FIRE),
+//    /* Ice arrow     */ DMG_ENTRY(0, ANUBICE_DMGEFF_0xF),
+//    /* Light arrow   */ DMG_ENTRY(0, ANUBICE_DMGEFF_0xF),
+//    /* Unk arrow 1   */ DMG_ENTRY(0, ANUBICE_DMGEFF_0xF),
+//    /* Unk arrow 2   */ DMG_ENTRY(0, ANUBICE_DMGEFF_0xF),
+//    /* Unk arrow 3   */ DMG_ENTRY(0, ANUBICE_DMGEFF_0xF),
+//    /* Fire magic    */ DMG_ENTRY(3, ANUBICE_DMGEFF_FIRE),
+//    /* Ice magic     */ DMG_ENTRY(0, ANUBICE_DMGEFF_NONE),
+//    /* Light magic   */ DMG_ENTRY(0, ANUBICE_DMGEFF_NONE),
+//    /* Shield        */ DMG_ENTRY(0, ANUBICE_DMGEFF_NONE),
+//    /* Mirror Ray    */ DMG_ENTRY(0, ANUBICE_DMGEFF_NONE),
+//    /* Kokiri spin   */ DMG_ENTRY(0, ANUBICE_DMGEFF_0xF),
+//    /* Giant spin    */ DMG_ENTRY(6, ANUBICE_DMGEFF_0xF),
+//    /* Master spin   */ DMG_ENTRY(2, ANUBICE_DMGEFF_0xF),
+//    /* Kokiri jump   */ DMG_ENTRY(0, ANUBICE_DMGEFF_0xF),
+//    /* Giant jump    */ DMG_ENTRY(12, ANUBICE_DMGEFF_0xF),
+//    /* Master jump   */ DMG_ENTRY(4, ANUBICE_DMGEFF_0xF),
+//    /* Unknown 1     */ DMG_ENTRY(0, ANUBICE_DMGEFF_NONE),
+//    /* Unblockable   */ DMG_ENTRY(0, ANUBICE_DMGEFF_NONE),
+//    /* Hammer jump   */ DMG_ENTRY(0, ANUBICE_DMGEFF_NONE),
+//    /* Unknown 2     */ DMG_ENTRY(0, ANUBICE_DMGEFF_NONE),
+//};
 
 void EnAnubice_Hover(EnAnubice* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
@@ -128,6 +132,9 @@ void EnAnubice_SetFireballRot(EnAnubice* this, PlayState* play) {
 }
 
 void EnAnubice_Init(Actor* thisx, PlayState* play) {
+    // RogueLike DamageTable Overrride
+    sDamageTable = GetModifiedDamageTable(thisx);
+
     EnAnubice* this = (EnAnubice*)thisx;
 
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 20.0f);

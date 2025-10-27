@@ -223,7 +223,7 @@ static DamageTable sBigDekuBabaDamageTable;
 //    /* Unblockable   */ DMG_ENTRY(0, DEKUBABA_DMGEFF_NONE),
 //    /* Hammer jump   */ DMG_ENTRY(4, DEKUBABA_DMGEFF_NONE),
 //    /* Unknown 2     */ DMG_ENTRY(0, DEKUBABA_DMGEFF_NONE),
-//};
+// };
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_F32(targetArrowOffset, 1500, ICHAIN_STOP),
