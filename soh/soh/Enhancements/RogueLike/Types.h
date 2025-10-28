@@ -11,6 +11,25 @@ typedef enum {
     RL_MAX,
 } RoguelikeStats;
 
+typedef enum {
+    RL_QUEST_KILL,
+    RL_QUEST_MAX,
+} RogueLikeQuestTypes;
+
+typedef enum {
+    RL_QUEST_HF_STALFOS,
+    RL_QUEST_ID_MAX,
+} RogueLikeQuest;
+
+typedef struct {
+    u8 questId;
+    u8 questType;
+    const char* questName;
+    const char* questDescription;
+    u16 questProgress;
+    u16 questGoal;
+} RogueLikeQuestObject;
+
 #ifdef __cplusplus
 }
 #endif

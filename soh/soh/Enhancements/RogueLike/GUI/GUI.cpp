@@ -13,6 +13,8 @@ std::map<RoguelikeStats, std::pair<std::string, std::string>> rogueLikeStatMap =
     { RL_DEFENSE, { "Defense", "ITEM_SHIELD_HYLIAN" } },
 };
 
+std::vector<RogueLikeQuestObject> activeQuests;
+
 void TableCellVerticalCenteredText(ImVec4 color, const char* text) {
     float textHeight = ImGui::GetTextLineHeight();
     float offsetX = (32.0f - textHeight + 10.0f) * 0.5f;
@@ -119,6 +121,26 @@ void RogueLike::GUI::HUDWindow::Draw() {
             }
 
             ImGui::EndTable();
+
+            if (ImGui::BeginChild("QuestWindow", ImVec2(300.0f, 0))) {
+                if (activeQuests.size() != 0) {
+                    ImVec4 completionColor = ImVec4(1, 1, 1, 1);
+                    for (auto& quests : activeQuests) {
+                        if (quests.questProgress == quests.questGoal) {
+                            completionColor = ImVec4(0, 1, 0, 1);
+                        }
+                        std::string questProgressStr = std::to_string(quests.questProgress).c_str();
+                        questProgressStr += " / ";
+                        questProgressStr += std::to_string(quests.questGoal).c_str();
+
+                        ImGui::SeparatorText(quests.questName);
+                        ImGui::Text(quests.questDescription);
+                        TableCellHorizontalCenteredText(completionColor, questProgressStr.c_str());
+                        ImGui::Separator();
+                    }
+                }
+                ImGui::EndChild();
+            }
         }
         ImGui::EndChild();
     }

@@ -1,0 +1,19 @@
+#ifndef ROGUELIKE_QUESTS_H
+#define ROGUELIKE_QUESTS_H
+
+extern "C" {
+#include <z64math.h>
+}
+
+namespace RogueLike {
+
+namespace Quests {
+
+void AddQuestById(u8 questId);
+void UpdateQuestProgress(u8 questId);
+
+} // namespace Quests
+
+} // namespace RogueLike
+
+#endif

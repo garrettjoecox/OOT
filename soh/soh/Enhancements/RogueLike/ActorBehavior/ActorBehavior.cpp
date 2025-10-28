@@ -5,6 +5,10 @@
 
 extern "C" {
 #include "variables.h"
+
+// Quest Includes
+#include "overlays/actors/ovl_En_Niw_Lady/z_en_niw_lady.h"
+void func_80ABAC00(EnNiwLady* thisx, PlayState* play);
 }
 
 // This is kind of a catch-all for things that are simple enough to not need their own file.
@@ -12,6 +16,13 @@ static void MiscVanillaBehaviorHandler(GIVanillaBehavior id, bool* should, va_li
     switch (id) {
         case VB_OPEN_KOKIRI_FOREST: {
             *should = true;
+            break;
+        }
+        case VB_GIVE_ITEM_FROM_ANJU_AS_ADULT: {
+            EnNiwLady* enNiwLady = (EnNiwLady*)optionalArg;
+            RogueLike::Quests::AddQuestById(RL_QUEST_HF_STALFOS);
+            enNiwLady->actionFunc = func_80ABAC00;
+            *should = false;
             break;
         }
         default:
