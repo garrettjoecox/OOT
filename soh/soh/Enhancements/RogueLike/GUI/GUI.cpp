@@ -13,11 +13,27 @@ std::map<RoguelikeStats, std::pair<std::string, std::string>> rogueLikeStatMap =
     { RL_DEFENSE, { "Defense", "ITEM_SHIELD_HYLIAN" } },
 };
 
-void TableCellCenteredText(ImVec4 color, const char* text) {
+void TableCellVerticalCenteredText(ImVec4 color, const char* text) {
     float textHeight = ImGui::GetTextLineHeight();
-    float offsetY = (32.0f - textHeight + 10.0f) * 0.5f;
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + offsetY);
+    float offsetX = (32.0f - textHeight + 10.0f) * 0.5f;
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + offsetX);
     ImGui::TextColored(color, text);
+}
+
+void TableCellHorizontalCenteredText(ImVec4 color, const char* text) {
+    float cellWidth = ImGui::GetContentRegionAvail().x;
+    float textWidth = ImGui::CalcTextSize(text).x;
+    float offsetX = (cellWidth - textWidth) * 0.5f;
+    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offsetX);
+    ImGui::TextColored(color, text);
+}
+
+bool TableCellCenteredImageButton(const char* id, ImTextureID texture) {
+    float cellWidth = ImGui::GetContentRegionAvail().x;
+    float offsetX = (cellWidth - 46.0f) * 0.5f;
+
+    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offsetX);
+    return ImGui::ImageButton(id, texture, ImVec2(46.0f, 46.0f));
 }
 
 void RogueLike::GUI::StartingSelectionWindow::Draw() {
@@ -69,10 +85,10 @@ void RogueLike::GUI::HUDWindow::Draw() {
             ImGui::Image(textureId, ImVec2(46.0f, 46.0f));
 
             ImGui::TableNextColumn();
-            TableCellCenteredText(ImVec4(1, 1, 1, 1), "Level");
+            TableCellVerticalCenteredText(ImVec4(1, 1, 1, 1), "Level");
 
             ImGui::TableNextColumn();
-            TableCellCenteredText(ImVec4(0, 1, 0, 1), std::to_string(RogueLike::XP::GetCurrentLevel()).c_str());
+            TableCellVerticalCenteredText(ImVec4(0, 1, 0, 1), std::to_string(RogueLike::XP::GetCurrentLevel()).c_str());
 
             ImTextureID textureId2 =
                 Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName("ITEM_MASK_SKULL");
@@ -80,10 +96,11 @@ void RogueLike::GUI::HUDWindow::Draw() {
             ImGui::Image(textureId2, ImVec2(46.0f, 46.0f));
 
             ImGui::TableNextColumn();
-            TableCellCenteredText(ImVec4(1, 1, 1, 1), "Difficulty");
+            TableCellVerticalCenteredText(ImVec4(1, 1, 1, 1), "Difficulty");
 
             ImGui::TableNextColumn();
-            TableCellCenteredText(ImVec4(0, 1, 0, 1), std::to_string(RogueLike::Difficulty::GetCurrentLevel()).c_str());
+            TableCellVerticalCenteredText(ImVec4(0, 1, 0, 1),
+                                          std::to_string(RogueLike::Difficulty::GetCurrentLevel()).c_str());
 
             for (auto& stat : rogueLikeStatMap) {
                 ImTextureID textureId =
@@ -95,10 +112,10 @@ void RogueLike::GUI::HUDWindow::Draw() {
                 ImGui::Image(textureId, ImVec2(46.0f, 46.0f));
 
                 ImGui::TableNextColumn();
-                TableCellCenteredText(ImVec4(1, 1, 1, 1), stat.second.first.c_str());
+                TableCellVerticalCenteredText(ImVec4(1, 1, 1, 1), stat.second.first.c_str());
 
                 ImGui::TableNextColumn();
-                TableCellCenteredText(ImVec4(0, 1, 0, 1), statValueStr.c_str());
+                TableCellVerticalCenteredText(ImVec4(0, 1, 0, 1), statValueStr.c_str());
             }
 
             ImGui::EndTable();
@@ -111,8 +128,57 @@ void RogueLike::GUI::HUDWindow::Draw() {
     ImGui::End();
 }
 
+void RogueLike::GUI::LevelUpWindow::Draw() {
+    if (!IsVisible()) {
+        return;
+    }
+
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0.5f));
+    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0, 0, 0, 0));
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 1.0f, 1.0f, 0.0f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 1.0f, 1.0f, 0.2f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f, 1.0f, 1.0f, 0.1f));
+    ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(4.0f, 0));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 4.0f);
+    ImVec2 levelUpWindowSize = ImVec2(0, 0);
+    ImVec2 levelUpWindowPlacement = ImVec2(ImGui::GetContentRegionMax().x - levelUpWindowSize.x,
+                                           ImGui::GetContentRegionMax().y - levelUpWindowSize.y);
+    ImGui::SetNextWindowPos(levelUpWindowPlacement);
+    ImGui::SetNextWindowSize(levelUpWindowSize);
+
+    if (ImGui::Begin("Level Up", nullptr,
+                     ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoFocusOnAppearing |
+                         ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar |
+                         ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoMove |
+                         ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoSavedSettings)) {
+
+        TableCellHorizontalCenteredText(ImVec4(0, 1, 0, 1), "LEVEL UP");
+        if (ImGui::BeginTable("LevelUpOptions", 3, ImGuiTableFlags_SizingFixedFit)) {
+            for (auto& stat : rogueLikeStatMap) {
+                ImTextureID textureId =
+                    Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(stat.second.second);
+
+                ImGui::TableNextColumn();
+                if (TableCellCenteredImageButton(stat.second.first.c_str(), textureId)) {
+                    gSaveContext.ship.quest.data.rogueLike.stats[stat.first]++;
+                    this->Hide();
+                    gPlayState->frameAdvCtx.enabled = false;
+                }
+                ImGui::Text(stat.second.first.c_str());
+            }
+            ImGui::EndTable();
+        }
+        levelUpWindowSize = ImGui::GetWindowSize();
+        ImGui::End();
+    }
+
+    ImGui::PopStyleColor(5);
+    ImGui::PopStyleVar(2);
+}
+
 std::shared_ptr<RogueLike::GUI::StartingSelectionWindow> mStartingSelectionWindow;
 std::shared_ptr<RogueLike::GUI::HUDWindow> mHUDWindow;
+std::shared_ptr<RogueLike::GUI::LevelUpWindow> mLevelUpWindow;
 
 // Entry point for the module, run once on game boot
 static void InitRogueLikeGUI() {
@@ -128,9 +194,14 @@ static void InitRogueLikeGUI() {
     mHUDWindow = std::make_shared<RogueLike::GUI::HUDWindow>(CVAR_WINDOW("RogueLikeHUD"), "RogueLike HUD");
     gui->AddGuiWindow(mHUDWindow);
 
+    mLevelUpWindow =
+        std::make_shared<RogueLike::GUI::LevelUpWindow>(CVAR_WINDOW("RogueLikeLevelUp"), "RogueLike Level Up");
+    gui->AddGuiWindow(mLevelUpWindow);
+
     COND_HOOK(OnExitGame, true, [](int32_t fileNum) {
         mStartingSelectionWindow->Hide();
         mHUDWindow->Hide();
+        mLevelUpWindow->Hide();
     });
 }
 
@@ -142,9 +213,10 @@ static void OnLoadGame() {
         mStartingSelectionWindow->Hide();
         mHUDWindow->Hide();
     }
+    mLevelUpWindow->Hide();
 
     COND_HOOK(OnPlayerUpdate, IS_ROGUELIKE, [] {
-        if (mStartingSelectionWindow->IsVisible()) {
+        if (mStartingSelectionWindow->IsVisible() || mLevelUpWindow->IsVisible()) {
             mHUDWindow->Hide();
             gPlayState->frameAdvCtx.enabled = true;
         } else {

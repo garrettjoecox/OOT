@@ -9,6 +9,8 @@ extern "C" {
 extern PlayState* gPlayState;
 }
 
+extern std::shared_ptr<RogueLike::GUI::LevelUpWindow> mLevelUpWindow;
+
 const u32 BASE_XP = 100;
 const float GROWTH_RATE = 1.3f;
 
@@ -43,8 +45,7 @@ void RogueLike::XP::GrantXP(u32 amount) {
 
     if (newLevel != oldLevel) {
         Sfx_PlaySfxCentered(NA_SE_SY_CORRECT_CHIME);
-        // TODO: Temporary, simply just increase attack for now
-        gSaveContext.ship.quest.data.rogueLike.stats[RL_ATTACK]++;
+        mLevelUpWindow->Show();
     }
 }
 

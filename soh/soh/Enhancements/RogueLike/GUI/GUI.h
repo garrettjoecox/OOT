@@ -31,6 +31,20 @@ class HUDWindow final : public Ship::GuiWindow {
     void UpdateElement() override{};
 };
 
+class LevelUpWindow final : public Ship::GuiWindow {
+  public:
+    using GuiWindow::GuiWindow;
+    void Draw() override;
+    ~LevelUpWindow(){};
+
+  protected:
+    void InitElement() override{};
+    void DrawElement() override{};
+    void UpdateElement() override{};
+};
+
+extern std::shared_ptr<RogueLike::GUI::LevelUpWindow> mLevelUpWindow;
+
 } // namespace GUI
 
 } // namespace RogueLike
