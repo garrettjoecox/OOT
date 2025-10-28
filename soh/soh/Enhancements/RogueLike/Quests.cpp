@@ -98,7 +98,7 @@ static void OnLoadGame() {
 
         switch (refActor->id) {
             case ACTOR_EN_TEST:
-                if (CheckActiveQuestById(RL_QUEST_HF_STALFOS)) {
+                if (CheckActiveQuestById(RL_QUEST_HF_STALFOS) && gPlayState->sceneNum == SCENE_HYRULE_FIELD) {
                     if (!CheckQuestCompleteById(RL_QUEST_HF_STALFOS)) {
                         activeQuests.at(RL_QUEST_HF_STALFOS).questProgress++;
                     }
