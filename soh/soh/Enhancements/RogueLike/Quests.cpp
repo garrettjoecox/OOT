@@ -109,13 +109,14 @@ static void OnLoadGame() {
         }
     });
 
-    COND_HOOK(OnOpenText, IS_ROGUELIKE, [](u16* textId, bool* loadFromMessageTable) {
-        if (std::to_string(*textId) == "20542") {
-            auto entry = CustomMessage::LoadVanillaMessageTableEntry(*textId);
-            // std::string newText = "Stalfos have been attacking our Cucco's, please help us!";
-            // entry.msg = newText.c_str();
-        }
-    })
+    COND_ID_HOOK(OnOpenText, 0x503e, IS_ROGUELIKE, [](u16* textId, bool* loadFromMessageTable) {
+        auto oldEntry = CustomMessage::LoadVanillaMessageTableEntry(*textId);
+        std::string endOfMessage = oldEntry.GetEnglish().substr(oldEntry.GetEnglish().size() - 4);
+        auto messageEntry = CustomMessage("Stalfos have been attacking our Cucco's, please help us!" + endOfMessage);
+        messageEntry.AutoFormat();
+        messageEntry.LoadIntoFont();
+        *loadFromMessageTable = false;
+    });
 }
 
 static RegisterShipInitFunc initFunc(InitRogueLikeQuests, {});
