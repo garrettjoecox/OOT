@@ -11,8 +11,8 @@ extern PlayState* gPlayState;
 
 extern std::shared_ptr<RogueLike::GUI::LevelUpWindow> mLevelUpWindow;
 
-const u32 BASE_XP = 100;
-const float GROWTH_RATE = 1.3f;
+#define BASE_XP CVarGetFloat("gRogueLike.BaseXP", 100.0f)
+#define GROWTH_RATE CVarGetFloat("gRogueLike.XPGrowthRate", 1.3f)
 
 float RogueLike::XP::GetProgressToNextLevel() {
     u32 currentXP = gSaveContext.ship.quest.data.rogueLike.xp;

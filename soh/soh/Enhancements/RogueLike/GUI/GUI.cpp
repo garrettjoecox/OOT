@@ -1,12 +1,17 @@
 #include "soh/Enhancements/RogueLike/RogueLike.h"
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
 #include "soh/ShipInit.hpp"
+#include "soh/SohGui/SohMenu.h"
 #include "soh/Enhancements/randomizer/3drando/random.hpp"
 
 extern "C" {
 #include "variables.h"
 
 extern PlayState* gPlayState;
+}
+
+namespace SohGui {
+extern std::shared_ptr<SohMenu> mSohMenu;
 }
 
 void RogueLike::GUI::BeginFullscreenDimmed(const char* windowName) {
@@ -313,6 +318,34 @@ static void InitRogueLikeGUI() {
     mLevelUpWindow =
         std::make_shared<RogueLike::GUI::LevelUpWindow>(CVAR_WINDOW("RogueLikeLevelUp"), "RogueLike Level Up");
     gui->AddGuiWindow(mLevelUpWindow);
+
+    SohGui::mSohMenu->AddMenuEntry("RogueLike", CVAR_SETTING("Menu.RogueLikeSidebarSection"));
+    SohGui::mSohMenu->AddSidebarEntry("RogueLike", "Configuration", 1);
+    WidgetPath path = { "RogueLike", "Configuration", SECTION_COLUMN_1 };
+    SohGui::mSohMenu->AddWidget(path, "Configuration", WIDGET_CUSTOM).CustomFunction([](WidgetInfo& info) {
+        if (UIWidgets::Button("Reset All", UIWidgets::ButtonOptions().Size(UIWidgets::Sizes::Inline))) {
+            CVarSetFloat("gRogueLike.BaseDifficulty", 5000.0f);
+            CVarSetFloat("gRogueLike.DifficultyGrowthRate", 1.3f);
+            CVarSetFloat("gRogueLike.BaseXP", 100.0f);
+            CVarSetFloat("gRogueLike.XPGrowthRate", 1.3f);
+        }
+
+        UIWidgets::CVarSliderFloat(
+            "Base Difficulty", "gRogueLike.BaseDifficulty",
+            UIWidgets::FloatSliderOptions().Min(0.0f).Max(10000.0f).DefaultValue(5000.0f).Size(ImVec2(300.0f, 0.0f)));
+
+        UIWidgets::CVarSliderFloat(
+            "Difficulty Growth Rate", "gRogueLike.DifficultyGrowthRate",
+            UIWidgets::FloatSliderOptions().Min(0.0f).Max(5.0f).DefaultValue(1.3f).Size(ImVec2(300.0f, 0.0f)));
+
+        UIWidgets::CVarSliderFloat(
+            "Base XP Req", "gRogueLike.BaseXP",
+            UIWidgets::FloatSliderOptions().Min(0.0f).Max(1000.0f).DefaultValue(100.0f).Size(ImVec2(300.0f, 0.0f)));
+
+        UIWidgets::CVarSliderFloat(
+            "XP Growth Rate", "gRogueLike.XPGrowthRate",
+            UIWidgets::FloatSliderOptions().Min(0.0f).Max(5.0f).DefaultValue(1.3f).Size(ImVec2(300.0f, 0.0f)));
+    });
 
     COND_HOOK(OnExitGame, true, [](int32_t fileNum) {
         mStartingSelectionWindow->Hide();
