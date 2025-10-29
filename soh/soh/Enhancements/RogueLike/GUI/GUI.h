@@ -2,10 +2,17 @@
 #define ROGUELIKE_GUI_H
 
 #include <libultraship/libultraship.h>
+#include <vector>
+#include <string>
+#include "soh/Enhancements/RogueLike/Choices.hpp"
 
 namespace RogueLike {
 
 namespace GUI {
+
+void BeginFullscreenDimmed(const char* windowName);
+RogueLike::Choices::ChoiceCard* DrawChooseScreen(std::string heading,
+                                                 std::vector<RogueLike::Choices::ChoiceCard>& allChoices, int rolls);
 
 class StartingSelectionWindow final : public Ship::GuiWindow {
   public:

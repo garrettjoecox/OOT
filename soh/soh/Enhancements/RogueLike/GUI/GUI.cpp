@@ -1,6 +1,7 @@
 #include "soh/Enhancements/RogueLike/RogueLike.h"
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
 #include "soh/ShipInit.hpp"
+#include "soh/Enhancements/randomizer/3drando/random.hpp"
 
 extern "C" {
 #include "variables.h"
@@ -8,9 +9,167 @@ extern "C" {
 extern PlayState* gPlayState;
 }
 
+void RogueLike::GUI::BeginFullscreenDimmed(const char* windowName) {
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->Pos);
+    ImGui::SetNextWindowSize(viewport->Size);
+    ImGui::SetNextWindowViewport(viewport->ID);
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    ImGui::Begin(windowName, nullptr,
+                 ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
+    ImGui::PopStyleVar();
+    ImGui::PopStyleVar();
+}
+
+static std::vector<RogueLike::Choices::ChoiceCard*> choices = {};
+static float rollTimer = 0.0f;
+static int rollsRemaining = 0;
+
+RogueLike::Choices::ChoiceCard*
+RogueLike::GUI::DrawChooseScreen(std::string heading, std::vector<RogueLike::Choices::ChoiceCard>& allChoices,
+                                 int rolls) {
+    RogueLike::Choices::ChoiceCard* selectedChoice = nullptr;
+
+    ImVec2 outerCardSize = ImVec2(300, 400);
+    ImVec2 innerCardSize = ImVec2(outerCardSize.x - 40, outerCardSize.y - 40);
+    ImVec2 iconSize = ImVec2(125, 125);
+
+    // Heading
+    ImGui::SetWindowFontScale(2.0f);
+    ImGui::SetCursorPosY(ImGui::GetWindowHeight() / 2 - (outerCardSize.y / 2) - 100);
+    ImGui::SetCursorPosX((ImGui::GetWindowWidth() - ImGui::CalcTextSize(heading.c_str()).x) / 2);
+    ImGui::Text("%s", heading.c_str());
+    ImGui::SetWindowFontScale(1.0f);
+
+    // Cards
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+
+    if (choices.size() == 0) {
+        choices = RogueLike::Choices::Choose3Max(allChoices);
+        rollTimer = 0.0f;
+        if (choices.size() > 2) {
+            rollsRemaining = rolls;
+            choices.resize(2);
+        } else {
+            rollsRemaining = 0;
+        }
+    }
+
+    if (rollsRemaining > 0) {
+        rollTimer += ImGui::GetIO().DeltaTime;
+        if (rollTimer >= 0.05f) {
+            rollTimer = 0.0f;
+            rollsRemaining--;
+            choices = RogueLike::Choices::Choose3Max(allChoices);
+            if (choices.size() > 2) {
+                choices.resize(2);
+            }
+        }
+    }
+
+    ImGui::SetCursorPosX((ImGui::GetWindowWidth() - (outerCardSize.x * choices.size())) / 2);
+    ImGui::SetCursorPosY(ImGui::GetWindowHeight() / 2 - (outerCardSize.y / 2));
+
+    static int cachedHoverIndex = -1;
+    int hoverIndex = -1;
+
+    for (size_t i = 0; i < choices.size(); i++) {
+        if (i > 0) {
+            ImGui::SameLine();
+        }
+
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(20, 20));
+        ImGui::BeginChild(("card" + std::to_string(i)).c_str(), outerCardSize, ImGuiChildFlags_AlwaysUseWindowPadding);
+        ImGui::PopStyleVar();
+        ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 10.0f);
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, (cachedHoverIndex == static_cast<int>(i))
+                                                    ? ImVec4(0.2f, 0.2f, 0.2f, 1.0f)
+                                                    : ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+        ImGui::BeginChild(("card_content" + std::to_string(i)).c_str(), ImVec2(-1, -1), 0);
+        ImGui::PopStyleColor();
+        ImGui::PopStyleVar();
+
+        if (choices[i]->textureName.substr(0, 10) == "QUEST_SONG") {
+            // Songs are thinner
+            iconSize = ImVec2(100, 150);
+        }
+
+        ImGui::SetCursorPosX(innerCardSize.x / 2 - iconSize.x / 2);
+        ImGui::SetCursorPosY(innerCardSize.y / 2 - iconSize.y / 2 - 20);
+        ImTextureID textureId =
+            Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(choices[i]->textureName);
+        ImGui::Image(textureId, iconSize);
+
+        ImGui::SetCursorPosX(innerCardSize.x / 2 - ImGui::CalcTextSize(choices[i]->name.c_str()).x / 2);
+        ImGui::SetCursorPosY(innerCardSize.y - 75);
+        if (rollsRemaining == 0) {
+            ImGui::Text("%s", choices[i]->name.c_str());
+        }
+
+        ImGui::EndChild();
+        if (ImGui::IsItemHovered() && rollsRemaining == 0) {
+            hoverIndex = static_cast<int>(i);
+        }
+        if (ImGui::IsItemClicked() && rollsRemaining == 0) {
+            selectedChoice = choices[i];
+        }
+        ImGui::EndChild();
+    }
+
+    // Draw button indicators below each card
+    for (size_t i = 0; i < choices.size(); i++) {
+        // Draw button indicator
+        const char* buttonLabel = (i == 0) ? "B" : "A";
+        float circleRadius = 30.0f;
+        ImVec2 circleCenter = ImVec2((ImGui::GetWindowWidth() - (outerCardSize.x * choices.size())) / 2 +
+                                         (outerCardSize.x * i) + (outerCardSize.x / 2),
+                                     ImGui::GetWindowHeight() / 2 + (outerCardSize.y / 2) + 150);
+
+        ImDrawList* drawList = ImGui::GetWindowDrawList();
+        drawList->AddCircleFilled(circleCenter, circleRadius,
+                                  rollsRemaining == 0
+                                      ? ((i == 0) ? IM_COL32(0, 150, 0, 255) : IM_COL32(20, 20, 190, 255))
+                                      : IM_COL32(100, 100, 100, 255));
+        drawList->AddCircle(circleCenter, circleRadius, IM_COL32(0, 0, 0, 100), 0, 4.0f);
+
+        ImVec2 textSize = ImGui::CalcTextSize(buttonLabel);
+        ImVec2 textPos = ImVec2(circleCenter.x - textSize.x / 2, circleCenter.y - textSize.y / 2);
+        drawList->AddText(textPos, IM_COL32(255, 255, 255, 255), buttonLabel);
+    }
+
+    if (hoverIndex != -1) {
+        cachedHoverIndex = hoverIndex;
+    } else {
+        cachedHoverIndex = -1;
+    }
+
+    ImGui::PopStyleVar();
+
+    if (rollsRemaining == 0) {
+        Input* input = &gPlayState->state.input[0];
+
+        if (CHECK_BTN_ANY(input->press.button, BTN_A) && choices.size() > 1) {
+            selectedChoice = choices[1];
+            input->press.button &= ~BTN_A;
+        }
+        if (CHECK_BTN_ANY(input->press.button, BTN_B)) {
+            selectedChoice = choices[0];
+            input->press.button &= ~BTN_B;
+        }
+    }
+
+    if (selectedChoice != nullptr) {
+        choices.clear();
+    }
+    return selectedChoice;
+}
+
 std::map<RoguelikeStats, std::pair<std::string, std::string>> rogueLikeStatMap = {
     { RL_ATTACK, { "Attack", "ITEM_SWORD_MASTER" } },
     { RL_DEFENSE, { "Defense", "ITEM_SHIELD_HYLIAN" } },
+    { RL_SPEED, { "Speed", "ITEM_MASK_BUNNY" } },
 };
 
 void TableCellVerticalCenteredText(ImVec4 color, const char* text) {
@@ -36,27 +195,6 @@ bool TableCellCenteredImageButton(const char* id, ImTextureID texture) {
     return ImGui::ImageButton(id, texture, ImVec2(46.0f, 46.0f));
 }
 
-void RogueLike::GUI::StartingSelectionWindow::Draw() {
-    if (!IsVisible()) {
-        return;
-    }
-
-    // Full screen overlay
-    ImGuiViewport* viewport = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(viewport->Pos);
-    ImGui::SetNextWindowSize(viewport->Size);
-    ImGui::SetNextWindowViewport(viewport->ID);
-
-    ImGui::Begin("RogueLike Starting Selection", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize);
-
-    ImGui::Text("RogueLike Starting Selection");
-    if (ImGui::Button("Start RogueLike Mode")) {
-        this->Hide();
-        gPlayState->frameAdvCtx.enabled = false;
-    }
-    ImGui::End();
-}
-
 void RogueLike::GUI::HUDWindow::Draw() {
     if (!IsVisible()) {
         return;
@@ -71,10 +209,6 @@ void RogueLike::GUI::HUDWindow::Draw() {
     ImGui::Begin("RogueLike HUD", nullptr,
                  ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBackground);
 
-    // Progress bar based on experience points
-    ImGui::ProgressBar(RogueLike::XP::GetProgressToNextLevel(), ImVec2(-1, 0));
-    ImGui::ProgressBar(RogueLike::Difficulty::GetProgressToNextLevel(), ImVec2(-1, 0));
-
     ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0, 0, 0, 0));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 4.0f);
     if (ImGui::BeginChild("StatsWindow")) {
@@ -88,7 +222,11 @@ void RogueLike::GUI::HUDWindow::Draw() {
             TableCellVerticalCenteredText(ImVec4(1, 1, 1, 1), "Level");
 
             ImGui::TableNextColumn();
-            TableCellVerticalCenteredText(ImVec4(0, 1, 0, 1), std::to_string(RogueLike::XP::GetCurrentLevel()).c_str());
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 9.0f);
+            ImGui::ProgressBar(RogueLike::XP::GetProgressToNextLevel(), ImVec2(200, 0),
+                               (std::to_string(RogueLike::XP::GetCurrentLevel()) + " (" +
+                                std::to_string(static_cast<int>(RogueLike::XP::GetProgressToNextLevel() * 100)) + "%)")
+                                   .c_str());
 
             ImTextureID textureId2 =
                 Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName("ITEM_MASK_SKULL");
@@ -99,8 +237,12 @@ void RogueLike::GUI::HUDWindow::Draw() {
             TableCellVerticalCenteredText(ImVec4(1, 1, 1, 1), "Difficulty");
 
             ImGui::TableNextColumn();
-            TableCellVerticalCenteredText(ImVec4(0, 1, 0, 1),
-                                          std::to_string(RogueLike::Difficulty::GetCurrentLevel()).c_str());
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 9.0f);
+            ImGui::ProgressBar(
+                RogueLike::Difficulty::GetProgressToNextLevel(), ImVec2(200, 0),
+                (std::to_string(RogueLike::Difficulty::GetCurrentLevel()) + " (" +
+                 std::to_string(static_cast<int>(RogueLike::Difficulty::GetProgressToNextLevel() * 100)) + "%)")
+                    .c_str());
 
             for (auto& stat : rogueLikeStatMap) {
                 ImTextureID textureId =
@@ -126,54 +268,6 @@ void RogueLike::GUI::HUDWindow::Draw() {
     ImGui::PopStyleVar(1);
 
     ImGui::End();
-}
-
-void RogueLike::GUI::LevelUpWindow::Draw() {
-    if (!IsVisible()) {
-        return;
-    }
-
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0.5f));
-    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0, 0, 0, 0));
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 1.0f, 1.0f, 0.0f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 1.0f, 1.0f, 0.2f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f, 1.0f, 1.0f, 0.1f));
-    ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(4.0f, 0));
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 4.0f);
-    ImVec2 levelUpWindowSize = ImVec2(0, 0);
-    ImVec2 levelUpWindowPlacement = ImVec2(ImGui::GetContentRegionMax().x - levelUpWindowSize.x,
-                                           ImGui::GetContentRegionMax().y - levelUpWindowSize.y);
-    ImGui::SetNextWindowPos(levelUpWindowPlacement);
-    ImGui::SetNextWindowSize(levelUpWindowSize);
-
-    if (ImGui::Begin("Level Up", nullptr,
-                     ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoFocusOnAppearing |
-                         ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar |
-                         ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoMove |
-                         ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoSavedSettings)) {
-
-        TableCellHorizontalCenteredText(ImVec4(0, 1, 0, 1), "LEVEL UP");
-        if (ImGui::BeginTable("LevelUpOptions", 3, ImGuiTableFlags_SizingFixedFit)) {
-            for (auto& stat : rogueLikeStatMap) {
-                ImTextureID textureId =
-                    Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(stat.second.second);
-
-                ImGui::TableNextColumn();
-                if (TableCellCenteredImageButton(stat.second.first.c_str(), textureId)) {
-                    gSaveContext.ship.quest.data.rogueLike.stats[stat.first]++;
-                    this->Hide();
-                    gPlayState->frameAdvCtx.enabled = false;
-                }
-                ImGui::Text(stat.second.first.c_str());
-            }
-            ImGui::EndTable();
-        }
-        levelUpWindowSize = ImGui::GetWindowSize();
-        ImGui::End();
-    }
-
-    ImGui::PopStyleColor(5);
-    ImGui::PopStyleVar(2);
 }
 
 std::shared_ptr<RogueLike::GUI::StartingSelectionWindow> mStartingSelectionWindow;
@@ -206,14 +300,14 @@ static void InitRogueLikeGUI() {
 }
 
 static void OnLoadGame() {
-    if (IS_ROGUELIKE) {
-        mStartingSelectionWindow->Show();
-        mHUDWindow->Show();
-    } else {
-        mStartingSelectionWindow->Hide();
-        mHUDWindow->Hide();
-    }
+    mStartingSelectionWindow->Hide();
+    mHUDWindow->Hide();
     mLevelUpWindow->Hide();
+
+    if (IS_ROGUELIKE) {
+        // TODO: Check if this is first start
+        mStartingSelectionWindow->Show();
+    }
 
     COND_HOOK(OnPlayerUpdate, IS_ROGUELIKE, [] {
         if (mStartingSelectionWindow->IsVisible() || mLevelUpWindow->IsVisible()) {

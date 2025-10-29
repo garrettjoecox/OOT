@@ -8,6 +8,7 @@ extern "C" {
 typedef enum {
     RL_ATTACK,
     RL_DEFENSE,
+    RL_SPEED,
     RL_MAX,
 } RoguelikeStats;
 
