@@ -168,6 +168,7 @@ typedef struct ShipRogueLikeSaveContextData {
     u32 xp;
     u32 difficulty;
     uint64_t lastActivity;
+    RogueLikeQuestObject quests[RL_QUEST_ID_MAX];
 } ShipRogueLikeSaveContextData;
 
 typedef struct ShipBossRushSaveContextData {
