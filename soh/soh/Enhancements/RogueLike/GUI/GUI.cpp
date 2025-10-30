@@ -76,7 +76,7 @@ RogueLike::GUI::DrawChooseScreen(std::string heading, std::vector<RogueLike::Cho
 
     float cardStartX = (ImGui::GetWindowWidth() - (outerCardSize.x * choices.size())) / 2;
     float cardStartY = ImGui::GetWindowHeight() / 2 - (outerCardSize.y / 2);
-    
+
     ImGui::SetCursorPosX(cardStartX);
     ImGui::SetCursorPosY(cardStartY);
 

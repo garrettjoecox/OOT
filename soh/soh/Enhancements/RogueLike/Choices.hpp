@@ -77,7 +77,18 @@ inline std::vector<ChoiceCard> Songs = {
     { #item, name, item, IsItemInSlot, GiveItem }
 
 inline std::vector<ChoiceCard> Items = {
+    ITEM_CHOICE(ITEM_STICK, "Deku Stick"),
+    ITEM_CHOICE(ITEM_NUT, "Deku Nut"),
     ITEM_CHOICE(ITEM_BOW, "Bow"),
+    ITEM_CHOICE(ITEM_SLINGSHOT, "Slingshot"),
+    ITEM_CHOICE(ITEM_BOTTLE, "Bottle"),
+    { "ITEM_BOMB", "Bombs", ITEM_BOMB_BAG_20,
+      [](int32_t _) { return gSaveContext.inventory.items[SLOT(ITEM_BOMB)] == ITEM_NONE; }, GiveItem },
+    { "ITEM_BOMBCHU", "Bombchu", ITEM_BOMBCHUS_20,
+      [](int32_t _) {
+          return gSaveContext.inventory.items[SLOT(ITEM_BOMB)] != ITEM_NONE && IsItemInSlot(ITEM_BOMBCHU);
+      },
+      GiveItem },
     ITEM_CHOICE(ITEM_HOOKSHOT, "Hookshot"),
     // Longshot requires hookshot
     { "ITEM_LONGSHOT", "Longshot", ITEM_LONGSHOT,
@@ -127,6 +138,16 @@ inline std::vector<ChoiceCard> Equipment = {
     EQUIP_CHOICE(ITEM_TUNIC_ZORA, "Zora Tunic", EQUIP_TYPE_TUNIC, EQUIP_INV_TUNIC_ZORA),
     EQUIP_CHOICE(ITEM_BOOTS_IRON, "Iron Boots", EQUIP_TYPE_BOOTS, EQUIP_INV_BOOTS_IRON),
     EQUIP_CHOICE(ITEM_BOOTS_HOVER, "Hover Boots", EQUIP_TYPE_BOOTS, EQUIP_INV_BOOTS_HOVER),
+    { "ITEM_SCALE_SILVER", "Silver Scale", ITEM_SCALE_SILVER, [](int32_t _) { return CUR_UPG_VALUE(UPG_SCALE) == 0; },
+      GiveItem },
+    { "ITEM_SCALE_GOLDEN", "Golden Scale", ITEM_SCALE_GOLDEN, [](int32_t _) { return CUR_UPG_VALUE(UPG_SCALE) == 1; },
+      GiveItem },
+    { "ITEM_BRACELET", "Goron Bracelet", ITEM_BRACELET, [](int32_t _) { return CUR_UPG_VALUE(UPG_STRENGTH) == 0; },
+      GiveItem },
+    { "ITEM_GAUNTLETS_SILVER", "Silver Gauntlets", ITEM_GAUNTLETS_SILVER,
+      [](int32_t _) { return CUR_UPG_VALUE(UPG_STRENGTH) == 1; }, GiveItem },
+    { "ITEM_GAUNTLETS_GOLD", "Golden Gauntlets", ITEM_GAUNTLETS_GOLD,
+      [](int32_t _) { return CUR_UPG_VALUE(UPG_STRENGTH) == 2; }, GiveItem },
 };
 
 inline std::vector<ChoiceCard> All = {
