@@ -14,11 +14,18 @@ typedef enum {
 
 typedef enum {
     RL_QUEST_KILL,
+    RL_QUEST_SIGHTSEEING,
     RL_QUEST_MAX,
 } RogueLikeQuestTypes;
 
 typedef enum {
+    RL_QUEST_ACTIVE,
+    RL_QUEST_COMPLETE,
+} RogueLikeQuestStatus;
+
+typedef enum {
     RL_QUEST_HF_STALFOS,
+    RL_QUEST_ZD_POTTERY,
     RL_QUEST_ID_MAX,
 } RogueLikeQuest;
 
@@ -27,6 +34,7 @@ typedef struct {
     u8 questType;
     const char* questName;
     const char* questDescription;
+    u8 questStatus;
     u16 questProgress;
     u16 questGoal;
 } RogueLikeQuestObject;
