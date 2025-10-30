@@ -76,7 +76,7 @@ RogueLike::GUI::DrawChooseScreen(std::string heading, std::vector<RogueLike::Cho
 
     float cardStartX = (ImGui::GetWindowWidth() - (outerCardSize.x * choices.size())) / 2;
     float cardStartY = ImGui::GetWindowHeight() / 2 - (outerCardSize.y / 2);
-    
+
     ImGui::SetCursorPosX(cardStartX);
     ImGui::SetCursorPosY(cardStartY);
 
@@ -279,7 +279,7 @@ void RogueLike::GUI::HUDWindow::Draw() {
                         if (quests.questProgress == quests.questGoal || quests.questStatus == RL_QUEST_COMPLETE) {
                             completionColor = ImVec4(0, 1, 0, 1);
                         }
-                        
+
                         ImGui::SeparatorText(quests.questName);
                         if (quests.questStatus != RL_QUEST_COMPLETE) {
                             ImGui::Text(quests.questDescription);
