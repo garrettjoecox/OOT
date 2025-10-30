@@ -336,6 +336,8 @@ static void InitRogueLikeGUI() {
             CVarSetFloat("gRogueLike.DifficultyGrowthRate", 1.3f);
             CVarSetFloat("gRogueLike.BaseXP", 100.0f);
             CVarSetFloat("gRogueLike.XPGrowthRate", 1.3f);
+            CVarSetInteger("gRogueLike.EnemyPlateMax", 3);
+            CVarSetInteger("gRogueLike.EnemyPlateChance", 25);
 
             CVarSetInteger("gRogueLike.XPDrop.Enemies", 50);
             CVarSetInteger("gRogueLike.XPDrop.Bosses", 200);
