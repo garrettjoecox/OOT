@@ -74,8 +74,11 @@ RogueLike::GUI::DrawChooseScreen(std::string heading, std::vector<RogueLike::Cho
         }
     }
 
-    ImGui::SetCursorPosX((ImGui::GetWindowWidth() - (outerCardSize.x * choices.size())) / 2);
-    ImGui::SetCursorPosY(ImGui::GetWindowHeight() / 2 - (outerCardSize.y / 2));
+    float cardStartX = (ImGui::GetWindowWidth() - (outerCardSize.x * choices.size())) / 2;
+    float cardStartY = ImGui::GetWindowHeight() / 2 - (outerCardSize.y / 2);
+    
+    ImGui::SetCursorPosX(cardStartX);
+    ImGui::SetCursorPosY(cardStartY);
 
     static int cachedHoverIndex = -1;
     int hoverIndex = -1;
@@ -129,9 +132,8 @@ RogueLike::GUI::DrawChooseScreen(std::string heading, std::vector<RogueLike::Cho
         const char* buttonLabel = (i == 0) ? "B" : "A";
         float circleRadius = 30.0f;
         ImVec2 windowPos = ImGui::GetWindowPos();
-        ImVec2 circleCenter = ImVec2(windowPos.x + (ImGui::GetWindowWidth() - (outerCardSize.x * choices.size())) / 2 +
-                                         (outerCardSize.x * i) + (outerCardSize.x / 2),
-                                     windowPos.y + ImGui::GetWindowHeight() / 2 + (outerCardSize.y / 2) + 70);
+        ImVec2 circleCenter = ImVec2(windowPos.x + cardStartX + (outerCardSize.x * i) + (outerCardSize.x / 2),
+                                     windowPos.y + cardStartY + outerCardSize.y + 70);
 
         ImDrawList* drawList = ImGui::GetWindowDrawList();
         drawList->AddCircleFilled(circleCenter, circleRadius,
