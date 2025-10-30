@@ -128,9 +128,10 @@ RogueLike::GUI::DrawChooseScreen(std::string heading, std::vector<RogueLike::Cho
         // Draw button indicator
         const char* buttonLabel = (i == 0) ? "B" : "A";
         float circleRadius = 30.0f;
-        ImVec2 circleCenter = ImVec2((ImGui::GetWindowWidth() - (outerCardSize.x * choices.size())) / 2 +
+        ImVec2 windowPos = ImGui::GetWindowPos();
+        ImVec2 circleCenter = ImVec2(windowPos.x + (ImGui::GetWindowWidth() - (outerCardSize.x * choices.size())) / 2 +
                                          (outerCardSize.x * i) + (outerCardSize.x / 2),
-                                     ImGui::GetWindowHeight() / 2 + (outerCardSize.y / 2) + 150);
+                                     windowPos.y + ImGui::GetWindowHeight() / 2 + (outerCardSize.y / 2) + 70);
 
         ImDrawList* drawList = ImGui::GetWindowDrawList();
         drawList->AddCircleFilled(circleCenter, circleRadius,
