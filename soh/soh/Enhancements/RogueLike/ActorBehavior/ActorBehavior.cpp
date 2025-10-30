@@ -17,6 +17,22 @@ static void MiscVanillaBehaviorHandler(GIVanillaBehavior id, bool* should, va_li
     va_copy(args, originalArgs);
 
     switch (id) {
+        case VB_GIVE_ITEM_FROM_TARGET_IN_WOODS:
+        case VB_GIVE_ITEM_FROM_TALONS_CHICKENS:
+        case VB_GIVE_ITEM_FROM_DIVING_MINIGAME:
+        case VB_GIVE_ITEM_FROM_GORON:
+        case VB_GIVE_ITEM_FROM_LAB_DIVE:
+        case VB_GIVE_ITEM_FROM_SKULL_KID_SARIAS_SONG:
+        case VB_GIVE_ITEM_FROM_MAN_ON_ROOF:
+        case VB_GIVE_ITEM_FAIRY_OCARINA:
+        case VB_GIVE_ITEM_WEIRD_EGG:
+        case VB_GIVE_ITEM_LIGHT_ARROW:
+        case VB_GIVE_ITEM_STRENGTH_1:
+        case VB_GIVE_ITEM_ZELDAS_LETTER:
+        case VB_GIVE_ITEM_OCARINA_OF_TIME:
+        case VB_CHEST_USE_ICE_EFFECT:
+            *should = false;
+            break;
         case VB_OPEN_KOKIRI_FOREST: {
             *should = true;
             break;
