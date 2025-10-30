@@ -268,16 +268,21 @@ void RogueLike::GUI::HUDWindow::Draw() {
                 if (activeQuests.size() != 0) {
                     ImVec4 completionColor = ImVec4(1, 1, 1, 1);
                     for (auto& quests : activeQuests) {
-                        if (quests.questProgress == quests.questGoal) {
+                        if (quests.questProgress == quests.questGoal || quests.questStatus == RL_QUEST_COMPLETE) {
                             completionColor = ImVec4(0, 1, 0, 1);
                         }
-                        std::string questProgressStr = std::to_string(quests.questProgress).c_str();
-                        questProgressStr += " / ";
-                        questProgressStr += std::to_string(quests.questGoal).c_str();
-
+                        
                         ImGui::SeparatorText(quests.questName);
-                        ImGui::Text(quests.questDescription);
-                        TableCellHorizontalCenteredText(completionColor, questProgressStr.c_str());
+                        if (quests.questStatus != RL_QUEST_COMPLETE) {
+                            ImGui::Text(quests.questDescription);
+                            std::string questProgressStr = std::to_string(quests.questProgress).c_str();
+                            questProgressStr += " / ";
+                            questProgressStr += std::to_string(quests.questGoal).c_str();
+                            TableCellHorizontalCenteredText(completionColor, questProgressStr.c_str());
+                        } else {
+                            TableCellHorizontalCenteredText(completionColor, "Quest Complete");
+                        }
+
                         ImGui::Separator();
                     }
                 }

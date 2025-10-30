@@ -9,6 +9,7 @@ namespace RogueLike {
 
 namespace Quests {
 
+void CompleteQuestById(u8 questId);
 void AddQuestById(u8 questId);
 void UpdateQuestProgress(u8 questId);
 
