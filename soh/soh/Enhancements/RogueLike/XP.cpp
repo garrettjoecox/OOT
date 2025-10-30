@@ -10,6 +10,7 @@ extern PlayState* gPlayState;
 }
 
 extern std::shared_ptr<RogueLike::GUI::LevelUpWindow> mLevelUpWindow;
+extern std::map<RoguelikeStats, std::pair<std::string, std::string>> rogueLikeStatMap;
 
 #define BASE_XP CVarGetFloat("gRogueLike.BaseXP", 100.0f)
 #define GROWTH_RATE CVarGetFloat("gRogueLike.XPGrowthRate", 1.3f)
@@ -115,5 +116,23 @@ void RogueLike::XP::SpawnXPGroup(Vec3f spawnPos, u32 amount) {
 
         SpawnXPOrb(spawnPos, orbAmount);
         remainingAmount -= orbAmount;
+    }
+}
+
+void RogueLike::XP::UpdatePlayerStats() {
+    for (auto& stat : rogueLikeStatMap) {
+        switch (stat.first) {
+            case RL_HEALTH:
+                gSaveContext.healthCapacity = 0x30 + (gSaveContext.ship.quest.data.rogueLike.stats[stat.first] * 0x10);
+                break;
+            case RL_ATTACK:
+                break;
+            case RL_DEFENSE:
+                break;
+            case RL_SPEED:
+                break;
+            default:
+                break;
+        }
     }
 }

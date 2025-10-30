@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 typedef enum {
+    RL_HEALTH,
     RL_ATTACK,
     RL_DEFENSE,
     RL_SPEED,

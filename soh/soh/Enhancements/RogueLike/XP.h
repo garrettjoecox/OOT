@@ -18,6 +18,7 @@ u32 ConvertLevelToXP(u32 level);
 void GrantXP(u32 amount);
 void SpawnXPOrb(Vec3f spawnPos, u32 amount, int16_t flags = CustomItem::STOP_BOBBING | CustomItem::TOSS_ON_SPAWN);
 void SpawnXPGroup(Vec3f spawnPos, u32 amount);
+void UpdatePlayerStats();
 
 } // namespace XP
 
