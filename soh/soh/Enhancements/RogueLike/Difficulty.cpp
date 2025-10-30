@@ -11,8 +11,8 @@ extern "C" {
 extern PlayState* gPlayState;
 }
 
-const u32 BASE_DIFFICULTY = 5000;
-const float GROWTH_RATE = 1.3f;
+#define BASE_DIFFICULTY CVarGetFloat("gRogueLike.BaseDifficulty", 5000.0f)
+#define GROWTH_RATE CVarGetFloat("gRogueLike.DifficultyGrowthRate", 1.3f)
 
 void RogueLike::Difficulty::IndicateActivity() {
     gSaveContext.ship.quest.data.rogueLike.lastActivity = GetUnixTimestamp();
@@ -52,7 +52,6 @@ void RogueLike::Difficulty::IncrementDifficulty(u32 amount) {
         Actor* actor = gPlayState->actorCtx.actorLists[ACTORCAT_ENEMY].head;
         while (actor != NULL) {
             actor->colChkInfo.health = (actor->colChkInfo.health / (oldLevel + 1)) * (newLevel + 1);
-            ;
             SetActorMaximumHealth(actor, (GetActorMaximumHealth(actor) / (oldLevel + 1)) * (newLevel + 1));
             actor = actor->next;
         }
