@@ -25,7 +25,7 @@ static void InitPotsBehavior() {
         auto tupleKey = std::make_tuple(gPlayState->sceneNum, gPlayState->roomCtx.curRoom.num, actorIndex);
 
         if (brokenPots.find(tupleKey) == brokenPots.end()) {
-            RogueLike::XP::SpawnXPGroup(potActor->actor.world.pos, 20);
+            RogueLike::XP::SpawnXPGroup(potActor->actor.world.pos, CVarGetInteger("gRogueLike.XPDrop.Pots", 20));
             brokenPots.insert(tupleKey);
         }
     });

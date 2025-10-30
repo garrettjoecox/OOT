@@ -331,6 +331,15 @@ static void InitRogueLikeGUI() {
             CVarSetFloat("gRogueLike.DifficultyGrowthRate", 1.3f);
             CVarSetFloat("gRogueLike.BaseXP", 100.0f);
             CVarSetFloat("gRogueLike.XPGrowthRate", 1.3f);
+
+            CVarSetInteger("gRogueLike.XPDrop.Enemies", 50);
+            CVarSetInteger("gRogueLike.XPDrop.Bosses", 200);
+            CVarSetInteger("gRogueLike.XPDrop.BusinessScrubs", 100);
+            CVarSetInteger("gRogueLike.XPDrop.Chests", 50);
+            CVarSetInteger("gRogueLike.XPDrop.Grass", 20);
+            CVarSetInteger("gRogueLike.XPDrop.Pots", 20);
+            CVarSetInteger("gRogueLike.XPDrop.Rocks", 20);
+            CVarSetInteger("gRogueLike.XPDrop.Trees", 20);
         }
 
         UIWidgets::CVarSliderFloat(
@@ -348,6 +357,42 @@ static void InitRogueLikeGUI() {
         UIWidgets::CVarSliderFloat(
             "XP Growth Rate", "gRogueLike.XPGrowthRate",
             UIWidgets::FloatSliderOptions().Min(0.0f).Max(5.0f).DefaultValue(1.3f).Size(ImVec2(300.0f, 0.0f)));
+
+        UIWidgets::Separator();
+
+        ImGui::Text("XP Drop Rates:");
+
+        UIWidgets::CVarSliderInt(
+            "Enemies", "gRogueLike.XPDrop.Enemies",
+            UIWidgets::IntSliderOptions().Min(1).Max(1000).DefaultValue(50).Size(ImVec2(300.0f, 0.0f)));
+
+        UIWidgets::CVarSliderInt(
+            "Bosses", "gRogueLike.XPDrop.Bosses",
+            UIWidgets::IntSliderOptions().Min(1).Max(5000).DefaultValue(200).Size(ImVec2(300.0f, 0.0f)));
+
+        UIWidgets::CVarSliderInt(
+            "Business Scrubs", "gRogueLike.XPDrop.BusinessScrubs",
+            UIWidgets::IntSliderOptions().Min(1).Max(5000).DefaultValue(100).Size(ImVec2(300.0f, 0.0f)));
+
+        UIWidgets::CVarSliderInt(
+            "Chests", "gRogueLike.XPDrop.Chests",
+            UIWidgets::IntSliderOptions().Min(1).Max(1000).DefaultValue(50).Size(ImVec2(300.0f, 0.0f)));
+
+        UIWidgets::CVarSliderInt(
+            "Grass", "gRogueLike.XPDrop.Grass",
+            UIWidgets::IntSliderOptions().Min(1).Max(5000).DefaultValue(20).Size(ImVec2(300.0f, 0.0f)));
+
+        UIWidgets::CVarSliderInt(
+            "Pots", "gRogueLike.XPDrop.Pots",
+            UIWidgets::IntSliderOptions().Min(1).Max(1000).DefaultValue(20).Size(ImVec2(300.0f, 0.0f)));
+
+        UIWidgets::CVarSliderInt(
+            "Rocks", "gRogueLike.XPDrop.Rocks",
+            UIWidgets::IntSliderOptions().Min(1).Max(5000).DefaultValue(20).Size(ImVec2(300.0f, 0.0f)));
+
+        UIWidgets::CVarSliderInt(
+            "Trees", "gRogueLike.XPDrop.Trees",
+            UIWidgets::IntSliderOptions().Min(1).Max(5000).DefaultValue(20).Size(ImVec2(300.0f, 0.0f)));
     });
 
     COND_HOOK(OnExitGame, true, [](int32_t fileNum) {

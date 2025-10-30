@@ -29,7 +29,7 @@ static void InitGrassBehavior() {
         auto tupleKey = std::make_tuple(gPlayState->sceneNum, gPlayState->roomCtx.curRoom.num, actorIndex);
 
         if (brokenGrass.find(tupleKey) == brokenGrass.end()) {
-            RogueLike::XP::SpawnXPGroup(grassActor->actor.world.pos, 20);
+            RogueLike::XP::SpawnXPGroup(grassActor->actor.world.pos, CVarGetInteger("gRogueLike.XPDrop.Grass", 20));
             brokenGrass.insert(tupleKey);
         }
     });

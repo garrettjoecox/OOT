@@ -20,7 +20,7 @@ void Player_Action_8084E6D4_overridden(Player* player, PlayState* play) {
 
         EnBox* enBox = (EnBox*)player->interactRangeActor;
 
-        RogueLike::XP::SpawnXPGroup(enBox->dyna.actor.world.pos, 50);
+        RogueLike::XP::SpawnXPGroup(enBox->dyna.actor.world.pos, CVarGetInteger("gRogueLike.XPDrop.Chests", 50));
 
         Sfx_PlaySfxCentered(NA_SE_SY_GET_RUPY);
     }

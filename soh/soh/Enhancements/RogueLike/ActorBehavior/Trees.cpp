@@ -29,7 +29,7 @@ static void InitTreesBehavior() {
         auto tupleKey = std::make_tuple(gPlayState->sceneNum, gPlayState->roomCtx.curRoom.num, actorIndex);
 
         if (bonkedTrees.find(tupleKey) == bonkedTrees.end()) {
-            RogueLike::XP::SpawnXPGroup(treeActor->actor.world.pos, 20);
+            RogueLike::XP::SpawnXPGroup(treeActor->actor.world.pos, CVarGetInteger("gRogueLike.XPDrop.Trees", 20));
             bonkedTrees.insert(tupleKey);
         }
     });

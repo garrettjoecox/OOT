@@ -29,7 +29,7 @@ static void InitRocksBehavior() {
         auto tupleKey = std::make_tuple(gPlayState->sceneNum, gPlayState->roomCtx.curRoom.num, actorIndex);
 
         if (brokenRocks.find(tupleKey) == brokenRocks.end()) {
-            RogueLike::XP::SpawnXPGroup(rockActor->actor.world.pos, 20);
+            RogueLike::XP::SpawnXPGroup(rockActor->actor.world.pos, CVarGetInteger("gRogueLike.XPDrop.Rocks", 20));
             brokenRocks.insert(tupleKey);
         }
     });

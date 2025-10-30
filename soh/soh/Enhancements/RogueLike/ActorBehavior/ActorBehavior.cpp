@@ -39,7 +39,7 @@ static void OnEnemyDefeatHandler(void* actorRef) {
 
     switch (actor->id) {
         default:
-            RogueLike::XP::SpawnXPGroup(actor->world.pos, 50);
+            RogueLike::XP::SpawnXPGroup(actor->world.pos, CVarGetInteger("gRogueLike.XPDrop.Enemies", 50));
             break;
     }
 }
