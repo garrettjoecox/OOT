@@ -1,3 +1,6 @@
+#ifndef CUSTOM_ITEM_H
+#define CUSTOM_ITEM_H
+
 extern "C" {
 #include "z64actor.h"
 }
@@ -18,8 +21,11 @@ enum CustomItemFlags : int16_t {
     CALLED_ACTION = 1 << 7,      // 0000 0000 1000 0000
     TOSS_ON_SPAWN = 1 << 8,      // 0000 0001 0000 0000
     ABLE_TO_BOOMERANG = 1 << 9,  // 0000 0010 0000 0000
+    ENABLE_GRAVITY = 1 << 10,    // 0000 0100 0000 0000
 };
 void RegisterHooks();
 EnItem00* Spawn(f32 posX, f32 posY, f32 posZ, s16 rot, s16 flags, s16 params, ActorFunc actionFunc = NULL,
                 ActorFunc drawFunc = NULL);
 }; // namespace CustomItem
+
+#endif // CUSTOM_ITEM_H

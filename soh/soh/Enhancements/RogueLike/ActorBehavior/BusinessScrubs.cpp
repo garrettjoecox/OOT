@@ -29,7 +29,8 @@ static void InitBusinessScrubsBehavior() {
         auto tupleKey = std::make_tuple(gPlayState->sceneNum, gPlayState->roomCtx.curRoom.num, actorIndex);
 
         if (killedScrubs.find(tupleKey) == killedScrubs.end()) {
-            RogueLike::XP::SpawnXPGroup(scrubActor->actor.world.pos, CVarGetInteger("gRogueLike.XPDrop.BusinessScrubs", 100));
+            RogueLike::XP::SpawnXPGroup(scrubActor->actor.world.pos,
+                                        CVarGetInteger("gRogueLike.XPDrop.BusinessScrubs", 100));
             killedScrubs.insert(tupleKey);
         }
     });

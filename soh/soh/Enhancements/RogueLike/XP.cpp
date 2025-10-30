@@ -49,9 +49,9 @@ void RogueLike::XP::GrantXP(u32 amount) {
     }
 }
 
-void RogueLike::XP::SpawnXPOrb(Vec3f spawnPos, u32 amount) {
+void RogueLike::XP::SpawnXPOrb(Vec3f spawnPos, u32 amount, int16_t flags) {
     CustomItem::Spawn(
-        spawnPos.x, spawnPos.y + 10.0f, spawnPos.z, 0, CustomItem::STOP_BOBBING | CustomItem::TOSS_ON_SPAWN, amount,
+        spawnPos.x, spawnPos.y + 10.0f, spawnPos.z, 0, flags, amount,
         [](Actor* actor, PlayState* play) {
             RogueLike::XP::GrantXP(CUSTOM_ITEM_PARAM);
             Sfx_PlaySfxCentered(NA_SE_SY_RUPY_COUNT);
