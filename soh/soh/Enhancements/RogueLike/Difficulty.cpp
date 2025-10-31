@@ -85,17 +85,20 @@ static void OnLoadGame() {
         u32 damage = va_arg(args, u32);
         u32 dmgFlags = va_arg(args, u32);
 
-        if (actor->category != ACTORCAT_ENEMY) {
+        if (actor->category == ACTORCAT_PLAYER) {
+            // Player taking damage, 1 Point reduction per Defense Level
+            damage -= gSaveContext.ship.quest.data.rogueLike.stats[RL_DEFENSE];
+        } else if (actor->category == ACTORCAT_ENEMY) {
+            if (dmgFlags & DMG_SLASH_KOKIRI) {
+                // This was a Kokiri Sword attack, double damage bonus etc
+                // damage = static_cast<u32>(damage * 2.0f);
+            }
+
+            // Enemy taking damage, 1 Point addition per Attack Level
+            damage += gSaveContext.ship.quest.data.rogueLike.stats[RL_ATTACK];
+        } else {
             return;
         }
-
-        if (dmgFlags & DMG_SLASH_KOKIRI) {
-            // This was a Kokiri Sword attack, double damage bonus etc
-            // damage = static_cast<u32>(damage * 2.0f);
-        }
-
-        // Generic attack stat bonus
-        damage += gSaveContext.ship.quest.data.rogueLike.stats[RL_ATTACK];
 
         // Overwrite damage amount
         actor->colChkInfo.damage = damage;

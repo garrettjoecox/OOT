@@ -175,6 +175,7 @@ RogueLike::GUI::DrawChooseScreen(std::string heading, std::vector<RogueLike::Cho
 }
 
 std::map<RoguelikeStats, std::pair<std::string, std::string>> rogueLikeStatMap = {
+    { RL_HEALTH, { "Health", "ITEM_HEART_CONTAINER" } },
     { RL_ATTACK, { "Attack", "ITEM_SWORD_MASTER" } },
     { RL_DEFENSE, { "Defense", "ITEM_SHIELD_HYLIAN" } },
     { RL_SPEED, { "Speed", "ITEM_MASK_BUNNY" } },
@@ -398,6 +399,39 @@ static void InitRogueLikeGUI() {
         UIWidgets::CVarSliderInt(
             "Trees", "gRogueLike.XPDrop.Trees",
             UIWidgets::IntSliderOptions().Min(1).Max(5000).DefaultValue(20).Size(ImVec2(300.0f, 0.0f)));
+    });
+
+    SohGui::mSohMenu->AddSidebarEntry("RogueLike", "Testing", 1);
+    path = { "RogueLike", "Testing", SECTION_COLUMN_1 };
+    SohGui::mSohMenu->AddWidget(path, "Testing", WIDGET_CUSTOM).CustomFunction([](WidgetInfo& info) {
+        std::string statPlusValue = "";
+        std::string statMinusValue = "";
+        if (ImGui::BeginTable("Stat Testing", 2)) {
+            for (auto& stat : rogueLikeStatMap) {
+                ImTextureID textureId =
+                    Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName(stat.second.second);
+                statPlusValue = "+ ";
+                statMinusValue = "- ";
+                std::string statValueStr = stat.second.first;
+                statPlusValue += statValueStr;
+                statMinusValue += statValueStr;
+
+                ImGui::TableNextColumn();
+                if (ImGui::ImageButton(statPlusValue.c_str(), textureId, ImVec2(46.0f, 46.0f))) {
+                    gSaveContext.ship.quest.data.rogueLike.stats[stat.first]++;
+                    RogueLike::XP::UpdatePlayerStats();
+                }
+                ImGui::TextColored(ImVec4(0, 1, 0, 1), statPlusValue.c_str());
+
+                ImGui::TableNextColumn();
+                if (ImGui::ImageButton(statMinusValue.c_str(), textureId, ImVec2(46.0f, 46.0f))) {
+                    gSaveContext.ship.quest.data.rogueLike.stats[stat.first]--;
+                    RogueLike::XP::UpdatePlayerStats();
+                }
+                ImGui::TextColored(ImVec4(1, 0, 0, 1), statMinusValue.c_str());
+            }
+            ImGui::EndTable();
+        }
     });
 
     COND_HOOK(OnExitGame, true, [](int32_t fileNum) {

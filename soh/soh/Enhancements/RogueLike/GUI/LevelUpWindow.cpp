@@ -57,6 +57,7 @@ void RogueLike::GUI::LevelUpWindow::Draw() {
         default: {
             // Apply choices
             cardChoice->onSelect(cardChoice->value);
+            RogueLike::XP::UpdatePlayerStats();
 
             // Close window and continue game
             this->Hide();
