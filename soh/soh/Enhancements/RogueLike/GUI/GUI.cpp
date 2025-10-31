@@ -337,6 +337,8 @@ static void InitRogueLikeGUI() {
             CVarSetFloat("gRogueLike.DifficultyGrowthRate", 1.3f);
             CVarSetFloat("gRogueLike.BaseXP", 100.0f);
             CVarSetFloat("gRogueLike.XPGrowthRate", 1.3f);
+            CVarSetInteger("gRogueLike.EnemyPlateMax", 3);
+            CVarSetInteger("gRogueLike.EnemyPlateChance", 25);
 
             CVarSetInteger("gRogueLike.XPDrop.Enemies", 50);
             CVarSetInteger("gRogueLike.XPDrop.Bosses", 200);
@@ -347,6 +349,8 @@ static void InitRogueLikeGUI() {
             CVarSetInteger("gRogueLike.XPDrop.Rocks", 20);
             CVarSetInteger("gRogueLike.XPDrop.Trees", 20);
         }
+
+        ImGui::SeparatorText("Difficulty Options:");
 
         UIWidgets::CVarSliderFloat(
             "Base Difficulty", "gRogueLike.BaseDifficulty",
@@ -364,9 +368,15 @@ static void InitRogueLikeGUI() {
             "XP Growth Rate", "gRogueLike.XPGrowthRate",
             UIWidgets::FloatSliderOptions().Min(0.0f).Max(5.0f).DefaultValue(1.3f).Size(ImVec2(300.0f, 0.0f)));
 
-        UIWidgets::Separator();
+        UIWidgets::CVarSliderInt(
+            "Maximum Enemies Plated", "gRogueLike.EnemyPlateMax",
+            UIWidgets::IntSliderOptions().Min(0).Max(10).DefaultValue(3).Size(ImVec2(300.0f, 0.0f)));
 
-        ImGui::Text("XP Drop Rates:");
+        UIWidgets::CVarSliderInt(
+            "Chance of Enemy Plating", "gRogueLike.EnemyPlateChance",
+            UIWidgets::IntSliderOptions().Min(0).Max(100).DefaultValue(25).Size(ImVec2(300.0f, 0.0f)));
+
+        ImGui::SeparatorText("XP Drop Rates:");
 
         UIWidgets::CVarSliderInt(
             "Enemies", "gRogueLike.XPDrop.Enemies",
