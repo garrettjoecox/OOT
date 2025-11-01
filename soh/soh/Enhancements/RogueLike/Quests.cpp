@@ -15,6 +15,8 @@ extern PlayState* gPlayState;
 // clang-format off
 std::vector<RogueLikeQuestObject> rogueLikeQuestList = {
     { RL_QUEST_HF_STALFOS, RL_QUEST_KILL, "Stal-Not-So-Child", "The Stalchild in Hyrule Field have\ngotten bigger, take them out!", RL_QUEST_ACTIVE, 0, 5 },
+    { RL_QUEST_KF_HOPOFFAITH, RL_QUEST_SIGHTSEEING, "Hop of Faith", "Sidehop from the fence\nabove the waterfall and land\non the middle platform.", RL_QUEST_ACTIVE, 0, 1},
+    { RL_QUEST_KF_STRONGMAN, RL_QUEST_SIGHTSEEING, "Toe Crushers", "Mido likes rock, show them\nthat we don't!", RL_QUEST_ACTIVE, 0, 11 },
     { RL_QUEST_ZD_POTTERY, RL_QUEST_SIGHTSEEING, "A Smashing View", "Toss a pot off the edge\nof the waterfall.", RL_QUEST_ACTIVE, 0, 1 },
 };
 // clang-format on
@@ -93,6 +95,24 @@ u16 GetQuestGoal(u8 questId) {
     return 0;
 }
 
+u16 DetermineInitialQuestProgress(u8 questId, int16_t progressActor) {
+    ActorListEntry actorList = gPlayState->actorCtx.actorLists[ACTORCAT_PROP];
+    u16 initialProgress = GetQuestGoal(questId);
+    if (questId == RL_QUEST_KF_STRONGMAN) {
+        initialProgress++;
+    }
+
+    Actor* currentActor = actorList.head;
+    while (currentActor != nullptr) {
+        if (currentActor->id == progressActor) {
+            initialProgress--;
+        }
+        currentActor = currentActor->next;
+    }
+
+    return initialProgress;
+}
+
 void RogueLike::Quests::UpdateQuestProgress(u8 questId) {
     if (!CheckActiveQuestById(questId)) {
         return;
@@ -101,6 +121,36 @@ void RogueLike::Quests::UpdateQuestProgress(u8 questId) {
     for (auto& quest : activeQuests) {
         if (quest.questId == questId) {
             quest.questProgress++;
+            break;
+        }
+    }
+}
+
+void RogueLike::Quests::SetQuestProgress(u8 questId, u16 progress) {
+    if (!CheckActiveQuestById(questId)) {
+        return;
+    }
+
+    for (auto& quest : activeQuests) {
+        if (quest.questId == questId) {
+            quest.questProgress = progress;
+            break;
+        }
+    }
+}
+
+void RogueLike::Quests::ResetQuestProgress(u8 questId) {
+    if (!CheckActiveQuestById(questId)) {
+        return;
+    }
+
+    if (CheckQuestGoalCompleteById(questId)) {
+        return;
+    }
+
+    for (auto& quest : activeQuests) {
+        if (quest.questId == questId) {
+            quest.questProgress = 0;
             break;
         }
     }
@@ -118,8 +168,44 @@ static void OnLoadGame() {
         }
     }
 
-    // Test Quest Add
-    // RogueLike::Quests::AddQuestById(RL_QUEST_HF_STALFOS);
+    COND_HOOK(OnPlayerUpdate, IS_ROGUELIKE, []() {
+        Player* player = GET_PLAYER(gPlayState);
+        static bool hopOfFaithStart = false;
+
+        if (CheckActiveQuestById(RL_QUEST_KF_HOPOFFAITH) && !CheckQuestGoalCompleteById(RL_QUEST_KF_HOPOFFAITH)) {
+            bool isHopping = (player->stateFlags2 & PLAYER_STATE2_HOPPING);
+            if (!hopOfFaithStart && isHopping && player->actor.world.pos.y >= 360.0f) {
+                hopOfFaithStart = true;
+                SPDLOG_INFO("Hopping started");
+            }
+            if (hopOfFaithStart && !isHopping) {
+                hopOfFaithStart = false;
+                SPDLOG_INFO("Hopping ended");
+                SPDLOG_INFO("Player X: {} | Z: {}", std::to_string(player->actor.world.pos.x).c_str(),
+                            std::to_string(player->actor.world.pos.z).c_str());
+                if ((player->actor.world.pos.x >= 318.0f && player->actor.world.pos.x <= 418.0f) &&
+                    (player->actor.world.pos.z >= -227.6f && player->actor.world.pos.z <= -126.5f)) {
+                    RogueLike::Quests::UpdateQuestProgress(RL_QUEST_KF_HOPOFFAITH);
+                }
+            }
+        }
+    });
+
+    COND_HOOK(OnSceneInit, IS_ROGUELIKE, [](u16 sceneNum) {
+        for (auto& quest : activeQuests) {
+            RogueLike::Quests::ResetQuestProgress(quest.questId);
+        }
+    });
+
+    COND_HOOK(OnRoomInit, IS_ROGUELIKE, [](u16 roomNum) {
+        if (gPlayState->sceneNum == SCENE_KOKIRI_FOREST) {
+            if (CheckActiveQuestById(RL_QUEST_KF_STRONGMAN)) {
+                if (!CheckQuestCompletedById(RL_QUEST_KF_STRONGMAN)) {
+                    RogueLike::Quests::ResetQuestProgress(RL_QUEST_KF_STRONGMAN);
+                }
+            }
+        }
+    });
 
     COND_HOOK(OnSceneSpawnActors, IS_ROGUELIKE, []() {
         if (gPlayState->sceneNum == SCENE_HYRULE_FIELD) {
@@ -166,6 +252,16 @@ static void OnLoadGame() {
                     }
                 }
                 break;
+            case ACTOR_EN_ISHI:
+                if (refActor->world.pos.x == refActor->home.pos.x && refActor->world.pos.z == refActor->home.pos.z) {
+                    return;
+                }
+                if (CheckActiveQuestById(RL_QUEST_KF_STRONGMAN) && gPlayState->sceneNum == SCENE_KOKIRI_FOREST && gPlayState->roomCtx.curRoom.num == 0) {
+                    if (!CheckQuestGoalCompleteById(RL_QUEST_KF_STRONGMAN)) {
+                        RogueLike::Quests::UpdateQuestProgress(RL_QUEST_KF_STRONGMAN);
+                    }
+                }
+                break;
             default:
                 break;
         }
@@ -188,7 +284,7 @@ static void OnLoadGame() {
             messageEntry.AutoFormat();
             messageEntry.LoadIntoFont();
 
-            RogueLike::XP::SpawnXPGroup(GET_PLAYER(gPlayState)->actor.world.pos, 10);
+            RogueLike::XP::SpawnXPGroup(GET_PLAYER(gPlayState)->actor.world.pos, 20);
             RogueLike::Quests::CompleteQuestById(RL_QUEST_HF_STALFOS);
 
             *loadFromMessageTable = false;
@@ -218,12 +314,86 @@ static void OnLoadGame() {
             messageEntry = CustomMessage(
                 "Need a tip? Take one of the Pots outside of the Shop and toss it over the top of the waterfall." +
                 endOfMessage);
-            RogueLike::Quests::AddQuestById(RL_QUEST_ZD_POTTERY);
         } else {
             messageEntry = CustomMessage(
                 "The sound, wasn't that exhilarating? There may be a few more pots if you fancy another go." +
                 endOfMessage);
+            RogueLike::XP::SpawnXPGroup(GET_PLAYER(gPlayState)->actor.world.pos, 10);
             RogueLike::Quests::CompleteQuestById(RL_QUEST_ZD_POTTERY);
+        }
+
+        messageEntry.AutoFormat();
+        messageEntry.LoadIntoFont();
+        *loadFromMessageTable = false;
+    });
+
+    COND_ID_HOOK(OnOpenText, 0x1004, IS_ROGUELIKE, [](u16* textId, bool* loadFromMessageTable) {
+        auto oldEntry = CustomMessage::LoadVanillaMessageTableEntry(*textId);
+        std::string endOfMessage = oldEntry.GetEnglish().substr(oldEntry.GetEnglish().size() - 2);
+        auto messageEntry = CustomMessage("" + endOfMessage);
+
+        if (!CheckQuestGoalCompleteById(RL_QUEST_KF_STRONGMAN)) {
+            messageEntry = CustomMessage(
+                "Stupid Mido likes these stupid rocks! Don't just stand there, help me smash them!" +
+                endOfMessage);
+            if (!CheckActiveQuestById(RL_QUEST_KF_STRONGMAN)) {
+                RogueLike::Quests::AddQuestById(RL_QUEST_KF_STRONGMAN);
+                RogueLike::Quests::SetQuestProgress(RL_QUEST_KF_STRONGMAN, DetermineInitialQuestProgress(RL_QUEST_KF_STRONGMAN, ACTOR_EN_ISHI));
+            }
+        } else {
+            messageEntry = CustomMessage(
+                "Thanks for being one of the good guys! Oh, this one? Don't worry, I'll have it smashed by your 17th birthday." +
+                endOfMessage);
+            RogueLike::XP::SpawnXPGroup(GET_PLAYER(gPlayState)->actor.world.pos, 10);
+            RogueLike::Quests::CompleteQuestById(RL_QUEST_KF_STRONGMAN);
+        }
+
+        messageEntry.AutoFormat();
+        messageEntry.LoadIntoFont();
+        *loadFromMessageTable = false;
+    });
+
+    COND_ID_HOOK(OnOpenText, 0x10d7, IS_ROGUELIKE, [](u16* textId, bool* loadFromMessageTable) {
+        auto oldEntry = CustomMessage::LoadVanillaMessageTableEntry(*textId);
+        std::string endOfMessage = oldEntry.GetEnglish().substr(oldEntry.GetEnglish().size() - 4);
+        auto messageEntry = CustomMessage("" + endOfMessage);
+
+        if (!CheckActiveQuestById(RL_QUEST_KF_HOPOFFAITH)) {
+            messageEntry = CustomMessage(
+                "Wow, you came all the way to see me? Not afraid of heights I see." +
+                endOfMessage);
+        } else {
+            Message_ContinueTextbox(gPlayState, 0x10d8);
+        }
+
+        messageEntry.AutoFormat();
+        messageEntry.LoadIntoFont();
+        *loadFromMessageTable = false;
+    });
+
+    COND_ID_HOOK(OnOpenText, 0x10d8, IS_ROGUELIKE, [](u16* textId, bool* loadFromMessageTable) {
+        auto oldEntry = CustomMessage::LoadVanillaMessageTableEntry(*textId);
+        std::string endOfMessage = oldEntry.GetEnglish().substr(oldEntry.GetEnglish().size() - 2);
+        auto messageEntry = CustomMessage("" + endOfMessage);
+
+        if (!CheckActiveQuestById(RL_QUEST_KF_HOPOFFAITH)) {
+            messageEntry =
+                CustomMessage("If we're going to continue meeting like this, let's see what you got!" + endOfMessage);
+            RogueLike::Quests::AddQuestById(RL_QUEST_KF_HOPOFFAITH);
+        } else {
+            if (!CheckQuestGoalCompleteById(RL_QUEST_KF_HOPOFFAITH)) {
+                messageEntry = CustomMessage("Can't read the Quest List, huh. See that fence above the waterfall? "
+                                             "Sidehop off of it and land on the middle platform below." +
+                                             endOfMessage);
+            } else {
+                messageEntry = CustomMessage("Hey, nice distance! They say you can unload doors doing that." +
+                                             endOfMessage);
+                if (!CheckQuestCompletedById(RL_QUEST_KF_HOPOFFAITH)) {
+                    RogueLike::XP::SpawnXPGroup(GET_PLAYER(gPlayState)->actor.world.pos, 10);
+                    RogueLike::Quests::CompleteQuestById(RL_QUEST_KF_HOPOFFAITH);
+                }
+            }
+            
         }
 
         messageEntry.AutoFormat();

@@ -12,6 +12,8 @@ namespace Quests {
 void CompleteQuestById(u8 questId);
 void AddQuestById(u8 questId);
 void UpdateQuestProgress(u8 questId);
+void SetQuestProgress(u8 questId, u16 progress);
+void ResetQuestProgress(u8 questId);
 
 } // namespace Quests
 

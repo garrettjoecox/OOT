@@ -48,6 +48,12 @@ void GameInteractor_ExecuteOnSceneInit(int16_t sceneNum) {
     GameInteractor::Instance->ExecuteHooksForFilter<GameInteractor::OnSceneInit>(sceneNum);
 }
 
+void GameInteractor_ExecuteOnRoomInit(int16_t roomNum) {
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnRoomInit>(roomNum);
+    GameInteractor::Instance->ExecuteHooksForID<GameInteractor::OnRoomInit>(roomNum, roomNum);
+    GameInteractor::Instance->ExecuteHooksForFilter<GameInteractor::OnRoomInit>(roomNum);
+}
+
 void GameInteractor_ExecuteAfterSceneCommands(int16_t sceneNum) {
     GameInteractor::Instance->ExecuteHooks<GameInteractor::AfterSceneCommands>(sceneNum);
     GameInteractor::Instance->ExecuteHooksForID<GameInteractor::AfterSceneCommands>(sceneNum, sceneNum);

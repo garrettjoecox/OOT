@@ -26,6 +26,8 @@ typedef enum {
 
 typedef enum {
     RL_QUEST_HF_STALFOS,
+    RL_QUEST_KF_HOPOFFAITH,
+    RL_QUEST_KF_STRONGMAN,
     RL_QUEST_ZD_POTTERY,
     RL_QUEST_ID_MAX,
 } RogueLikeQuest;
