@@ -120,19 +120,5 @@ void RogueLike::XP::SpawnXPGroup(Vec3f spawnPos, u32 amount) {
 }
 
 void RogueLike::XP::UpdatePlayerStats() {
-    for (auto& stat : rogueLikeStatMap) {
-        switch (stat.first) {
-            case RL_HEALTH:
-                gSaveContext.healthCapacity = 0x30 + (gSaveContext.ship.quest.data.rogueLike.stats[stat.first] * 0x10);
-                break;
-            case RL_ATTACK:
-                break;
-            case RL_DEFENSE:
-                break;
-            case RL_SPEED:
-                break;
-            default:
-                break;
-        }
-    }
+    gSaveContext.healthCapacity = 0x30 + (gSaveContext.ship.quest.data.rogueLike.stats[RL_HEALTH] * 0x10);
 }

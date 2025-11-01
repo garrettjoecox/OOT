@@ -20,6 +20,10 @@ static void InitEnemyBehavior() {
     COND_HOOK(OnActorInit, IS_ROGUELIKE, [](void* actor) {
         Actor* refActor = static_cast<Actor*>(actor);
 
+        if (refActor->category != ACTORCAT_ENEMY) {
+            return;
+        }
+
         if (platedEnemies.size() < ENEMY_PLATE_MAX) {
             plateChanceRoll = Random(0, 100);
             if (plateChanceRoll >= PLATE_CHANCE) {

@@ -86,16 +86,27 @@ static void OnLoadGame() {
         u32 dmgFlags = va_arg(args, u32);
 
         if (actor->category == ACTORCAT_PLAYER) {
+            SPDLOG_INFO("Incoming Damage Before: {}", damage);
+
+            // Player taking damage, 1 Point addition per Difficulty Level
+            damage *= RogueLike::Difficulty::GetCurrentLevel() + 1;
+
             // Player taking damage, 1 Point reduction per Defense Level
-            damage -= gSaveContext.ship.quest.data.rogueLike.stats[RL_DEFENSE];
+            damage /= (gSaveContext.ship.quest.data.rogueLike.stats[RL_DEFENSE] + 1);
+
+            SPDLOG_INFO("Incoming Damage After: {}", damage);
         } else if (actor->category == ACTORCAT_ENEMY) {
+            SPDLOG_INFO("Outgoing Damage Before: {}", damage);
+
             if (dmgFlags & DMG_SLASH_KOKIRI) {
                 // This was a Kokiri Sword attack, double damage bonus etc
                 // damage = static_cast<u32>(damage * 2.0f);
             }
 
             // Enemy taking damage, 1 Point addition per Attack Level
-            damage += gSaveContext.ship.quest.data.rogueLike.stats[RL_ATTACK];
+            damage *= gSaveContext.ship.quest.data.rogueLike.stats[RL_ATTACK] + 1;
+
+            SPDLOG_INFO("Outgoing Damage After: {}", damage);
         } else {
             return;
         }

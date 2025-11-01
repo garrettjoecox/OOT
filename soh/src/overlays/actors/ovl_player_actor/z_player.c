@@ -7128,9 +7128,8 @@ void func_8083DFE0(Player* this, f32* arg1, s16* arg2) {
         float maxSpeed = R_RUN_SPEED_LIMIT / 100.0f;
 
         if (this->currentMask == PLAYER_MASK_BUNNY) {
-            if (IS_ROGUELIKE && gSaveContext.ship.quest.data.rogueLike.stats[RL_SPEED] != 0 && maxSpeed != 0) {
-                maxSpeed =
-                    (R_RUN_SPEED_LIMIT / 100.0f) + (gSaveContext.ship.quest.data.rogueLike.stats[RL_SPEED] * 0.25f);
+            if (IS_ROGUELIKE) {
+                maxSpeed *= 1.0f + (((f32)gSaveContext.ship.quest.data.rogueLike.stats[RL_SPEED]) / 10.0f) * 1.5f;
             } else if (CVarGetInteger(CVAR_ENHANCEMENT("MMBunnyHood"), BUNNY_HOOD_VANILLA) ==
                        BUNNY_HOOD_FAST_AND_JUMP) {
                 maxSpeed *= 1.5f;
@@ -8874,8 +8873,8 @@ void Player_Action_80842180(Player* this, PlayState* play) {
         if (!func_8083C484(this, &sp2C, &sp2A)) {
 
             if (this->currentMask == PLAYER_MASK_BUNNY) {
-                if (IS_ROGUELIKE && gSaveContext.ship.quest.data.rogueLike.stats[RL_SPEED] != 0 && sp2C != 0) {
-                    sp2C = sp2C + (gSaveContext.ship.quest.data.rogueLike.stats[RL_SPEED] * 0.25f);
+                if (IS_ROGUELIKE) {
+                    sp2C *= 1.0f + (((f32)gSaveContext.ship.quest.data.rogueLike.stats[RL_SPEED]) / 10.0f) * 1.5f;
                 } else if (CVarGetInteger(CVAR_ENHANCEMENT("MMBunnyHood"), BUNNY_HOOD_VANILLA) ==
                            BUNNY_HOOD_FAST_AND_JUMP) {
                     sp2C *= 1.5f;
@@ -12828,8 +12827,8 @@ s16 func_8084ABD8(PlayState* play, Player* this, s32 arg2, s16 arg3) {
         f32 movementSpeed = LINK_IS_ADULT ? 9.0f : 8.25f;
 
         if (this->currentMask == PLAYER_MASK_BUNNY) {
-            if (IS_ROGUELIKE && gSaveContext.ship.quest.data.rogueLike.stats[RL_SPEED] != 0 && movementSpeed != 0) {
-                movementSpeed = movementSpeed + (gSaveContext.ship.quest.data.rogueLike.stats[RL_SPEED] * 0.25f);
+            if (IS_ROGUELIKE) {
+                movementSpeed *= 1.0f + (((f32)gSaveContext.ship.quest.data.rogueLike.stats[RL_SPEED]) / 10.0f) * 1.5f;
             } else if (CVarGetInteger(CVAR_ENHANCEMENT("MMBunnyHood"), BUNNY_HOOD_VANILLA) ==
                        BUNNY_HOOD_FAST_AND_JUMP) {
                 movementSpeed *= 1.5f;

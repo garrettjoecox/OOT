@@ -332,6 +332,22 @@ static void InitRogueLikeGUI() {
     SohGui::mSohMenu->AddSidebarEntry("RogueLike", "Configuration", 1);
     WidgetPath path = { "RogueLike", "Configuration", SECTION_COLUMN_1 };
     SohGui::mSohMenu->AddWidget(path, "Configuration", WIDGET_CUSTOM).CustomFunction([](WidgetInfo& info) {
+        
+        if (UIWidgets::Button("Add XP Level", UIWidgets::ButtonOptions().Size(UIWidgets::Sizes::Inline))) {
+            RogueLike::XP::GrantXP(RogueLike::XP::ConvertLevelToXP(RogueLike::XP::GetCurrentLevel() + 1) - gSaveContext.ship.quest.data.rogueLike.xp + 1);
+        }
+        ImGui::SameLine();
+        if (UIWidgets::Button("Remove XP Level", UIWidgets::ButtonOptions().Size(UIWidgets::Sizes::Inline))) {
+            gSaveContext.ship.quest.data.rogueLike.xp = RogueLike::XP::ConvertLevelToXP(RogueLike::XP::GetCurrentLevel() - 1);
+        }
+        if (UIWidgets::Button("Add Difficulty Level", UIWidgets::ButtonOptions().Size(UIWidgets::Sizes::Inline))) {
+            RogueLike::Difficulty::IncrementDifficulty(RogueLike::Difficulty::ConvertLevelToDifficulty(RogueLike::Difficulty::GetCurrentLevel() + 1) - gSaveContext.ship.quest.data.rogueLike.difficulty + 1);
+        }
+        ImGui::SameLine();
+        if (UIWidgets::Button("Remove Difficulty Level", UIWidgets::ButtonOptions().Size(UIWidgets::Sizes::Inline))) {
+            gSaveContext.ship.quest.data.rogueLike.difficulty = RogueLike::Difficulty::ConvertLevelToDifficulty(RogueLike::Difficulty::GetCurrentLevel() - 1);
+        }
+
         if (UIWidgets::Button("Reset All", UIWidgets::ButtonOptions().Size(UIWidgets::Sizes::Inline))) {
             CVarSetFloat("gRogueLike.BaseDifficulty", 5000.0f);
             CVarSetFloat("gRogueLike.DifficultyGrowthRate", 1.3f);
