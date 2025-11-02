@@ -16,6 +16,7 @@ typedef enum {
 typedef enum {
     RL_QUEST_KILL,
     RL_QUEST_SIGHTSEEING,
+    RL_QUEST_TRIAL,
     RL_QUEST_MAX,
 } RogueLikeQuestTypes;
 
@@ -25,9 +26,11 @@ typedef enum {
 } RogueLikeQuestStatus;
 
 typedef enum {
-    RL_QUEST_HF_STALFOS,
+    RL_QUEST_HF_TRIAL_A,
     RL_QUEST_KF_HOPOFFAITH,
     RL_QUEST_KF_STRONGMAN,
+    RL_QUEST_KV_POTHUNT,
+    RL_QUEST_KV_STALFOS,
     RL_QUEST_ZD_POTTERY,
     RL_QUEST_ID_MAX,
 } RogueLikeQuest;

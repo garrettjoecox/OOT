@@ -40,7 +40,7 @@ static void MiscVanillaBehaviorHandler(GIVanillaBehavior id, bool* should, va_li
         case VB_GIVE_ITEM_FROM_ANJU_AS_ADULT: {
             EnNiwLady* enNiwLady = va_arg(args, EnNiwLady*);
             Flags_SetItemGetInf(ITEMGETINF_2C);
-            RogueLike::Quests::AddQuestById(RL_QUEST_HF_STALFOS);
+            RogueLike::Quests::AddQuestById(RL_QUEST_KV_STALFOS);
             enNiwLady->actionFunc = func_80ABA778;
             *should = false;
             break;
