@@ -36,12 +36,12 @@ static void InitEnemyBehavior() {
 
     COND_HOOK(OnActorUpdate, IS_ROGUELIKE, [](void* actor) {
         Actor* refActor = static_cast<Actor*>(actor);
-        if (refActor->category != ACTORCAT_ENEMY && refActor->id != ACTOR_OBJ_TSUBO) {
-            return;
-        }
-
         if (refActor->id == ACTOR_OBJ_TSUBO && refActor->params == 256) {
             Actor_SetColorFilter(refActor, 0x1000, 150, 0, 1000);
+            return
+        }
+
+        if (refActor->category != ACTORCAT_ENEMY) {
             return;
         }
 
