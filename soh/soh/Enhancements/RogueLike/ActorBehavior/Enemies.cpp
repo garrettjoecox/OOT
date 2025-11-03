@@ -38,7 +38,7 @@ static void InitEnemyBehavior() {
         Actor* refActor = static_cast<Actor*>(actor);
         if (refActor->id == ACTOR_OBJ_TSUBO && refActor->params == 256) {
             Actor_SetColorFilter(refActor, 0x1000, 150, 0, 1000);
-            return
+            return;
         }
 
         if (refActor->category != ACTORCAT_ENEMY) {
