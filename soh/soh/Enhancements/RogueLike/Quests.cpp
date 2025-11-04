@@ -19,12 +19,12 @@ s32 Object_Spawn(ObjectContext* objectCtx, s16 objectId);
 
 // clang-format off
 std::vector<RogueLikeQuestObject> rogueLikeQuestList = {
-    { RL_QUEST_HF_TRIAL_A, RL_QUEST_TRIAL, "Ganon's Fury I", "Watch out!", RL_QUEST_ACTIVE, 0, 1 },
-    { RL_QUEST_KF_HOPOFFAITH, RL_QUEST_SIGHTSEEING, "Hop of Faith", "Sidehop from the fence\nabove the waterfall and land\non the middle platform.", RL_QUEST_ACTIVE, 0, 1},
-    { RL_QUEST_KF_STRONGMAN, RL_QUEST_SIGHTSEEING, "Toe Crushers", "Mido likes rock, show them\nthat we don't!", RL_QUEST_ACTIVE, 0, 11 },
-    { RL_QUEST_KV_POTHUNT, RL_QUEST_SIGHTSEEING, "The Pot Thickens", "A magical pot with extra lives?\nFind out how many!", RL_QUEST_ACTIVE, 0, 4 },
-    { RL_QUEST_KV_STALFOS, RL_QUEST_KILL, "Stal-Not-So-Child", "The Stalchild in Hyrule Field have\ngotten bigger, take them out!", RL_QUEST_ACTIVE, 0, 5 },
-    { RL_QUEST_ZD_POTTERY, RL_QUEST_SIGHTSEEING, "A Smashing View", "Toss a pot off the edge\nof the waterfall.", RL_QUEST_ACTIVE, 0, 1 },
+    { RL_QUEST_HF_TRIAL_A, "Ganon's Fury I", "Watch out!", RL_QUEST_ACTIVE, 0, 1 },
+    { RL_QUEST_KF_HOPOFFAITH, "Hop of Faith", "Sidehop from the fence\nabove the waterfall and land\non the middle platform.", RL_QUEST_ACTIVE, 0, 1},
+    { RL_QUEST_KF_STRONGMAN, "Toe Crushers", "Mido likes rock, show them\nthat we don't!", RL_QUEST_ACTIVE, 0, 11 },
+    { RL_QUEST_KV_POTHUNT, "The Pot Thickens", "A magical pot with extra lives?\nFind out how many!", RL_QUEST_ACTIVE, 0, 4 },
+    { RL_QUEST_KV_STALFOS, "Stal-Not-So-Child", "The Stalchild in Hyrule Field have\ngotten bigger, take them out!", RL_QUEST_ACTIVE, 0, 5 },
+    { RL_QUEST_ZD_POTTERY, "A Smashing View", "Toss a pot off the edge\nof the waterfall.", RL_QUEST_ACTIVE, 0, 1 },
 };
 
 std::vector<Vec3f> potHuntLocations = {
@@ -48,7 +48,7 @@ extern std::vector<RogueLikeQuestObject> activeQuests;
 static std::vector<Vec3f> potHuntAvailability;
 static std::vector<Actor*> currentTrialActorList;
 static bool potHuntActorSpawned = false;
-static bool showTrialConditions = true;
+static bool sendConditionMessage = true;
 
 bool CheckActiveQuestById(u8 questId) {
     for (auto& quest : activeQuests) {
@@ -75,6 +75,33 @@ bool CheckQuestCompletedById(u8 questId) {
         }
     }
     return false;
+}
+
+void SendQuestConditionMessage(u8 questId) {
+    if (!sendConditionMessage) {
+        return;
+    }
+
+    std::string message = "";
+    ImVec4 color = ImVec4(1, 1, 1, 1);
+
+    switch (questId) {
+        case RL_QUEST_KV_POTHUNT:
+            message = "A Magical Pot has appeared nearby.";
+            color = ImVec4(0.25f, 0, 0.75f, 1);
+            break;
+        case RL_QUEST_HF_TRIAL_A:
+            message = "Come back when you have a sword...";
+            color = ImVec4(1, 0, 0, 1);
+            break;
+        default:
+            return;
+    }
+    Notification::Emit({
+        .message = message,
+        .messageColor = color,
+    });
+    sendConditionMessage = false;
 }
 
 void RogueLike::Quests::CompleteQuestById(u8 questId) {
@@ -233,15 +260,31 @@ void StartQuest(u8 questId) {
                                               spawnPoint.y, spawnPoint.z, 0, 0, 0, 256, false);
                 Actor_SetColorFilter(potActor, 0x1000, 150, 0, 1000);
                 potHuntAvailability.erase(potHuntAvailability.begin() + potRoll);
-                Notification::Emit({
-                    .message = "A Magical Pot has appeared nearby.",
-                    .messageColor = ImVec4(0.25f, 0, 0.75f, 1),
-                });
+                SendQuestConditionMessage(RL_QUEST_KV_POTHUNT);
             }
             break;
         default:
             break;
     }
+}
+
+RogueLikeQuest FindTrialByLocation(Actor* trialActor) {
+    switch (gPlayState->sceneNum) {
+        case SCENE_HYRULE_FIELD:
+            if (trialActor->world.pos.x == 335.571f && trialActor->world.pos.z == 2677.854f) {
+                if (LINK_IS_ADULT && ((EQUIP_FLAG_SWORD_MASTER & gSaveContext.inventory.equipment) ||
+                                      (EQUIP_FLAG_SWORD_BGS & gSaveContext.inventory.equipment))) {
+                    return RL_QUEST_HF_TRIAL_A;
+                } else {
+                    SendQuestConditionMessage(RL_QUEST_HF_TRIAL_A);
+                }
+            }
+            break;
+        default:
+            break;
+    }
+
+    return RL_QUEST_ID_MAX;
 }
 
 static void InitRogueLikeQuests() {
@@ -259,6 +302,7 @@ static void OnLoadGame() {
 
     COND_HOOK(OnPlayerUpdate, IS_ROGUELIKE, []() {
         Player* player = GET_PLAYER(gPlayState);
+        RogueLikeQuest questId = RL_QUEST_ID_MAX;
         static bool hopOfFaithStart = false;
 
         if (CheckActiveQuestById(RL_QUEST_KF_HOPOFFAITH) && !CheckQuestGoalCompleteById(RL_QUEST_KF_HOPOFFAITH)) {
@@ -274,24 +318,17 @@ static void OnLoadGame() {
                 }
             }
         }
-        if (!CheckQuestGoalCompleteById(RL_QUEST_HF_TRIAL_A) && gPlayState->sceneNum == SCENE_HYRULE_FIELD) {
-            if (!CheckActiveQuestById(RL_QUEST_HF_TRIAL_A)) {
-                Actor* trialActor =
-                    Actor_FindNearby(gPlayState, &GET_PLAYER(gPlayState)->actor, ACTOR_BG_MJIN, ACTORCAT_BG, 45.0f);
-                if (trialActor != NULL) {
-                    if (LINK_IS_ADULT && ((EQUIP_FLAG_SWORD_MASTER & gSaveContext.inventory.equipment) ||
-                                          (EQUIP_FLAG_SWORD_BGS & gSaveContext.inventory.equipment))) {
-                        RogueLike::Quests::AddQuestById(RL_QUEST_HF_TRIAL_A);
-                        StartQuest(RL_QUEST_HF_TRIAL_A);
-                    } else {
-                        if (showTrialConditions) {
-                            Notification::Emit({
-                                .message = "Come back when you have a sword...",
-                                .messageColor = ImVec4(1, 0, 0, 1),
-                            });
-                            showTrialConditions = false;
-                        }
-                    }
+        if (gPlayState->sceneNum == SCENE_HYRULE_FIELD) {
+            Actor* trialActor =
+                Actor_FindNearby(gPlayState, &GET_PLAYER(gPlayState)->actor, ACTOR_BG_MJIN, ACTORCAT_BG, 45.0f);
+            if (trialActor != NULL) {
+                questId = FindTrialByLocation(trialActor);
+                if (questId == RL_QUEST_ID_MAX) {
+                    return;
+                }
+                if (!CheckActiveQuestById(questId)) {
+                    RogueLike::Quests::AddQuestById(questId);
+                    StartQuest(questId);
                 }
             }
         }
@@ -301,7 +338,7 @@ static void OnLoadGame() {
         for (auto& quest : activeQuests) {
             RogueLike::Quests::ResetQuestProgress(quest.questId);
         }
-        showTrialConditions = true;
+        sendConditionMessage = true;
     });
 
     COND_HOOK(OnRoomInit, IS_ROGUELIKE, [](u16 roomNum) {
