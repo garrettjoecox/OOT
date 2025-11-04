@@ -232,7 +232,7 @@ void RogueLike::Quests::ResetQuestProgress(u8 questId) {
     }
 }
 
-// StartQuest() - used for Quest Specific Functions. TODO: use to handle all quest inits.
+// StartQuest() - Used for Quest Specific Functions.
 void StartQuest(u8 questId) {
     uint32_t index = 0;
     switch (questId) {
@@ -294,6 +294,24 @@ void StartQuest(u8 questId) {
                 potHuntAvailability.erase(potHuntAvailability.begin() + potRoll);
                 sendConditionMessage = true;
                 SendQuestConditionMessage(RL_QUEST_KV_POTHUNT);
+            }
+            break;
+        case RL_QUEST_KV_STALFOS:
+            if (!CheckQuestGoalCompleteById(RL_QUEST_KV_STALFOS)) {
+                float centerX = 2475.3f;
+                float centerZ = 496.3f;
+                float radius = 100.0f;
+
+                for (int i = 0; i < GetQuestGoal(RL_QUEST_KV_STALFOS); i++) {
+                    float angle = i * (2 * M_PI / 5);
+                    float spawnX = centerX + radius * cosf(angle);
+                    float spawnZ = centerZ + radius * sinf(angle);
+
+                    if (ActorDB::Instance->RetrieveEntry(ACTOR_EN_TEST).entry.valid) {
+                        Actor_Spawn(&gPlayState->actorCtx, gPlayState, ACTOR_EN_TEST, spawnX, -4.7f, spawnZ, 0, 0, 0, 1,
+                                    0);
+                    }
+                }
             }
             break;
         default:
@@ -422,30 +440,13 @@ static void OnLoadGame() {
     COND_HOOK(OnSceneSpawnActors, IS_ROGUELIKE, []() {
         if (gPlayState->sceneNum == SCENE_HYRULE_FIELD) {
             if (CheckActiveQuestById(RL_QUEST_KV_STALFOS)) {
-                if (!CheckQuestGoalCompleteById(RL_QUEST_KV_STALFOS)) {
-                    float centerX = 2475.3f;
-                    float centerZ = 496.3f;
-                    float radius = 100.0f;
-
-                    for (int i = 0; i < GetQuestGoal(RL_QUEST_KV_STALFOS); i++) {
-                        float angle = i * (2 * M_PI / 5);
-                        float spawnX = centerX + radius * cosf(angle);
-                        float spawnZ = centerZ + radius * sinf(angle);
-
-                        if (ActorDB::Instance->RetrieveEntry(ACTOR_EN_TEST).entry.valid) {
-                            Actor_Spawn(&gPlayState->actorCtx, gPlayState, ACTOR_EN_TEST, spawnX, -4.7f, spawnZ, 0, 0,
-                                        0, 1, 0);
-                        }
-                    }
-                }
+                StartQuest(RL_QUEST_KV_STALFOS);
             }
-            if (!CheckActiveQuestById(RL_QUEST_HF_TRIAL_A) && !CheckQuestGoalCompleteById(RL_QUEST_HF_TRIAL_A)) {
-                Object_Spawn(&gPlayState->objectCtx, OBJECT_MJIN);
-                Actor_Spawn(&gPlayState->actorCtx, gPlayState, ACTOR_BG_MJIN, 335.571f, -0.0f, 2677.854f, 0, 0, 0, 1,
-                            false);
-                Actor_Spawn(&gPlayState->actorCtx, gPlayState, ACTOR_BG_MJIN, 1490.550f, -135.0f, 8760.643f, 0, 0, 0, 1,
-                            false);
-            }
+            Object_Spawn(&gPlayState->objectCtx, OBJECT_MJIN);
+            Actor_Spawn(&gPlayState->actorCtx, gPlayState, ACTOR_BG_MJIN, 335.571f, -0.0f, 2677.854f, 0, 0, 0, 1,
+                        false);
+            Actor_Spawn(&gPlayState->actorCtx, gPlayState, ACTOR_BG_MJIN, 1490.550f, -135.0f, 8760.643f, 0, 0, 0, 1,
+                        false);
         }
     });
 
