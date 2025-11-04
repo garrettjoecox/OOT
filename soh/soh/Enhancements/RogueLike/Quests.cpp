@@ -20,6 +20,7 @@ s32 Object_Spawn(ObjectContext* objectCtx, s16 objectId);
 // clang-format off
 std::vector<RogueLikeQuestObject> rogueLikeQuestList = {
     { RL_QUEST_HF_TRIAL_A, "Ganon's Fury I", "Watch out!", RL_QUEST_ACTIVE, 0, 1 },
+    { RL_QUEST_HF_TRIAL_B, "Ganon's Fury II", "Get to Gerudo Valley\nbefore time runs out!", RL_QUEST_ACTIVE, 0, 1 },
     { RL_QUEST_KF_HOPOFFAITH, "Hop of Faith", "Sidehop from the fence\nabove the waterfall and land\non the middle platform.", RL_QUEST_ACTIVE, 0, 1},
     { RL_QUEST_KF_STRONGMAN, "Toe Crushers", "Mido likes rock, show them\nthat we don't!", RL_QUEST_ACTIVE, 0, 11 },
     { RL_QUEST_KV_POTHUNT, "The Pot Thickens", "A magical pot with extra lives?\nFind out how many!", RL_QUEST_ACTIVE, 0, 4 },
@@ -88,10 +89,14 @@ void SendQuestConditionMessage(u8 questId) {
     switch (questId) {
         case RL_QUEST_KV_POTHUNT:
             message = "A Magical Pot has appeared nearby.";
-            color = ImVec4(0.25f, 0, 0.75f, 1);
+            color = ImVec4(0, 0.25f, 0.75f, 1);
             break;
         case RL_QUEST_HF_TRIAL_A:
             message = "Come back when you have a sword...";
+            color = ImVec4(1, 0, 0, 1);
+            break;
+        case RL_QUEST_HF_TRIAL_B:
+            message = "Come back when you're faster...";
             color = ImVec4(1, 0, 0, 1);
             break;
         default:
@@ -110,6 +115,20 @@ void RogueLike::Quests::CompleteQuestById(u8 questId) {
             quest.questStatus = RL_QUEST_COMPLETE;
             break;
         }
+    }
+}
+
+void RogueLike::Quests::RemoveQuestById(u8 questId) {
+    int index = -1;
+    for (int i = 0; i < activeQuests.size(); i++) {
+        if (activeQuests[i].questId == questId) {
+            index = i;
+            break;
+        }
+    }
+
+    if (index != -1) {
+        activeQuests.erase(activeQuests.begin() + index);
     }
 }
 
@@ -249,6 +268,19 @@ void StartQuest(u8 questId) {
                 GameInteractor::RawAction::SetWeatherStorm(false);
             }
             break;
+        case RL_QUEST_HF_TRIAL_B:
+            if (!CheckQuestGoalCompleteById(RL_QUEST_HF_TRIAL_B)) {
+                GameInteractor::RawAction::SetWeatherStorm(true);
+                gSaveContext.timerState = 6;
+                gSaveContext.timerSeconds = 70;
+            } else {
+                RogueLike::Quests::CompleteQuestById(RL_QUEST_HF_TRIAL_B);
+                uint32_t reward = RogueLike::XP::ConvertLevelToXP(RogueLike::XP::GetCurrentLevel() + 1);
+                gSaveContext.timerState = 0;
+                gSaveContext.timerSeconds = 0;
+                GameInteractor::RawAction::SetWeatherStorm(false);
+            }
+            break;
         case RL_QUEST_KV_POTHUNT:
             if (!CheckQuestGoalCompleteById(RL_QUEST_KV_POTHUNT)) {
                 if (potHuntAvailability.size() == 0) {
@@ -260,6 +292,7 @@ void StartQuest(u8 questId) {
                                               spawnPoint.y, spawnPoint.z, 0, 0, 0, 256, false);
                 Actor_SetColorFilter(potActor, 0x1000, 150, 0, 1000);
                 potHuntAvailability.erase(potHuntAvailability.begin() + potRoll);
+                sendConditionMessage = true;
                 SendQuestConditionMessage(RL_QUEST_KV_POTHUNT);
             }
             break;
@@ -277,6 +310,11 @@ RogueLikeQuest FindTrialByLocation(Actor* trialActor) {
                     return RL_QUEST_HF_TRIAL_A;
                 } else {
                     SendQuestConditionMessage(RL_QUEST_HF_TRIAL_A);
+                }
+            }
+            if (trialActor->world.pos.x == 1490.550f && trialActor->world.pos.z == 8760.643f) {
+                if (LINK_IS_ADULT) {
+                    return RL_QUEST_HF_TRIAL_B;
                 }
             }
             break;
@@ -304,6 +342,31 @@ static void OnLoadGame() {
         Player* player = GET_PLAYER(gPlayState);
         RogueLikeQuest questId = RL_QUEST_ID_MAX;
         static bool hopOfFaithStart = false;
+        static bool trialTimerInit = false;
+        static uint32_t trialTimer = 0;
+
+        if (trialTimerInit == false) {
+            trialTimer = gPlayState->gameplayFrames;
+            trialTimerInit = true;
+        }
+
+        if (CheckActiveQuestById(RL_QUEST_HF_TRIAL_B) && !CheckQuestGoalCompleteById(RL_QUEST_HF_TRIAL_B)) {
+            if (gSaveContext.timerState == 6) {
+                if (gSaveContext.timerSeconds > 0) {
+                    if (trialTimer <= gPlayState->gameplayFrames - 20) {
+                        gSaveContext.timerSeconds--;
+                        trialTimer = gPlayState->gameplayFrames;
+                    }
+                } else if (gSaveContext.timerSeconds <= 0) {
+                    gSaveContext.health = 4;
+                    gSaveContext.timerState = 0;
+                    gSaveContext.timerSeconds = 0;
+                    RogueLike::Quests::RemoveQuestById(RL_QUEST_HF_TRIAL_B);
+                    sendConditionMessage = true;
+                    SendQuestConditionMessage(RL_QUEST_HF_TRIAL_B);
+                }
+            }
+        }
 
         if (CheckActiveQuestById(RL_QUEST_KF_HOPOFFAITH) && !CheckQuestGoalCompleteById(RL_QUEST_KF_HOPOFFAITH)) {
             bool isHopping = (player->stateFlags2 & PLAYER_STATE2_HOPPING);
@@ -323,18 +386,23 @@ static void OnLoadGame() {
                 Actor_FindNearby(gPlayState, &GET_PLAYER(gPlayState)->actor, ACTOR_BG_MJIN, ACTORCAT_BG, 45.0f);
             if (trialActor != NULL) {
                 questId = FindTrialByLocation(trialActor);
-                if (questId == RL_QUEST_ID_MAX) {
-                    return;
-                }
-                if (!CheckActiveQuestById(questId)) {
-                    RogueLike::Quests::AddQuestById(questId);
-                    StartQuest(questId);
+                if (questId != RL_QUEST_ID_MAX) {
+                    if (!CheckActiveQuestById(questId)) {
+                        RogueLike::Quests::AddQuestById(questId);
+                        StartQuest(questId);
+                    }
                 }
             }
         }
     });
 
     COND_HOOK(OnSceneInit, IS_ROGUELIKE, [](u16 sceneNum) {
+        if (CheckActiveQuestById(RL_QUEST_HF_TRIAL_B) && gSaveContext.timerState == 6 &&
+            gPlayState->sceneNum == SCENE_GERUDO_VALLEY) {
+            if (gSaveContext.timerSeconds > 0) {
+                RogueLike::Quests::UpdateQuestProgress(RL_QUEST_HF_TRIAL_B);
+            }
+        }
         for (auto& quest : activeQuests) {
             RogueLike::Quests::ResetQuestProgress(quest.questId);
         }
@@ -373,8 +441,10 @@ static void OnLoadGame() {
             }
             if (!CheckActiveQuestById(RL_QUEST_HF_TRIAL_A) && !CheckQuestGoalCompleteById(RL_QUEST_HF_TRIAL_A)) {
                 Object_Spawn(&gPlayState->objectCtx, OBJECT_MJIN);
-                Actor* trialActor = Actor_Spawn(&gPlayState->actorCtx, gPlayState, ACTOR_BG_MJIN, 335.571f, -0.0f,
-                                                2677.854f, 0, 0, 0, 1, false);
+                Actor_Spawn(&gPlayState->actorCtx, gPlayState, ACTOR_BG_MJIN, 335.571f, -0.0f, 2677.854f, 0, 0, 0, 1,
+                            false);
+                Actor_Spawn(&gPlayState->actorCtx, gPlayState, ACTOR_BG_MJIN, 1490.550f, -135.0f, 8760.643f, 0, 0, 0, 1,
+                            false);
             }
         }
     });

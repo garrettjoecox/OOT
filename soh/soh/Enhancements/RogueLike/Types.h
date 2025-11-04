@@ -20,6 +20,7 @@ typedef enum {
 
 typedef enum {
     RL_QUEST_HF_TRIAL_A,
+    RL_QUEST_HF_TRIAL_B,
     RL_QUEST_KF_HOPOFFAITH,
     RL_QUEST_KF_STRONGMAN,
     RL_QUEST_KV_POTHUNT,
