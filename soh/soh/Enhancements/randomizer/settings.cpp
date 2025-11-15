@@ -1,6 +1,7 @@
 #include "settings.h"
 #include "trial.h"
 #include "dungeon.h"
+#include "3drando/random.hpp"
 
 #include "soh/OTRGlobals.h"
 
@@ -9,6 +10,7 @@
 #include <utility>
 
 #include <libultraship/bridge/consolevariablebridge.h>
+#include <libultraship/libultraship.h>
 
 namespace Rando {
 std::shared_ptr<Settings> Settings::mInstance;
@@ -2985,6 +2987,36 @@ void Settings::SetAllToContext() {
         mContext->GetItemLocation(i)->SetExcludedOption(
             StaticData::GetLocation(static_cast<RandomizerCheck>(i))->GetExcludedOption()->GetOptionIndex());
     }
+}
+
+void Settings::RandomizeAllSettings() {
+    // Randomize all settings except tricks
+    for (int i = 0; i < RSK_MAX; i++) {
+        auto key = static_cast<RandomizerSettingKey>(i);
+        Option& option = mOptions[key];
+        
+        // Skip if the option is hidden or has no valid options
+        if (option.IsHidden() || option.GetOptionCount() == 0) {
+            continue;
+        }
+        
+        // Get a random index within the valid range for this option
+        uint8_t randomIndex = Random(0, static_cast<uint32_t>(option.GetOptionCount()));
+        
+        // Set the option to the random value
+        option.SetContextIndex(randomIndex);
+        
+        // Also update the CVar if it has one
+        if (!option.GetCVarName().empty()) {
+            CVarSetInteger(option.GetCVarName().c_str(), randomIndex);
+        }
+    }
+    
+    // Update option properties to handle dependencies between options
+    UpdateOptionProperties();
+    
+    // Save CVars
+    Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
 }
 
 std::shared_ptr<Settings> Settings::GetInstance() {
