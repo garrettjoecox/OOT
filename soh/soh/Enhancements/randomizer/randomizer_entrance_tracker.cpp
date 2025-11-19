@@ -635,9 +635,9 @@ void InitEntranceTrackingData() {
     gEntranceTrackingData = { 0 };
 
     // Check if entrance randomization is disabled
-    if (!OTRGlobals::Instance->gRandomizer->GetRandoSettingValue(RSK_SHUFFLE_ENTRANCES)) {
-        return;
-    }
+    // if (!OTRGlobals::Instance->gRandomizer->GetRandoSettingValue(RSK_SHUFFLE_ENTRANCES)) {
+    //    return;
+    //}
 
     // Set total and group counts
     for (size_t i = 0; i < ENTRANCE_OVERRIDES_MAX_COUNT; i++) {

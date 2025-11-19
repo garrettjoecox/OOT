@@ -329,7 +329,8 @@ void Entrance_SetGameOverEntrance(void) {
     s16 scene = gPlayState->sceneNum;
 
     // When in a boss room and boss shuffle is on, use the boss scene to find the death warp entrance
-    if (Randomizer_GetSettingValue(RSK_SHUFFLE_BOSS_ENTRANCES) != RO_BOSS_ROOM_ENTRANCE_SHUFFLE_OFF &&
+    if ((Randomizer_GetSettingValue(RSK_SHUFFLE_BOSS_ENTRANCES) != RO_BOSS_ROOM_ENTRANCE_SHUFFLE_OFF ||
+        CVarGetInteger(CVAR_REMOTE_ARCHIPELAGO("ShuffleEntrances"), 0)) &&
         scene >= SCENE_DEKU_TREE_BOSS && scene <= SCENE_SHADOW_TEMPLE_BOSS) {
         // Normalize boss scene range to 0 on lookup and handle for grotto entrances
         gSaveContext.entranceIndex =
@@ -375,7 +376,8 @@ void Entrance_SetSavewarpEntrance(void) {
     s16 scene = gSaveContext.savedSceneNum;
 
     // When in a boss room and boss shuffle is on, use the boss scene to find the savewarp entrance
-    if (Randomizer_GetSettingValue(RSK_SHUFFLE_BOSS_ENTRANCES) != RO_BOSS_ROOM_ENTRANCE_SHUFFLE_OFF &&
+    if ((Randomizer_GetSettingValue(RSK_SHUFFLE_BOSS_ENTRANCES) != RO_BOSS_ROOM_ENTRANCE_SHUFFLE_OFF ||
+        CVarGetInteger(CVAR_REMOTE_ARCHIPELAGO("ShuffleEntrances"), 0)) &&
         scene >= SCENE_DEKU_TREE_BOSS && scene <= SCENE_SHADOW_TEMPLE_BOSS) {
         // Normalize boss scene range to 0 on lookup and handle for grotto entrances
         gSaveContext.entranceIndex =
@@ -532,7 +534,8 @@ void Entrance_HandleEponaState(void) {
     Player* player = GET_PLAYER(gPlayState);
     // If Link is riding Epona but he's about to go through an entrance where she can't spawn,
     // unset the Epona flag to avoid Master glitch, and restore temp B.
-    if (Randomizer_GetSettingValue(RSK_SHUFFLE_OVERWORLD_ENTRANCES) && (player->stateFlags1 & PLAYER_STATE1_ON_HORSE)) {
+    if ((Randomizer_GetSettingValue(RSK_SHUFFLE_OVERWORLD_ENTRANCES ||
+        CVarGetInteger(CVAR_REMOTE_ARCHIPELAGO("ShuffleEntrances"), 0)) && (player->stateFlags1 & PLAYER_STATE1_ON_HORSE)) {
         // Allow Master glitch to be performed on the Thieves Hideout entrance
         if (entrance == Entrance_GetOverride(ENTR_THIEVES_HIDEOUT_4)) { // Gerudo Fortress -> Theives Hideout
             return;
@@ -684,7 +687,8 @@ void Entrance_OverrideGerudoGuardCapture(void) {
             gPlayState->nextEntranceIndex = ENTR_GERUDO_VALLEY_1; // Gerudo Valley thrown out
         }
 
-        if ((LINK_IS_CHILD || Randomizer_GetSettingValue(RSK_SHUFFLE_OVERWORLD_ENTRANCES)) &&
+        if ((LINK_IS_CHILD || (Randomizer_GetSettingValue(RSK_SHUFFLE_OVERWORLD_ENTRANCES ||
+        CVarGetInteger(CVAR_REMOTE_ARCHIPELAGO("ShuffleEntrances"), 0))) &&
             gPlayState->nextEntranceIndex == ENTR_GERUDO_VALLEY_1) {             // Gerudo Valley thrown out
             if (gPlayState->sceneNum != SCENE_GERUDO_VALLEY) {                   // Gerudo Valley
                 gPlayState->nextEntranceIndex = ENTR_GERUDOS_FORTRESS_EAST_EXIT; // Gerudo Fortress
@@ -701,7 +705,8 @@ void Entrance_OverrideSpawnScene(s32 sceneNum, s32 spawn) {
     modifiedLinkActorEntry.rot = gPlayState->linkActorEntry->rot;
     modifiedLinkActorEntry.params = gPlayState->linkActorEntry->params;
 
-    if (Randomizer_GetSettingValue(RSK_SHUFFLE_DUNGEON_ENTRANCES) == RO_DUNGEON_ENTRANCE_SHUFFLE_ON_PLUS_GANON) {
+    if (Randomizer_GetSettingValue(RSK_SHUFFLE_DUNGEON_ENTRANCES) == RO_DUNGEON_ENTRANCE_SHUFFLE_ON_PLUS_GANON ||
+        CVarGetInteger(CVAR_REMOTE_ARCHIPELAGO("ShuffleEntrances"), 0)) {
         // Move Hyrule's Castle Courtyard exit spawn to be before the crates so players don't skip Talon
         if (sceneNum == SCENE_HYRULE_CASTLE && spawn == 1) {
             modifiedLinkActorEntry.pos.x = 0x033A;
@@ -722,7 +727,8 @@ void Entrance_OverrideSpawnScene(s32 sceneNum, s32 spawn) {
         }
     }
 
-    if (Randomizer_GetSettingValue(RSK_SHUFFLE_BOSS_ENTRANCES) != RO_BOSS_ROOM_ENTRANCE_SHUFFLE_OFF) {
+    if (Randomizer_GetSettingValue(RSK_SHUFFLE_BOSS_ENTRANCES) != RO_BOSS_ROOM_ENTRANCE_SHUFFLE_OFF ||
+        CVarGetInteger(CVAR_REMOTE_ARCHIPELAGO("ShuffleEntrances"), 0)) {
         // Repair the authentically bugged entrance when leaving Barniades boss room -> JabuJabu's belly
         // Link's position needs to be adjusted to prevent him from falling through the floor
         if (sceneNum == SCENE_JABU_JABU && spawn == 1) {
@@ -753,7 +759,8 @@ void Entrance_OverrideSpawnScene(s32 sceneNum, s32 spawn) {
 }
 
 s32 Entrance_OverrideSpawnSceneRoom(s32 sceneNum, s32 spawn, s32 roomNum) {
-    if (Randomizer_GetSettingValue(RSK_SHUFFLE_BOSS_ENTRANCES) != RO_BOSS_ROOM_ENTRANCE_SHUFFLE_OFF) {
+    if (Randomizer_GetSettingValue(RSK_SHUFFLE_BOSS_ENTRANCES) != RO_BOSS_ROOM_ENTRANCE_SHUFFLE_OFF ||
+        CVarGetInteger(CVAR_REMOTE_ARCHIPELAGO("ShuffleEntrances"), 0)) {
         // Repair the authentically bugged scene/spawn info for leaving Barinade's boss room -> JabuJabu's belly
         // to load the correct room outside Barniade's boss room
         if (sceneNum == SCENE_JABU_JABU && spawn == 1) {

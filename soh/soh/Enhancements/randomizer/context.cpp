@@ -439,8 +439,10 @@ void Context::ParseArchipelago() {
     ParseArchipelagoTricks();
     ParseArchipelagoExcludedLocations();
     CreateStaticHints();
-    mEntranceShuffler->UnshuffleAllEntrances();
-    mDungeons->ResetAllDungeons();
+    if (!CVarGetInteger(CVAR_REMOTE_ARCHIPELAGO("ShuffleEntrances"), 0)) {
+        mEntranceShuffler->UnshuffleAllEntrances();
+        mDungeons->ResetAllDungeons();
+    }
     mTrials->RemoveAllTrials();
 }
 
@@ -699,23 +701,25 @@ void Context::ParseArchipelagoOptions() {
     mOptions[RSK_KEYRINGS_BOTTOM_OF_THE_WELL].Set(0);
     mOptions[RSK_KEYRINGS_GTG].Set(0);
     mOptions[RSK_KEYRINGS_GANONS_CASTLE].Set(0);
-    mOptions[RSK_SHUFFLE_ENTRANCES].Set(0);
-    mOptions[RSK_SHUFFLE_DUNGEON_ENTRANCES].Set(0);
-    mOptions[RSK_SHUFFLE_OVERWORLD_ENTRANCES].Set(0);
-    mOptions[RSK_SHUFFLE_INTERIOR_ENTRANCES].Set(0);
-    mOptions[RSK_SHUFFLE_THIEVES_HIDEOUT_ENTRANCES].Set(0);
-    mOptions[RSK_SHUFFLE_GROTTO_ENTRANCES].Set(0);
-    mOptions[RSK_SHUFFLE_OWL_DROPS].Set(0);
-    mOptions[RSK_SHUFFLE_WARP_SONGS].Set(0);
-    mOptions[RSK_SHUFFLE_OVERWORLD_SPAWNS].Set(0);
-    mOptions[RSK_MIXED_ENTRANCE_POOLS].Set(0);
-    mOptions[RSK_MIX_DUNGEON_ENTRANCES].Set(0);
-    mOptions[RSK_MIX_BOSS_ENTRANCES].Set(0);
-    mOptions[RSK_MIX_OVERWORLD_ENTRANCES].Set(0);
-    mOptions[RSK_MIX_INTERIOR_ENTRANCES].Set(0);
-    mOptions[RSK_MIX_THIEVES_HIDEOUT_ENTRANCES].Set(0);
-    mOptions[RSK_MIX_GROTTO_ENTRANCES].Set(0);
-    mOptions[RSK_DECOUPLED_ENTRANCES].Set(0);
+    if (!CVarGetInteger(CVAR_REMOTE_ARCHIPELAGO("ShuffleEntrances"), 0)) {
+        mOptions[RSK_SHUFFLE_ENTRANCES].Set(0);
+        mOptions[RSK_SHUFFLE_DUNGEON_ENTRANCES].Set(0);
+        mOptions[RSK_SHUFFLE_OVERWORLD_ENTRANCES].Set(0);
+        mOptions[RSK_SHUFFLE_INTERIOR_ENTRANCES].Set(0);
+        mOptions[RSK_SHUFFLE_THIEVES_HIDEOUT_ENTRANCES].Set(0);
+        mOptions[RSK_SHUFFLE_GROTTO_ENTRANCES].Set(0);
+        mOptions[RSK_SHUFFLE_OWL_DROPS].Set(0);
+        mOptions[RSK_SHUFFLE_WARP_SONGS].Set(0);
+        mOptions[RSK_SHUFFLE_OVERWORLD_SPAWNS].Set(0);
+        mOptions[RSK_MIXED_ENTRANCE_POOLS].Set(0);
+        mOptions[RSK_MIX_DUNGEON_ENTRANCES].Set(0);
+        mOptions[RSK_MIX_BOSS_ENTRANCES].Set(0);
+        mOptions[RSK_MIX_OVERWORLD_ENTRANCES].Set(0);
+        mOptions[RSK_MIX_INTERIOR_ENTRANCES].Set(0);
+        mOptions[RSK_MIX_THIEVES_HIDEOUT_ENTRANCES].Set(0);
+        mOptions[RSK_MIX_GROTTO_ENTRANCES].Set(0);
+        mOptions[RSK_DECOUPLED_ENTRANCES].Set(0);
+    }
     mOptions[RSK_STARTING_SKULLTULA_TOKEN].Set(0);
     mOptions[RSK_STARTING_HEARTS].Set(2);
     mOptions[RSK_DAMAGE_MULTIPLIER].Set(0);

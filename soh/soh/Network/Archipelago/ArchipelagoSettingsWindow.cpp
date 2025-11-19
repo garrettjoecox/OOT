@@ -75,6 +75,13 @@ void ArchipelagoSettingsWindow::DrawElement() {
             UIWidgets::CheckboxOptions().Color(THEME_COLOR).Tooltip("You die, others die. Others die, you die!"))) {
         apClient.SetDeathLinkTag();
     }
+    UIWidgets::CVarCheckbox(
+        "Shuffle Entrances", CVAR_REMOTE_ARCHIPELAGO("ShuffleEntrances"),
+        UIWidgets::CheckboxOptions()
+            .Color(THEME_COLOR)
+            .Tooltip(
+                "With this checked, pull in a spoiler with entrances shuffled and create a new AP save and your "
+                "entrances will match the spoiler. Uncheck and start a new save file to unshuffle entrances again."));
 };
 
 void ArchipelagoSettingsWindow::InitElement() {
