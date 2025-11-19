@@ -48,6 +48,8 @@ bool ArchipelagoClient::StartClient() {
         apClient.reset();
     }
 
+    CVarSetInteger(CVAR_REMOTE_ANCHOR("RoomSettings.SyncItemsAndFlags"), 0);
+
     disconnecting = false;
     retries = 0;
     uri = CVarGetString(CVAR_REMOTE_ARCHIPELAGO("ServerAddress"), "localhost:38281");

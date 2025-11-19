@@ -126,12 +126,18 @@ void AnchorMainMenu(WidgetInfo& info) {
     ImGui::SeparatorText("Current Room");
     ImGui::Text("%s Connected", ICON_FA_CHECK);
 
+    if (IS_ARCHIPELAGO)
+        ImGui::BeginDisabled();
+
     UIWidgets::PushStyleButton(THEME_COLOR);
     if (ImGui::Button("Request Team State")) {
         anchor->SendPacket_RequestTeamState();
     }
     UIWidgets::Tooltip("Try this if you are missing items or flags that your team members have collected");
     UIWidgets::PopStyleButton();
+
+    if (IS_ARCHIPELAGO)
+        ImGui::EndDisabled();
 
     ImGui::SameLine();
 
@@ -189,6 +195,21 @@ void AnchorAdminMenu(WidgetInfo& info) {
     if (UIWidgets::CVarCheckbox("Sync Items & Flags", CVAR_REMOTE_ANCHOR("RoomSettings.SyncItemsAndFlags"),
                                 UIWidgets::CheckboxOptions().DefaultValue(true).Color(THEME_COLOR))) {
         anchor->SendPacket_UpdateRoomState();
+    }
+    if (IS_ARCHIPELAGO) {
+        CVarSetInteger(CVAR_REMOTE_ANCHOR("RoomSettings.SyncItemsAndFlags"), 0);
+        ImGui::BeginDisabled();
+    }
+
+    if (UIWidgets::CVarCheckbox("Sync Items & Flags", CVAR_REMOTE_ANCHOR("RoomSettings.SyncItemsAndFlags"),
+                                UIWidgets::CheckboxOptions().DefaultValue(true).Color(THEME_COLOR))) {
+        if (!IS_ARCHIPELAGO) {
+            anchor->SendPacket_UpdateRoomState();
+        }
+    }
+
+    if (IS_ARCHIPELAGO) {
+        ImGui::EndDisabled();
     }
 }
 
