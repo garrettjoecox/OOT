@@ -330,7 +330,7 @@ void Entrance_SetGameOverEntrance(void) {
 
     // When in a boss room and boss shuffle is on, use the boss scene to find the death warp entrance
     if ((Randomizer_GetSettingValue(RSK_SHUFFLE_BOSS_ENTRANCES) != RO_BOSS_ROOM_ENTRANCE_SHUFFLE_OFF ||
-        CVarGetInteger(CVAR_REMOTE_ARCHIPELAGO("ShuffleEntrances"), 0)) &&
+         CVarGetInteger(CVAR_REMOTE_ARCHIPELAGO("ShuffleEntrances"), 0)) &&
         scene >= SCENE_DEKU_TREE_BOSS && scene <= SCENE_SHADOW_TEMPLE_BOSS) {
         // Normalize boss scene range to 0 on lookup and handle for grotto entrances
         gSaveContext.entranceIndex =
@@ -377,7 +377,7 @@ void Entrance_SetSavewarpEntrance(void) {
 
     // When in a boss room and boss shuffle is on, use the boss scene to find the savewarp entrance
     if ((Randomizer_GetSettingValue(RSK_SHUFFLE_BOSS_ENTRANCES) != RO_BOSS_ROOM_ENTRANCE_SHUFFLE_OFF ||
-        CVarGetInteger(CVAR_REMOTE_ARCHIPELAGO("ShuffleEntrances"), 0)) &&
+         CVarGetInteger(CVAR_REMOTE_ARCHIPELAGO("ShuffleEntrances"), 0)) &&
         scene >= SCENE_DEKU_TREE_BOSS && scene <= SCENE_SHADOW_TEMPLE_BOSS) {
         // Normalize boss scene range to 0 on lookup and handle for grotto entrances
         gSaveContext.entranceIndex =
@@ -534,8 +534,9 @@ void Entrance_HandleEponaState(void) {
     Player* player = GET_PLAYER(gPlayState);
     // If Link is riding Epona but he's about to go through an entrance where she can't spawn,
     // unset the Epona flag to avoid Master glitch, and restore temp B.
-    if ((Randomizer_GetSettingValue(RSK_SHUFFLE_OVERWORLD_ENTRANCES ||
-        CVarGetInteger(CVAR_REMOTE_ARCHIPELAGO("ShuffleEntrances"), 0)) && (player->stateFlags1 & PLAYER_STATE1_ON_HORSE)) {
+    if ((Randomizer_GetSettingValue(RSK_SHUFFLE_OVERWORLD_ENTRANCES) ||
+         CVarGetInteger(CVAR_REMOTE_ARCHIPELAGO("ShuffleEntrances"), 0)) &&
+        (player->stateFlags1 & PLAYER_STATE1_ON_HORSE)) {
         // Allow Master glitch to be performed on the Thieves Hideout entrance
         if (entrance == Entrance_GetOverride(ENTR_THIEVES_HIDEOUT_4)) { // Gerudo Fortress -> Theives Hideout
             return;
@@ -687,8 +688,8 @@ void Entrance_OverrideGerudoGuardCapture(void) {
             gPlayState->nextEntranceIndex = ENTR_GERUDO_VALLEY_1; // Gerudo Valley thrown out
         }
 
-        if ((LINK_IS_CHILD || (Randomizer_GetSettingValue(RSK_SHUFFLE_OVERWORLD_ENTRANCES ||
-        CVarGetInteger(CVAR_REMOTE_ARCHIPELAGO("ShuffleEntrances"), 0))) &&
+        if ((LINK_IS_CHILD || (Randomizer_GetSettingValue(RSK_SHUFFLE_OVERWORLD_ENTRANCES) ||
+                               CVarGetInteger(CVAR_REMOTE_ARCHIPELAGO("ShuffleEntrances"), 0))) &&
             gPlayState->nextEntranceIndex == ENTR_GERUDO_VALLEY_1) {             // Gerudo Valley thrown out
             if (gPlayState->sceneNum != SCENE_GERUDO_VALLEY) {                   // Gerudo Valley
                 gPlayState->nextEntranceIndex = ENTR_GERUDOS_FORTRESS_EAST_EXIT; // Gerudo Fortress
