@@ -3986,6 +3986,14 @@ void RandomizerSettingsWindow::DrawElement() {
     }
 
     ImGui::SameLine();
+    UIWidgets::ButtonOptions randomizeOptions = UIWidgets::ButtonOptions().Size(ImVec2(250.f, 0.f)).Color(THEME_COLOR);
+    randomizeOptions.Disabled(disableEditingRandoSettings);
+    randomizeOptions.Tooltip("Randomizes all randomizer settings to random valid values (excludes tricks).");
+    if (UIWidgets::Button("Randomize All Settings", randomizeOptions)) {
+        mSettings->RandomizeAllSettings();
+    }
+
+    ImGui::SameLine();
     if (!CVarGetInteger(CVAR_RANDOMIZER_SETTING("DontGenerateSpoiler"), 0)) {
         std::string spoilerfilepath = CVarGetString(CVAR_GENERAL("SpoilerLog"), "");
         ImGui::Text("Spoiler File: %s", spoilerfilepath.c_str());
