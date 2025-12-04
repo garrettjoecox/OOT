@@ -153,6 +153,7 @@ Color_RGB8 kokiriColor = { 0x1E, 0x69, 0x1B };
 Color_RGB8 goronColor = { 0x64, 0x14, 0x00 };
 Color_RGB8 zoraColor = { 0x00, 0xEC, 0x64 };
 
+int32_t previousImGuiScaleIndex;
 float previousImGuiScale;
 
 bool prevAltAssets = false;
@@ -432,6 +433,7 @@ void OTRGlobals::Initialize() {
 
     hasMasterQuest = hasOriginal = false;
 
+    previousImGuiScaleIndex = -1;
     previousImGuiScale = defaultImGuiScale;
 
     fontMonoSmall = CreateFontWithSize(14.0f, "fonts/Inconsolata-Regular.ttf");
@@ -500,11 +502,17 @@ OTRGlobals::~OTRGlobals() {
 }
 
 void OTRGlobals::ScaleImGui() {
-    float scale = imguiScaleOptionToValue[CVarGetInteger(CVAR_SETTING("ImGuiScale"), defaultImGuiScale)];
+    int32_t imGuiScaleIndex = CVarGetInteger(CVAR_SETTING("ImGuiScale"), defaultImGuiScale);
+    if (imGuiScaleIndex == previousImGuiScaleIndex) {
+        return;
+    }
+
+    float scale = imguiScaleOptionToValue[imGuiScaleIndex];
     float newScale = scale / previousImGuiScale;
     ImGui::GetStyle().ScaleAllSizes(newScale);
     ImGui::GetIO().FontGlobalScale = scale;
     previousImGuiScale = scale;
+    previousImGuiScaleIndex = imGuiScaleIndex;
 }
 
 ImFont* OTRGlobals::CreateDefaultFontWithSize(float size) {

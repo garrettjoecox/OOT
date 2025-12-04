@@ -486,11 +486,11 @@ void RandomizerOnItemReceiveHandler(GetItemEntry receivedItemEntry) {
     if (receivedItemEntry.modIndex == MOD_NONE &&
         (receivedItemEntry.itemId == ITEM_HEART_PIECE || receivedItemEntry.itemId == ITEM_HEART_PIECE_2 ||
          receivedItemEntry.itemId == ITEM_HEART_CONTAINER)) {
-        gSaveContext.healthAccumulator = 0x140; // Refill 20 hearts
+        gSaveContext.healthAccumulator = MAX_HEALTH; // Refill 20 hearts
         if ((s32)(gSaveContext.inventory.questItems & 0xF0000000) == 0x40000000) {
             gSaveContext.inventory.questItems ^= 0x40000000;
-            gSaveContext.healthCapacity += 0x10;
-            gSaveContext.health += 0x10;
+            gSaveContext.healthCapacity += FULL_HEART_HEALTH;
+            gSaveContext.health += FULL_HEART_HEALTH;
         }
     }
 
@@ -1720,12 +1720,6 @@ void RandomizerOnVanillaBehaviorHandler(GIVanillaBehavior id, bool* should, va_l
             if (gPlayState->msgCtx.msgMode == MSGMODE_OCARINA_PLAYING && RAND_GET_OPTION(RSK_SKIP_SCARECROWS_SONG)) {
                 *should = true;
                 break;
-            }
-            break;
-        }
-        case VB_RENDER_KEY_COUNTER: {
-            if (Flags_GetRandomizerInf(RAND_INF_HAS_SKELETON_KEY)) {
-                *should = false;
             }
             break;
         }

@@ -1177,6 +1177,14 @@ typedef enum {
 
     // #### `result`
     // ```c
+    // true
+    // ```
+    // #### `args`
+    // - None
+    VB_HEARTS_INCREASE_WITH_CONTAINERS,
+
+    // #### `result`
+    // ```c
     // (respawnFlag == 1) || (respawnFlag == -1)
     // ```
     // #### `args`
@@ -2334,6 +2342,15 @@ typedef enum {
     // #### `args`
     // - `*BgHidanKowarerukabe`
     VB_FIRE_TEMPLE_BOMBABLE_WALL_BREAK,
+
+    // #### `result`
+    // ```c
+    // true
+    // ```
+    // #### `args`
+    // - `*Player`
+    // - `*Color_RGB8`
+    VB_APPLY_TUNIC_COLOR,
 
 } GIVanillaBehavior;
 
