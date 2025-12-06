@@ -2,6 +2,7 @@
 #include "vt.h"
 #include "overlays/effects/ovl_Effect_Ss_HitMark/z_eff_ss_hitmark.h"
 #include "soh/Enhancements/game-interactor/GameInteractor.h"
+#include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
 #include <assert.h>
 
 typedef s32 (*ColChkResetFunc)(PlayState*, Collider*);
@@ -3029,6 +3030,13 @@ void CollisionCheck_ApplyDamage(PlayState* play, CollisionCheckContext* colChkCt
 
     if (CVarGetInteger(CVAR_ENHANCEMENT("IvanCoopModeEnabled"), 0)) {
         collider->actor->colChkInfo.damage *= GET_PLAYER(play)->ivanDamageMultiplier;
+    }
+
+    if (!GameInteractor_Should(VB_APPLY_DAMAGE_TO_ACTOR, true, collider->actor,
+                               collider->actor->colChkInfo.damageEffect, collider->actor->colChkInfo.damage,
+                               info->acHitInfo->toucher.dmgFlags)) {
+        collider->actor->colChkInfo.damageEffect = 0;
+        collider->actor->colChkInfo.damage = 0;
     }
 }
 

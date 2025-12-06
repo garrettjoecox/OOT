@@ -1763,6 +1763,14 @@ typedef enum {
 
     // #### `result`
     // ```c
+    // actor.params & 1) == ROCK_SMALL
+    // ```
+    // #### `args`
+    // - `*EnIshi`
+    VB_ROCK_DROP_ITEM,
+
+    // #### `result`
+    // ```c
     // true
     // ```
     // #### `args`
@@ -2251,6 +2259,16 @@ typedef enum {
     // #### `args`
     // - `*Actor`
     VB_RECIEVE_FALL_DAMAGE,
+
+    // #### `result`
+    // ```c
+    // true
+    // ```
+    // #### `args`
+    // - `*Actor`
+    // - `u8` (damageEffect)
+    // - `u8` (damage)
+    VB_APPLY_DAMAGE_TO_ACTOR,
 
     // #### `result`
     // ```c

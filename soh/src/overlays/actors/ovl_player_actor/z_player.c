@@ -7127,9 +7127,13 @@ void func_8083DFE0(Player* this, f32* arg1, s16* arg2) {
     if (this->meleeWeaponState == 0) {
         float maxSpeed = R_RUN_SPEED_LIMIT / 100.0f;
 
-        if (CVarGetInteger(CVAR_ENHANCEMENT("MMBunnyHood"), BUNNY_HOOD_VANILLA) == BUNNY_HOOD_FAST_AND_JUMP &&
-            this->currentMask == PLAYER_MASK_BUNNY) {
-            maxSpeed *= 1.5f;
+        if (this->currentMask == PLAYER_MASK_BUNNY) {
+            if (IS_ROGUELIKE) {
+                maxSpeed *= 1.0f + (((f32)gSaveContext.ship.quest.data.rogueLike.stats[RL_SPEED]) / 10.0f) * 1.5f;
+            } else if (CVarGetInteger(CVAR_ENHANCEMENT("MMBunnyHood"), BUNNY_HOOD_VANILLA) ==
+                       BUNNY_HOOD_FAST_AND_JUMP) {
+                maxSpeed *= 1.5f;
+            }
         }
 
         if (CVarGetInteger(CVAR_SETTING("WalkModifier.Enabled"), 0) &&
@@ -7339,7 +7343,7 @@ s32 Player_ActionHandler_2(Player* this, PlayState* play) {
                 // Only skip cutscenes for drops when they're items/consumables from bushes/rocks/enemies.
                 uint8_t isDropToSkip =
                     (interactedActor->id == ACTOR_EN_ITEM00 && interactedActor->params != ITEM00_HEART_PIECE &&
-                     interactedActor->params != ITEM00_SMALL_KEY &&
+                     interactedActor->params != ITEM00_SMALL_KEY && interactedActor->params != ITEM00_NONE &&
                      interactedActor->params != ITEM00_SOH_GIVE_ITEM_ENTRY &&
                      interactedActor->params != ITEM00_SOH_GIVE_ITEM_ENTRY_GI) ||
                     interactedActor->id == ACTOR_EN_KAREBABA || interactedActor->id == ACTOR_EN_DEKUBABA;
@@ -8868,9 +8872,13 @@ void Player_Action_80842180(Player* this, PlayState* play) {
 
         if (!func_8083C484(this, &sp2C, &sp2A)) {
 
-            if (CVarGetInteger(CVAR_ENHANCEMENT("MMBunnyHood"), BUNNY_HOOD_VANILLA) != BUNNY_HOOD_VANILLA &&
-                this->currentMask == PLAYER_MASK_BUNNY) {
-                sp2C *= 1.5f;
+            if (this->currentMask == PLAYER_MASK_BUNNY) {
+                if (IS_ROGUELIKE) {
+                    sp2C *= 1.0f + (((f32)gSaveContext.ship.quest.data.rogueLike.stats[RL_SPEED]) / 10.0f) * 1.5f;
+                } else if (CVarGetInteger(CVAR_ENHANCEMENT("MMBunnyHood"), BUNNY_HOOD_VANILLA) ==
+                           BUNNY_HOOD_FAST_AND_JUMP) {
+                    sp2C *= 1.5f;
+                }
             }
 
             if (CVarGetInteger(CVAR_SETTING("WalkModifier.Enabled"), 0)) {
@@ -12817,9 +12825,14 @@ s16 func_8084ABD8(PlayState* play, Player* this, s32 arg2, s16 arg3) {
 
     if (CVarGetInteger(CVAR_SETTING("MoveInFirstPerson"), 0)) {
         f32 movementSpeed = LINK_IS_ADULT ? 9.0f : 8.25f;
-        if (CVarGetInteger(CVAR_ENHANCEMENT("MMBunnyHood"), BUNNY_HOOD_VANILLA) != BUNNY_HOOD_VANILLA &&
-            this->currentMask == PLAYER_MASK_BUNNY) {
-            movementSpeed *= 1.5f;
+
+        if (this->currentMask == PLAYER_MASK_BUNNY) {
+            if (IS_ROGUELIKE) {
+                movementSpeed *= 1.0f + (((f32)gSaveContext.ship.quest.data.rogueLike.stats[RL_SPEED]) / 10.0f) * 1.5f;
+            } else if (CVarGetInteger(CVAR_ENHANCEMENT("MMBunnyHood"), BUNNY_HOOD_VANILLA) ==
+                       BUNNY_HOOD_FAST_AND_JUMP) {
+                movementSpeed *= 1.5f;
+            }
         }
 
         f32 relX = (sControlInput->rel.stick_x / 10 * -invertXAxisMulti);

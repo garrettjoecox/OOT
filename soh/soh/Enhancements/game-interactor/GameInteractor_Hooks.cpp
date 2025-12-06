@@ -19,9 +19,6 @@ void GameInteractor_ExecuteOnExitGame(int32_t fileNum) {
 }
 
 void GameInteractor_ExecuteOnGameStateMainStart() {
-    // Cleanup all hooks at the start of each frame
-    GameInteractor::Instance->RemoveAllQueuedHooks();
-
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnGameStateMainStart>();
 }
 
@@ -54,6 +51,12 @@ void GameInteractor_ExecuteOnSceneInit(int16_t sceneNum) {
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnSceneInit>(sceneNum);
     GameInteractor::Instance->ExecuteHooksForID<GameInteractor::OnSceneInit>(sceneNum, sceneNum);
     GameInteractor::Instance->ExecuteHooksForFilter<GameInteractor::OnSceneInit>(sceneNum);
+}
+
+void GameInteractor_ExecuteOnRoomInit(int16_t roomNum) {
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnRoomInit>(roomNum);
+    GameInteractor::Instance->ExecuteHooksForID<GameInteractor::OnRoomInit>(roomNum, roomNum);
+    GameInteractor::Instance->ExecuteHooksForFilter<GameInteractor::OnRoomInit>(roomNum);
 }
 
 void GameInteractor_ExecuteAfterSceneCommands(int16_t sceneNum) {
@@ -227,6 +230,12 @@ void GameInteractor_ExecuteOnPlayDrawBegin() {
 
 void GameInteractor_ExecuteOnPlayDrawEnd() {
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnPlayDrawEnd>();
+}
+
+void GameInteractor_ExecuteOnOpenText(u16* textId, bool* loadFromMessageTable) {
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnOpenText>(textId, loadFromMessageTable);
+    GameInteractor::Instance->ExecuteHooksForID<GameInteractor::OnOpenText>(*textId, textId, loadFromMessageTable);
+    GameInteractor::Instance->ExecuteHooksForFilter<GameInteractor::OnOpenText>(textId, loadFromMessageTable);
 }
 
 bool GameInteractor_Should(GIVanillaBehavior flag, u32 result, ...) {

@@ -19,6 +19,7 @@ void GameInteractor_ExecuteOnEquipmentDelete(int16_t equipmentType, uint16_t equ
 void GameInteractor_ExecuteOnSaleEndHooks(GetItemEntry itemEntry);
 void GameInteractor_ExecuteOnTransitionEndHooks(int16_t sceneNum);
 void GameInteractor_ExecuteOnSceneInit(int16_t sceneNum);
+void GameInteractor_ExecuteOnRoomInit(int16_t roomNum);
 void GameInteractor_ExecuteAfterSceneCommands(int16_t sceneNum);
 void GameInteractor_ExecuteOnSceneFlagSet(int16_t sceneNum, int16_t flagType, int16_t flag);
 void GameInteractor_ExecuteOnSceneFlagUnset(int16_t sceneNum, int16_t flagType, int16_t flag);
@@ -53,6 +54,7 @@ void GameInteractor_ExecuteOnDungeonKeyUsedHooks(uint16_t mapIndex);
 void GameInteractor_ExecuteOnPlayDestroy();
 void GameInteractor_ExecuteOnPlayDrawBegin();
 void GameInteractor_ExecuteOnPlayDrawEnd();
+void GameInteractor_ExecuteOnOpenText(u16* textId, bool* loadFromMessageTable);
 bool GameInteractor_Should(GIVanillaBehavior flag, uint32_t result, ...);
 
 // MARK: -  Save Files
