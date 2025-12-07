@@ -4,6 +4,7 @@
 #include <vector>
 #include <list>
 #include <set>
+#include <array>
 
 #include "soh/Enhancements/randomizer/randomizerTypes.h"
 #include "soh/Enhancements/randomizer/context.h"
@@ -237,6 +238,7 @@ extern void AccessReset();
 extern void ResetAllLocations();
 extern bool HasTimePassAccess(uint8_t age);
 extern void DumpWorldGraph(std::string str);
+extern std::array<RandomizerRegion, RR_MAX - (RR_NONE + 1)> GetAllRegions();
 } // namespace Regions
 
 void RegionTable_Init();

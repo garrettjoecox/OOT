@@ -9,6 +9,8 @@
 #include "vt.h"
 #include "soh/ResourceManagerHelpers.h"
 
+#include "soh/Enhancements/Holiday/Archez.h"
+
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 
 void EnHeishi1_Init(Actor* thisx, PlayState* play);
@@ -493,6 +495,10 @@ s32 EnHeishi1_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3
     // turn the guards head to match the direction he is looking
     if (limbIndex == 16) {
         rot->x += (s16)this->headAngle;
+    }
+
+    if (limbIndex == 15) {
+        SkipOverrideNextLimb();
     }
 
     return false;

@@ -9,6 +9,7 @@
 #include <assert.h>
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
 #include "soh/ResourceManagerHelpers.h"
+#include "soh_assets.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED | ACTOR_FLAG_UPDATE_DURING_OCARINA)
 
@@ -1491,6 +1492,26 @@ s32 EnElf_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* p
     if (this->fairyFlags & FAIRY_FLAG_BIG) {
         if (limbIndex == 4 || limbIndex == 7 || limbIndex == 11 || limbIndex == 14) {
             *dList = NULL;
+        }
+    }
+
+    return false;
+}
+
+s32 EnElf_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, void* thisx) {
+    EnElf* this = (EnElf*)thisx;
+
+    if (CVarGetInteger("gHoliday.Visual.Hats", 0)) {
+        if (limbIndex == 2) {
+            OPEN_DISPS(play->state.gfxCtx);
+            Matrix_Push();
+            Matrix_RotateZYX(0, 0, 17047, MTXMODE_APPLY);
+            Matrix_Translate(202.0f, 0.0f, 0.0f, MTXMODE_APPLY);
+            Matrix_Scale(0.595f, 0.595f, 0.595f, MTXMODE_APPLY);
+            gSPMatrix(POLY_OPA_DISP++, MATRIX_NEWMTX(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            gSPDisplayList(POLY_OPA_DISP++, gSantaHatGenericDL);
+            Matrix_Pop();
+            CLOSE_DISPS(play->state.gfxCtx);
         }
     }
 

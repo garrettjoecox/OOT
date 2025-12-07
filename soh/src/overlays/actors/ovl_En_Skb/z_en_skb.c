@@ -3,6 +3,7 @@
 #include "objects/object_skb/object_skb.h"
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
 #include "soh/ResourceManagerHelpers.h"
+#include "soh_assets.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
@@ -553,6 +554,19 @@ void EnSkb_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot,
         BodyBreak_SetInfo(&this->bodyBreak, limbIndex, 11, 12, 18, dList, BODYBREAK_OBJECT_DEFAULT);
     } else if ((this->unk_283 ^ (this->unk_283 | 4)) == 0) {
         BodyBreak_SetInfo(&this->bodyBreak, limbIndex, 0, 18, 18, dList, BODYBREAK_OBJECT_DEFAULT);
+    }
+
+    if (limbIndex == 11 && CVarGetInteger("gHoliday.Visual.Hats", 0)) {
+        OPEN_DISPS(play->state.gfxCtx);
+        Matrix_Push();
+        Matrix_RotateZYX(0, 0, -2215, MTXMODE_APPLY);
+        Matrix_Translate(1324.324f, 662.162f, 0.0f, MTXMODE_APPLY);
+        Matrix_Scale(1.0f, 1.0f, 1.0f, MTXMODE_APPLY);
+        gDPSetEnvColor(POLY_OPA_DISP++, 255, 0, 0, 255);
+        gSPMatrix(POLY_OPA_DISP++, MATRIX_NEWMTX(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        gSPDisplayList(POLY_OPA_DISP++, gPaperCrownGenericDL);
+        Matrix_Pop();
+        CLOSE_DISPS(play->state.gfxCtx);
     }
 }
 

@@ -2796,6 +2796,7 @@ void Actor_Draw(PlayState* play, Actor* actor) {
     }
 
     actor->draw(actor, play);
+    GameInteractor_ExecuteOnActorDraw(actor);
 
     if (actor->colorFilterTimer != 0) {
         if (actor->colorFilterParams & 0x2000) {
@@ -3351,7 +3352,8 @@ Actor* Actor_Spawn(ActorContext* actorCtx, PlayState* play, s16 actorId, f32 pos
 
     objBankIndex = Object_GetIndex(&gPlayState->objectCtx, dbEntry->objectId);
 
-    if (objBankIndex < 0 && (!gMapLoading || CVarGetInteger(CVAR_ENHANCEMENT("RandomizedEnemies"), 0))) {
+    if (objBankIndex < 0 && (!gMapLoading || CVarGetInteger(CVAR_ENHANCEMENT("RandomizedEnemies"), 0) ||
+                             CVarGetInteger("gHoliday.Gameplay.Blitz.Enabled", 0))) {
         objBankIndex = 0;
     }
 

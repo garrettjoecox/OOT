@@ -38,6 +38,9 @@ Input* D_8012D1F8 = NULL;
 PlayState* gPlayState;
 s16 firstInit = 0;
 s16 gEnPartnerId;
+s16 gEnSnowballId;
+s16 gEnChristmasTreeId;
+s16 gEnChristmasDecoId;
 
 void Play_SpawnScene(PlayState* play, s32 sceneId, s32 spawn);
 
@@ -687,6 +690,12 @@ void Play_Init(GameState* thisx) {
                     GET_PLAYER(play)->actor.world.pos.y + Player_GetHeight(GET_PLAYER(play)) + 5.0f,
                     GET_PLAYER(play)->actor.world.pos.z, 0, 0, 0, 1, true);
     }
+
+    if (play->sceneNum == SCENE_KAKARIKO_VILLAGE) {
+        Actor_Spawn(&play->actorCtx, play, gEnChristmasTreeId, -734, 0, 420, 0, 0, 0, 0, true);
+    }
+
+    Actor_Spawn(&play->actorCtx, play, gEnChristmasDecoId, 0, 0, 0, 0, 0, 0, 0, true);
 }
 
 void Play_Update(PlayState* play) {
@@ -1596,6 +1605,10 @@ void Play_Draw(PlayState* play) {
         if ((HREG(80) != 10) || (HREG(88) != 0)) {
             if (play->envCtx.sandstormState != SANDSTORM_OFF) {
                 Environment_DrawSandstorm(play, play->envCtx.sandstormState);
+            } else if (CVarGetInteger("gHoliday.Visual.SnowingWeatherActive", 0) == 1) {
+                Environment_DrawSandstorm(play, SANDSTORM_DISSIPATE);
+            } else if (CVarGetInteger("gHoliday.Visual.SnowingWeatherActive", 0) == 2) {
+                Environment_DrawSandstorm(play, SANDSTORM_ACTIVE);
             }
         }
 
@@ -1692,7 +1705,7 @@ time_t Play_GetRealTime() {
 void Play_Main(GameState* thisx) {
     PlayState* play = (PlayState*)thisx;
 
-    if (play->envCtx.unk_EE[2] == 0 && CVarGetInteger(CVAR_GENERAL("LetItSnow"), 0)) {
+    if (play->envCtx.unk_EE[2] == 0 && CVarGetInteger("gHoliday.Visual.SnowingWeather", 0)) {
         play->envCtx.unk_EE[3] = 64;
         Actor_Spawn(&gPlayState->actorCtx, gPlayState, ACTOR_OBJECT_KANKYO, 0, 0, 0, 0, 0, 0, 3, 0);
     }

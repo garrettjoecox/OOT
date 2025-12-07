@@ -7,6 +7,7 @@
 #include "z_en_wood02.h"
 #include "objects/object_wood02/object_wood02.h"
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
+#include "soh/Enhancements/Holiday/Fredomato.h"
 
 #define FLAGS 0
 
@@ -178,6 +179,18 @@ void EnWood02_Init(Actor* thisx, PlayState* play2) {
     s32 bgId;
     f32 floorY;
     s16 extraRot;
+
+    if (CVarGetInteger(CVAR_GENERAL("LetItSnow"), 0)) {
+        if (gPlayState->sceneNum == SCENE_KAKARIKO_VILLAGE && this->actor.params <= WOOD_TREE_KAKARIKO_ADULT) {
+            Actor_Kill(this);
+        }
+
+        if (gPlayState->sceneNum == SCENE_KAKARIKO_VILLAGE && this->actor.params >= 0) {
+            this->actor.world.pos.x = 754.051;
+            this->actor.world.pos.y = 80.0;
+            this->actor.world.pos.z = 1429.908;
+        }
+    }
 
     // The tree in Kakariko's day scene does not have the same params to spawn the GS
     // as the night scene, For the always spawn GS enhancement we apply the needed
@@ -356,8 +369,9 @@ void EnWood02_Update(Actor* thisx, PlayState* play2) {
         if (this->actor.home.rot.y != 0) {
             dropsSpawnPt = this->actor.world.pos;
             dropsSpawnPt.y += 200.0f;
-
-            if (GameInteractor_Should(VB_TREE_DROP_ITEM, true, this)) {
+            if (HandleTreeBonk(&this->actor)) {
+                // no-op
+            } else if (GameInteractor_Should(VB_TREE_DROP_ITEM, true, this)) {
                 if ((this->unk_14C >= 0) && (this->unk_14C < 0x64)) {
                     if (GameInteractor_Should(VB_TREE_DROP_COLLECTIBLE, true, this)) {
                         Item_DropCollectibleRandom(play, &this->actor, &dropsSpawnPt, this->unk_14C << 4);
@@ -455,6 +469,10 @@ void EnWood02_Draw(Actor* thisx, PlayState* play) {
         green = 155;
         blue = 0;
     } else {
+        red = green = blue = 255;
+    }
+
+    if (CVarGetInteger("gHoliday.Visual.SnowingWeather", 0)) {
         red = green = blue = 255;
     }
 

@@ -5,6 +5,7 @@
 #include <assert.h>
 #include "soh/ResourceManagerHelpers.h"
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
+#include "soh/Enhancements/Holiday/Archez.h"
 
 #define ANIM_INTERP 1
 
@@ -45,7 +46,7 @@ void SkelAnime_DrawLimbLod(PlayState* play, s32 limbIndex, void** skeleton, Vec3
 
     if ((overrideLimbDraw == NULL) || !overrideLimbDraw(play, limbIndex, &dList, &pos, &rot, arg)) {
         Matrix_TranslateRotateZYX(&pos, &rot);
-        if (dList != NULL) {
+        if (GameInteractor_Should(VB_DRAW_SKEL_LIMB, dList != NULL, &POLY_OPA_DISP, dList)) {
             gSPMatrix(POLY_OPA_DISP++, MATRIX_NEWMTX(play->state.gfxCtx), G_MTX_LOAD);
             gSPDisplayList(POLY_OPA_DISP++, dList);
         }
@@ -105,7 +106,7 @@ void SkelAnime_DrawLod(PlayState* play, void** skeleton, Vec3s* jointTable, Over
 
     if ((overrideLimbDraw == NULL) || !overrideLimbDraw(play, 1, &dList, &pos, &rot, arg)) {
         Matrix_TranslateRotateZYX(&pos, &rot);
-        if (dList != NULL) {
+        if (GameInteractor_Should(VB_DRAW_SKEL_LIMB, dList != NULL, &POLY_OPA_DISP, dList)) {
             gSPMatrix(POLY_OPA_DISP++, MATRIX_NEWMTX(play->state.gfxCtx), G_MTX_LOAD);
             gSPDisplayList(POLY_OPA_DISP++, dList);
         }
@@ -121,6 +122,8 @@ void SkelAnime_DrawLod(PlayState* play, void** skeleton, Vec3s* jointTable, Over
     Matrix_Pop();
 
     CLOSE_DISPS(play->state.gfxCtx);
+
+    ClearOverrideSkips();
 }
 
 /**
@@ -157,8 +160,10 @@ void SkelAnime_DrawFlexLimbLod(PlayState* play, s32 limbIndex, void** skeleton, 
             MATRIX_TOMTX(*mtx);
             {
                 OPEN_DISPS(play->state.gfxCtx);
-                gSPMatrix(POLY_OPA_DISP++, *mtx, G_MTX_LOAD);
-                gSPDisplayList(POLY_OPA_DISP++, newDList);
+                if (GameInteractor_Should(VB_DRAW_SKEL_LIMB, true, &POLY_OPA_DISP, newDList, *mtx)) {
+                    gSPMatrix(POLY_OPA_DISP++, *mtx, G_MTX_LOAD);
+                    gSPDisplayList(POLY_OPA_DISP++, newDList);
+                }
                 CLOSE_DISPS(play->state.gfxCtx);
             }
             (*mtx)++;
@@ -230,8 +235,10 @@ void SkelAnime_DrawFlexLod(PlayState* play, void** skeleton, Vec3s* jointTable, 
         if (newDList != NULL) {
             MATRIX_TOMTX(mtx);
             gDPNoOpString(POLY_OPA_DISP++, "T5ST", 0);
-            gSPMatrix(POLY_OPA_DISP++, mtx, G_MTX_LOAD);
-            gSPDisplayList(POLY_OPA_DISP++, newDList);
+            if (GameInteractor_Should(VB_DRAW_SKEL_LIMB, true, &POLY_OPA_DISP, newDList, *mtx)) {
+                gSPMatrix(POLY_OPA_DISP++, mtx, G_MTX_LOAD);
+                gSPDisplayList(POLY_OPA_DISP++, newDList);
+            }
             mtx++;
         } else if (limbDList != NULL) {
             MATRIX_TOMTX(mtx);
@@ -250,6 +257,8 @@ void SkelAnime_DrawFlexLod(PlayState* play, void** skeleton, Vec3s* jointTable, 
     Matrix_Pop();
 
     CLOSE_DISPS(play->state.gfxCtx);
+
+    ClearOverrideSkips();
 }
 
 /**
@@ -275,7 +284,7 @@ void SkelAnime_DrawLimbOpa(PlayState* play, s32 limbIndex, void** skeleton, Vec3
 
     if ((overrideLimbDraw == NULL) || !overrideLimbDraw(play, limbIndex, &dList, &pos, &rot, arg)) {
         Matrix_TranslateRotateZYX(&pos, &rot);
-        if (dList != NULL) {
+        if (GameInteractor_Should(VB_DRAW_SKEL_LIMB, dList != NULL, &POLY_OPA_DISP, dList)) {
             gSPMatrix(POLY_OPA_DISP++, MATRIX_NEWMTX(play->state.gfxCtx), G_MTX_LOAD);
             gSPDisplayList(POLY_OPA_DISP++, dList);
         }
@@ -356,7 +365,7 @@ void SkelAnime_DrawOpa(PlayState* play, void** skeleton, Vec3s* jointTable, Over
 
     if ((overrideLimbDraw == NULL) || !overrideLimbDraw(play, 1, &dList, &pos, &rot, arg)) {
         Matrix_TranslateRotateZYX(&pos, &rot);
-        if (dList != NULL) {
+        if (GameInteractor_Should(VB_DRAW_SKEL_LIMB, dList != NULL, &POLY_OPA_DISP, dList)) {
             gSPMatrix(POLY_OPA_DISP++, MATRIX_NEWMTX(play->state.gfxCtx), G_MTX_LOAD);
             gSPDisplayList(POLY_OPA_DISP++, dList);
         }
@@ -373,6 +382,8 @@ void SkelAnime_DrawOpa(PlayState* play, void** skeleton, Vec3s* jointTable, Over
     Matrix_Pop();
 
     CLOSE_DISPS(play->state.gfxCtx);
+
+    ClearOverrideSkips();
 }
 
 /**
@@ -407,8 +418,10 @@ void SkelAnime_DrawFlexLimbOpa(PlayState* play, s32 limbIndex, void** skeleton, 
         Matrix_TranslateRotateZYX(&pos, &rot);
         if (newDList != NULL) {
             MATRIX_TOMTX(*limbMatricies);
-            gSPMatrix(POLY_OPA_DISP++, *limbMatricies, G_MTX_LOAD);
-            gSPDisplayList(POLY_OPA_DISP++, newDList);
+            if (GameInteractor_Should(VB_DRAW_SKEL_LIMB, true, &POLY_OPA_DISP, newDList, *limbMatricies)) {
+                gSPMatrix(POLY_OPA_DISP++, *limbMatricies, G_MTX_LOAD);
+                gSPDisplayList(POLY_OPA_DISP++, newDList);
+            }
             (*limbMatricies)++;
         } else if (limbDList != NULL) {
             MATRIX_TOMTX(*limbMatricies);
@@ -476,8 +489,10 @@ void SkelAnime_DrawFlexOpa(PlayState* play, void** skeleton, Vec3s* jointTable, 
         Matrix_TranslateRotateZYX(&pos, &rot);
         if (newDList != NULL) {
             MATRIX_TOMTX(mtx);
-            gSPMatrix(POLY_OPA_DISP++, mtx, G_MTX_LOAD);
-            gSPDisplayList(POLY_OPA_DISP++, newDList);
+            if (GameInteractor_Should(VB_DRAW_SKEL_LIMB, true, &POLY_OPA_DISP, newDList, *mtx)) {
+                gSPMatrix(POLY_OPA_DISP++, mtx, G_MTX_LOAD);
+                gSPDisplayList(POLY_OPA_DISP++, newDList);
+            }
             mtx++;
         } else if (limbDList != NULL) {
             MATRIX_TOMTX(mtx);
@@ -496,6 +511,8 @@ void SkelAnime_DrawFlexOpa(PlayState* play, void** skeleton, Vec3s* jointTable, 
 
     Matrix_Pop();
     CLOSE_DISPS(play->state.gfxCtx);
+
+    ClearOverrideSkips();
 }
 
 /**
@@ -574,7 +591,7 @@ Gfx* SkelAnime_DrawLimb(PlayState* play, s32 limbIndex, void** skeleton, Vec3s* 
 
     if ((overrideLimbDraw == NULL) || !overrideLimbDraw(play, limbIndex, &dList, &pos, &rot, arg, &gfx)) {
         Matrix_TranslateRotateZYX(&pos, &rot);
-        if (dList != NULL) {
+        if (GameInteractor_Should(VB_DRAW_SKEL_LIMB, dList != NULL, &gfx, dList)) {
             gSPMatrix(gfx++, MATRIX_NEWMTX(play->state.gfxCtx), G_MTX_LOAD);
             gSPDisplayList(gfx++, dList);
         }
@@ -630,7 +647,7 @@ Gfx* SkelAnime_Draw(PlayState* play, void** skeleton, Vec3s* jointTable, Overrid
 
     if ((overrideLimbDraw == NULL) || !overrideLimbDraw(play, 1, &dList, &pos, &rot, arg, &gfx)) {
         Matrix_TranslateRotateZYX(&pos, &rot);
-        if (dList != NULL) {
+        if (GameInteractor_Should(VB_DRAW_SKEL_LIMB, dList != NULL, &gfx, dList)) {
             gSPMatrix(gfx++, MATRIX_NEWMTX(play->state.gfxCtx), G_MTX_LOAD);
             gSPDisplayList(gfx++, dList);
         }
@@ -645,6 +662,8 @@ Gfx* SkelAnime_Draw(PlayState* play, void** skeleton, Vec3s* jointTable, Overrid
     }
 
     Matrix_Pop();
+
+    ClearOverrideSkips();
 
     return gfx;
 }
@@ -676,8 +695,10 @@ Gfx* SkelAnime_DrawFlexLimb(PlayState* play, s32 limbIndex, void** skeleton, Vec
         Matrix_TranslateRotateZYX(&pos, &rot);
         if (newDList != NULL) {
             MATRIX_TOMTX(*mtx);
-            gSPMatrix(gfx++, *mtx, G_MTX_LOAD);
-            gSPDisplayList(gfx++, newDList);
+            if (GameInteractor_Should(VB_DRAW_SKEL_LIMB, true, &gfx, newDList, *mtx)) {
+                gSPMatrix(gfx++, *mtx, G_MTX_LOAD);
+                gSPDisplayList(gfx++, newDList);
+            }
             (*mtx)++;
         } else if (limbDList != NULL) {
             MATRIX_TOMTX(*mtx);
@@ -741,8 +762,10 @@ Gfx* SkelAnime_DrawFlex(PlayState* play, void** skeleton, Vec3s* jointTable, s32
         Matrix_TranslateRotateZYX(&pos, &rot);
         if (newDList != NULL) {
             MATRIX_TOMTX(mtx);
-            gSPMatrix(gfx++, mtx, G_MTX_LOAD);
-            gSPDisplayList(gfx++, newDList);
+            if (GameInteractor_Should(VB_DRAW_SKEL_LIMB, true, &gfx, newDList, *mtx)) {
+                gSPMatrix(gfx++, mtx, G_MTX_LOAD);
+                gSPDisplayList(gfx++, newDList);
+            }
             mtx++;
         } else if (limbDList != NULL) {
             MATRIX_TOMTX(mtx);
@@ -758,6 +781,8 @@ Gfx* SkelAnime_DrawFlex(PlayState* play, void** skeleton, Vec3s* jointTable, s32
     }
 
     Matrix_Pop();
+
+    ClearOverrideSkips();
 
     return gfx;
 }

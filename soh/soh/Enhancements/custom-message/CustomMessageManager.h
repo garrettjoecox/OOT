@@ -77,6 +77,9 @@ class CustomMessage {
     void SetTextBoxType(TextBoxType boxType);
     const TextBoxPosition& GetTextBoxPosition() const;
 
+    // To only be used with OnOpenText hook
+    void LoadIntoFont();
+
     CustomMessage operator+(const CustomMessage& right) const;
     CustomMessage operator+(const std::string& right) const;
     void operator+=(const std::string& right);
@@ -244,10 +247,14 @@ class CustomMessageManager {
 
     bool InsertCustomMessage(std::string tableID, uint16_t textID, CustomMessage message);
 
+    CustomMessage activeCustomMessage;
+
   public:
     static CustomMessageManager* Instance;
 
     CustomMessageManager() = default;
+
+    void RegisterHooks();
 
     /**
      * @brief Formats the provided Custom Message Entry and inserts it into the table with the provided tableID,
@@ -307,6 +314,22 @@ class CustomMessageManager {
      * already exists.)
      */
     bool AddCustomMessageTable(std::string tableID);
+
+    /**
+     * @brief Sets the active custom message, which will be used the next time
+     * TEXT_CUSTOM_MESSAGE is used for a text box.
+     *
+     * @param message the message to set as active
+     */
+    void SetActiveCustomMessage(CustomMessage message);
+
+    /**
+     * @brief Displays a custom message in a textbox. This is the same as calling
+     * SetActiveCustomMessage and then beginning a textbox with TEXT_CUSTOM_MESSAGE.
+     *
+     * @param message the message to set as active
+     */
+    void StartTextbox(CustomMessage message);
 };
 
 class MessageNotFoundException : public std::exception {

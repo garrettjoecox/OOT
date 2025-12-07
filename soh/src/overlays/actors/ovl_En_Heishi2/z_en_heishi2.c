@@ -15,6 +15,8 @@
 #include "soh/Enhancements/game-interactor/GameInteractor.h"
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
 
+#include "soh/Enhancements/Holiday/Archez.h"
+
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
 void EnHeishi2_Init(Actor* thisx, PlayState* play);
@@ -830,6 +832,10 @@ s32 EnHeishi2_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3
                 rot->x = rot->x + this->unk_260.y;
                 rot->z = rot->z + this->unk_260.z;
             }
+    }
+
+    if (limbIndex == 15) {
+        SkipOverrideNextLimb();
     }
 
     return false;

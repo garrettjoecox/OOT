@@ -807,7 +807,7 @@ void DrawItem(ItemTrackerItem item) {
         case RG_TRIFORCE_PIECE:
             actualItemId = item.id;
             hasItem = IS_RANDO && OTRGlobals::Instance->gRandomizer->GetRandoSettingValue(RSK_TRIFORCE_HUNT);
-            itemName = "Triforce Piece";
+            itemName = "Christmas Ornament";
             break;
         case RG_GOHMA_SOUL:
             actualItemId = item.id;
@@ -1669,7 +1669,7 @@ void ItemTrackerWindow::DrawElement() {
 
         if (CVarGetInteger(CVAR_TRACKER_ITEM("DisplayType.TriforcePieces"), SECTION_DISPLAY_HIDDEN) ==
             SECTION_DISPLAY_SEPARATE) {
-            BeginFloatingWindows("Triforce Piece Tracker");
+            BeginFloatingWindows("Christmas Ornament Tracker");
             DrawItemsInRows(triforcePieces);
             EndFloatingWindows();
         }
@@ -1992,7 +1992,7 @@ void RegisterItemTrackerWidgets() {
                      .Tooltip("Customize what numbers are shown for key tracking."));
     SohGui::mSohMenu->AddSearchWidget({ keyTracking, "Randomizer", "Item Tracker", "General Settings" });
 
-    triforcePieceTracking = { .name = "Triforce Pieces", .type = WidgetType::WIDGET_CVAR_COMBOBOX };
+    triforcePieceTracking = { .name = "Christmas Ornaments", .type = WidgetType::WIDGET_CVAR_COMBOBOX };
     triforcePieceTracking.CVar(CVAR_TRACKER_ITEM("DisplayType.TriforcePieces"))
         .Options(ComboboxOptions()
                      .DefaultIndex(SECTION_DISPLAY_HIDDEN)
@@ -2040,7 +2040,7 @@ void RegisterItemTrackerWidgets() {
     ;
     SohGui::mSohMenu->AddSearchWidget({ bossSoulsTracking, "Randomizer", "Item Tracker", "General Settings", "icon" });
 
-    triforcePieceCount = { .name = "Triforce Piece Count Tracking", .type = WidgetType::WIDGET_CVAR_COMBOBOX };
+    triforcePieceCount = { .name = "Christmas Ornament Count Tracking", .type = WidgetType::WIDGET_CVAR_COMBOBOX };
     triforcePieceCount.CVar(CVAR_TRACKER_ITEM("TriforcePieceCounts"))
         .Options(ComboboxOptions()
                      .DefaultIndex(TRIFORCE_PIECE_COLLECTED_REQUIRED_MAX)
@@ -2048,7 +2048,7 @@ void RegisterItemTrackerWidgets() {
                      .LabelPosition(LabelPositions::Far)
                      .Color(THEME_COLOR)
                      .ComboMap(itemTrackerTriforcePieceTrackOptions)
-                     .Tooltip("Customize what numbers are shown for triforce piece tracking."));
+                     .Tooltip("Customize what numbers are shown for Christmas ornament tracking."));
     SohGui::mSohMenu->AddSearchWidget({ triforcePieceCount, "Randomizer", "Item Tracker", "General Settings" });
 
     ocarinaButtonTracking = { .name = "Ocarina Buttons", .type = WidgetType::WIDGET_CVAR_COMBOBOX };

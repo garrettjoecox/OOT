@@ -18,6 +18,7 @@ typedef enum TimerDisplay {
     DISPLAY_TIME_OF_DAY,
     DISPLAY_CONDITIONAL_TIMER,
     DISPLAY_NAVI_TIMER,
+    DISPLAY_FRED_QUEST,
 } TimerDisplay;
 
 typedef enum NaviTimerValues {

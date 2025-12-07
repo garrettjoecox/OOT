@@ -12,7 +12,9 @@
 #include "overlays/effects/ovl_Effect_Ss_Hahen/z_eff_ss_hahen.h"
 #include "overlays/actors/ovl_Door_Warp1/z_door_warp1.h"
 #include "soh/OTRGlobals.h"
+#include "soh_assets.h"
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
+#include "soh/Enhancements/Holiday/Archez.h"
 
 #define FLAGS                                                                                 \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
@@ -1350,6 +1352,8 @@ s32 BossGanondrof_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, 
         case 15:
             if ((this->actionFunc == BossGanondrof_Intro) && this->work[GND_MASK_OFF]) {
                 *dList = gPhantomGanonFaceDL;
+            } else {
+                SkipOverrideNextLimb();
             }
             rot->y += this->rideRotY[limbIndex];
             rot->z += this->rideRotZ[limbIndex];
@@ -1409,6 +1413,10 @@ s32 BossGanondrof_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, 
             break;
     }
 
+    if (limbIndex == 12) {
+        SkipOverrideNextLimb();
+    }
+
     return 0;
 }
 
@@ -1426,6 +1434,21 @@ void BossGanondrof_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec
 
     if (((this->flyMode != GND_FLY_PAINTING) || (this->actionFunc == BossGanondrof_Intro)) && (limbIndex <= 25)) {
         Matrix_MultVec3f(&zeroVec, &this->bodyPartsPos[limbIndex - 1]);
+    }
+
+    if (CVarGetInteger("gHoliday.Visual.Hats", 0) && this->deathState == NOT_DEAD) {
+        if (limbIndex == 15) {
+            OPEN_DISPS(play->state.gfxCtx);
+            Matrix_Push();
+            Matrix_RotateZYX(11955, 0, -15499, MTXMODE_APPLY);
+            Matrix_Translate(459.460f, 256.757f, -567.568f, MTXMODE_APPLY);
+            Matrix_Scale(0.877f, 0.877f, 0.877f, MTXMODE_APPLY);
+            gDPSetEnvColor(POLY_OPA_DISP++, 255, 100, 100, 255);
+            gSPMatrix(POLY_OPA_DISP++, MATRIX_NEWMTX(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            gSPDisplayList(POLY_OPA_DISP++, gPaperCrownGenericDL);
+            Matrix_Pop();
+            CLOSE_DISPS(play->state.gfxCtx);
+        }
     }
 }
 

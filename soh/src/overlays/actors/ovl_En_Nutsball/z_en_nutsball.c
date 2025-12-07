@@ -12,6 +12,7 @@
 #include "objects/object_shopnuts/object_shopnuts.h"
 #include "objects/object_dns/object_dns.h"
 #include "objects/object_dnk/object_dnk.h"
+#include "assets/objects/gameplay_keep/gameplay_keep.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 
@@ -75,7 +76,7 @@ void EnNutsball_Init(Actor* thisx, PlayState* play) {
     ActorShape_Init(&this->actor.shape, 400.0f, ActorShadow_DrawCircle, 13.0f);
     Collider_InitCylinder(play, &this->collider);
     Collider_SetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
-    if (CVarGetInteger(CVAR_ENHANCEMENT("RandomizedEnemies"), 0)) {
+    if (CVarGetInteger(CVAR_ENHANCEMENT("RandomizedEnemies"), 0) || CVarGetInteger(CVAR_GENERAL("LetItSnow"), 0)) {
         this->objBankIndex = 0;
     } else {
         this->objBankIndex = Object_GetIndex(&play->objectCtx, sObjectIDs[this->actor.params]);
@@ -141,8 +142,10 @@ void func_80ABBBA8(EnNutsball* this, PlayState* play) {
         sp40.y = this->actor.world.pos.y + 4;
         sp40.z = this->actor.world.pos.z;
 
-        EffectSsHahen_SpawnBurst(play, &sp40, 6.0f, 0, 7, 3, 15, HAHEN_OBJECT_DEFAULT, 10, NULL);
-        SoundSource_PlaySfxAtFixedWorldPos(play, &this->actor.world.pos, 20, NA_SE_EN_OCTAROCK_ROCK);
+        /*EffectSsHahen_SpawnBurst(play, &sp40, 6.0f, 0, 7, 3, 15, HAHEN_OBJECT_DEFAULT, 10, NULL);
+        SoundSource_PlaySfxAtFixedWorldPos(play, &this->actor.world.pos, 20, NA_SE_EN_OCTAROCK_ROCK);*/
+        EffectSsIcePiece_SpawnBurst(play, &this->actor.world.pos, this->actor.scale.x / 10);
+        SoundSource_PlaySfxAtFixedWorldPos(play, &this->actor.world.pos, 20, NA_SE_PL_ICE_BROKEN);
         Actor_Kill(&this->actor);
     } else {
         if (this->timer == -300) {
@@ -178,15 +181,34 @@ void EnNutsball_Draw(Actor* thisx, PlayState* play) {
 
     OPEN_DISPS(play->state.gfxCtx);
 
-    if (CVarGetInteger(CVAR_ENHANCEMENT("NewDrops"), 0) != 0) {
+    // if ((CVarGetInteger(CVAR_ENHANCEMENT("NewDrops"), 0) != 0) || CVarGetInteger(CVAR_GENERAL("LetItSnow"), 0)) {
+    //     Gfx_SetupDL_25Opa(play->state.gfxCtx);
+    //     f32 scale = 12.0f;
+
+    //    gSPSegment(POLY_OPA_DISP++, 0x08,
+    //               Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, (0 - 1) % 128, 32, 32, 1, 0, (1 * -2) % 128, 32, 32));
+
+    //    Matrix_RotateX(thisx->home.rot.z * 9.58738e-05f, MTXMODE_APPLY);
+    //    Matrix_Translate(0.0f, -445.946f, 0.0f, MTXMODE_APPLY);
+    //    Matrix_Scale(scale, scale, scale, MTXMODE_APPLY);
+
+    //    gSPMatrix(POLY_OPA_DISP++, MATRIX_NEWMTX(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    //    gDPSetEnvColor(POLY_OPA_DISP++, 0, 50, 100, 255);
+    //    gSPDisplayList(POLY_OPA_DISP++, gEffIceFragment3DL);
+    if ((CVarGetInteger(CVAR_ENHANCEMENT("NewDrops"), 0) != 0) || CVarGetInteger(CVAR_GENERAL("LetItSnow"), 0)) {
         Gfx_SetupDL_25Opa(play->state.gfxCtx);
+        f32 scale = 12.0f;
+
         gSPSegment(POLY_OPA_DISP++, 0x08,
-                   Gfx_TwoTexScroll(play->state.gfxCtx, 0, 1 * (play->state.frames * 6), 1 * (play->state.frames * 6),
-                                    32, 32, 1, 1 * (play->state.frames * 6), 1 * (play->state.frames * 6), 32, 32));
-        Matrix_Scale(25.0f, 25.0f, 25.0f, MTXMODE_APPLY);
+                   Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, (0 - 1) % 128, 32, 32, 1, 0, (1 * -2) % 128, 32, 32));
+
         Matrix_RotateX(thisx->home.rot.z * 9.58738e-05f, MTXMODE_APPLY);
-        gSPMatrix(POLY_OPA_DISP++, MATRIX_NEWMTX(play->state.gfxCtx), G_MTX_MODELVIEW | G_MTX_LOAD);
-        gSPDisplayList(POLY_OPA_DISP++, sDListsNew[thisx->params]);
+        Matrix_Translate(0.0f, -445.946f, 0.0f, MTXMODE_APPLY);
+        Matrix_Scale(scale, scale, scale, MTXMODE_APPLY);
+
+        gSPMatrix(POLY_OPA_DISP++, MATRIX_NEWMTX(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        gDPSetEnvColor(POLY_OPA_DISP++, 0, 50, 100, 255);
+        gSPDisplayList(POLY_OPA_DISP++, gEffIceFragment3DL);
     } else {
         Gfx_SetupDL_25Opa(play->state.gfxCtx);
         Matrix_Mult(&play->billboardMtxF, MTXMODE_APPLY);

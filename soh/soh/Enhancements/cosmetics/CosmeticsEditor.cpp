@@ -46,6 +46,13 @@ extern "C" {
 #include "textures/nintendo_rogo_static/nintendo_rogo_static.h"
 #include "objects/object_gi_rabit_mask/object_gi_rabit_mask.h"
 #include "overlays/ovl_Magic_Wind/ovl_Magic_Wind.h"
+#include "objects/object_wood02/object_wood02.h"
+#include "scenes/overworld/spot00/spot00_room_0.h"
+#include "scenes/overworld/spot04/spot04_room_0.h"
+#include "scenes/overworld/spot04/spot04_room_1.h"
+#include "scenes/overworld/spot20/spot20_room_0.h"
+#include "scenes/overworld/spot03/spot03_room_0.h"
+#include "scenes/overworld/spot15/spot15_room_0.h"
 
 extern PlayState* gPlayState;
 void ResourceMgr_PatchGfxByName(const char* path, const char* patchName, int index, Gfx instruction);
@@ -202,9 +209,9 @@ Color_RGBA8 ColorRGBA8(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
     colors were darker than the gDPSetPrimColor. You will see many more examples of this below in the `ApplyOrResetCustomGfxPatches` method
 */
 static std::map<std::string, CosmeticOption> cosmeticOptions = {
-    COSMETIC_OPTION("Link.KokiriTunic",             "Kokiri Tunic",             COSMETICS_GROUP_LINK,         ColorRGBA8( 30, 105,  27, 255), false, true, false),
-    COSMETIC_OPTION("Link.GoronTunic",              "Goron Tunic",              COSMETICS_GROUP_LINK,         ColorRGBA8(100,  20,   0, 255), false, true, false),
-    COSMETIC_OPTION("Link.ZoraTunic",               "Zora Tunic",               COSMETICS_GROUP_LINK,         ColorRGBA8(  0,  60, 100, 255), false, true, false),
+    COSMETIC_OPTION("Link.KokiriTunic",             "Kokiri Tunic",             COSMETICS_GROUP_LINK,         ColorRGBA8(255,   0,   0, 255), false, true, false),
+    COSMETIC_OPTION("Link.GoronTunic",              "Goron Tunic",              COSMETICS_GROUP_LINK,         ColorRGBA8(255,   0,   0, 255), false, true, false),
+    COSMETIC_OPTION("Link.ZoraTunic",               "Zora Tunic",               COSMETICS_GROUP_LINK,         ColorRGBA8(255,   0,   0, 255), false, true, false),
     COSMETIC_OPTION("Link.Hair",                    "Hair",                     COSMETICS_GROUP_LINK,         ColorRGBA8(255, 173,  27, 255), false, true, true),
     COSMETIC_OPTION("Link.Linen",                   "Linen",                    COSMETICS_GROUP_LINK,         ColorRGBA8(255, 255, 255, 255), false, true, true),
     COSMETIC_OPTION("Link.Boots",                   "Boots",                    COSMETICS_GROUP_LINK,         ColorRGBA8( 93,  44,  18, 255), false, true, true),
@@ -255,7 +262,7 @@ static std::map<std::string, CosmeticOption> cosmeticOptions = {
     COSMETIC_OPTION("Consumable.DDHeartBorder",     "DD Heart Border",          COSMETICS_GROUP_CONSUMABLE,   ColorRGBA8(255, 255, 255, 255), false, true, true),
     COSMETIC_OPTION("Consumable.Magic",             "Magic",                    COSMETICS_GROUP_CONSUMABLE,   ColorRGBA8(  0, 200,   0, 255), false, true, false),
     COSMETIC_OPTION("Consumable.MagicActive",       "Magic Active",             COSMETICS_GROUP_CONSUMABLE,   ColorRGBA8(250, 250,   0, 255), false, true, true),
-    COSMETIC_OPTION("Consumable_MagicInfinite",     "Infinite Magic",           COSMETICS_GROUP_CONSUMABLE,   ColorRGBA8(  0,   0, 200, 255), false, true, true),
+    COSMETIC_OPTION("Consumable.MagicInfinite",     "Infinite Magic",           COSMETICS_GROUP_CONSUMABLE,   ColorRGBA8(  0,   0, 200, 255), false, true, true),
     COSMETIC_OPTION("Consumable.MagicBorder",       "Magic Border",             COSMETICS_GROUP_CONSUMABLE,   ColorRGBA8(255, 255, 255, 255), false, true, true),
     COSMETIC_OPTION("Consumable.MagicBorderActive", "Magic Border Active",      COSMETICS_GROUP_CONSUMABLE,   ColorRGBA8(255, 255, 255, 255), false, true, true),
     COSMETIC_OPTION("Consumable.GreenRupee",        "Green Rupee",              COSMETICS_GROUP_CONSUMABLE,   ColorRGBA8( 50, 255,  50, 255), false, true, true),
@@ -443,7 +450,7 @@ static std::map<std::string, CosmeticOption> cosmeticOptions = {
     COSMETIC_OPTION("NPC.Dog1",                     "Dog 1",                    COSMETICS_GROUP_NPC,          ColorRGBA8(255, 255, 200, 255), false, true, true),
     COSMETIC_OPTION("NPC.Dog2",                     "Dog 2",                    COSMETICS_GROUP_NPC,          ColorRGBA8(150, 100,  50, 255), false, true, true),
     COSMETIC_OPTION("NPC.GoldenSkulltula",          "Golden Skulltula",         COSMETICS_GROUP_NPC,          ColorRGBA8(255, 255, 255, 255), false, true, false),
-    COSMETIC_OPTION("NPC.Kokiri",                   "Kokiri",                   COSMETICS_GROUP_NPC,          ColorRGBA8(  0, 130,  70, 255), false, true, false),
+    COSMETIC_OPTION("NPC.Kokiri",                   "Kokiri",                   COSMETICS_GROUP_NPC,          ColorRGBA8(255,   0,   0, 255), false, true, false),
     COSMETIC_OPTION("NPC.Gerudo",                   "Gerudo",                   COSMETICS_GROUP_NPC,          ColorRGBA8( 90,   0, 140, 255), false, true, false),
     COSMETIC_OPTION("NPC.MetalTrap",                "Metal Trap",               COSMETICS_GROUP_NPC,          ColorRGBA8(255, 255, 255, 255), false, true, true),
     COSMETIC_OPTION("NPC.IronKnuckles",             "Iron Knuckles",            COSMETICS_GROUP_NPC,          ColorRGBA8(245, 255, 205, 255), false, true, false),
@@ -518,6 +525,11 @@ void ResetPositionAll() {
 
 int hue = 0;
 
+#define CVAR_LL(v) \
+    "gHoliday."    \
+    "LL"           \
+    "." v
+
 // Runs every frame to update rainbow hue, a potential future optimization is to only run this a once or twice a second
 // and increase the speed of the rainbow hue rotation.
 void CosmeticsUpdateTick() {
@@ -527,10 +539,43 @@ void CosmeticsUpdateTick() {
         if (cosmeticOption.supportsRainbow && CVarGetInteger(cosmeticOption.rainbowCvar, 0)) {
             double frequency = 2 * M_PI / (360 * rainbowSpeed);
             Color_RGBA8 newColor;
-            newColor.r = static_cast<uint8_t>(sin(frequency * (hue + index) + 0) * 127) + 128;
-            newColor.g = static_cast<uint8_t>(sin(frequency * (hue + index) + (2 * M_PI / 3)) * 127) + 128;
-            newColor.b = static_cast<uint8_t>(sin(frequency * (hue + index) + (4 * M_PI / 3)) * 127) + 128;
+
             newColor.a = 255;
+
+            if (!CVarGetInteger(CVAR_LL("lEnableCustomRainbows"), 0)) {
+                newColor.r = static_cast<uint8_t>(sin(frequency * (hue + index) + 0) * 127) + 128;
+                newColor.g = static_cast<uint8_t>(sin(frequency * (hue + index) + (2 * M_PI / 3)) * 127) + 128;
+                newColor.b = static_cast<uint8_t>(sin(frequency * (hue + index) + (4 * M_PI / 3)) * 127) + 128;
+            } else {
+                Color_RGBA8 customColorZero = CVarGetColor(CVAR_LL("lCustomRainbow1"), {});
+                Color_RGBA8 customColorOne = CVarGetColor(CVAR_LL("lCustomRainbow2"), {});
+                Color_RGBA8 customColorMinusZero = CVarGetColor(CVAR_LL("lCustomRainbow3"), {});
+                Color_RGBA8 customColorMinusOne = CVarGetColor(CVAR_LL("lCustomRainbow4"), {});
+                float sinangle = sin(frequency * (hue + index));
+                bool quadrant1 = hue <= (360 * rainbowSpeed) / 4;
+                bool quadrant2 = hue >= (360 * rainbowSpeed) / 4 && hue <= (360 * rainbowSpeed) / 2;
+                bool quadrant3 = hue >= (360 * rainbowSpeed) / 2 && hue <= (360 * rainbowSpeed) * 3 / 4;
+                bool quadrant4 = hue >= (360 * rainbowSpeed) * 3 / 4;
+
+                if (quadrant1) { // zero to one
+                    newColor.r = sinangle * (customColorOne.r - customColorZero.r) + customColorZero.r;
+                    newColor.g = sinangle * (customColorOne.g - customColorZero.g) + customColorZero.g;
+                    newColor.b = sinangle * (customColorOne.b - customColorZero.b) + customColorZero.b;
+                } else if (quadrant2) { // one to zero
+                    newColor.r = sinangle * (customColorOne.r - customColorMinusZero.r) + customColorMinusZero.r;
+                    newColor.g = sinangle * (customColorOne.g - customColorMinusZero.g) + customColorMinusZero.g;
+                    newColor.b = sinangle * (customColorOne.b - customColorMinusZero.b) + customColorMinusZero.b;
+                } else if (quadrant3) { // zero to minus one
+                    newColor.r = -sinangle * (customColorMinusOne.r - customColorMinusZero.r) + customColorMinusZero.r;
+                    newColor.g = -sinangle * (customColorMinusOne.g - customColorMinusZero.g) + customColorMinusZero.g;
+                    newColor.b = -sinangle * (customColorMinusOne.b - customColorMinusZero.b) + customColorMinusZero.b;
+                } else if (quadrant4) { // minus one to zero
+                    newColor.r = -sinangle * (customColorMinusOne.r - customColorZero.r) + customColorZero.r;
+                    newColor.g = -sinangle * (customColorMinusOne.g - customColorZero.g) + customColorZero.g;
+                    newColor.b = -sinangle * (customColorMinusOne.b - customColorZero.b) + customColorZero.b;
+                }
+            }
+
             // For alpha supported options, retain the last set alpha instead of overwriting
             if (cosmeticOption.supportsAlpha) {
                 newColor.a = static_cast<uint8_t>(cosmeticOption.currentColor.w * 255.0f);
@@ -1875,14 +1920,6 @@ void Reset_Option_Double(const char* Button_Title, const char* name) {
 
 void DrawSillyTab() {
     ImGui::BeginDisabled(CVarGetInteger(CVAR_SETTING("DisableChanges"), 0));
-
-    UIWidgets::Separator(true, true, 2.0f, 2.0f);
-
-    UIWidgets::CVarCheckbox("Let It Snow", CVAR_GENERAL("LetItSnow"),
-                            UIWidgets::CheckboxOptions()
-                                .Color(THEME_COLOR)
-                                .Tooltip("Makes snow fall, changes chest texture colors to red and green, etc, for "
-                                         "December holidays.\nWill reset on restart outside of December 23-25."));
 
     UIWidgets::Separator(true, true, 2.0f, 2.0f);
 

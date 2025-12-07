@@ -946,7 +946,7 @@ std::string CleanCheckConditionString(std::string condition) {
 }
 
 namespace Regions {
-auto GetAllRegions() {
+std::array<RandomizerRegion, RR_MAX - (RR_NONE + 1)> GetAllRegions() {
     static const size_t regionCount = RR_MAX - (RR_NONE + 1);
 
     static std::array<RandomizerRegion, regionCount> allRegions = {};

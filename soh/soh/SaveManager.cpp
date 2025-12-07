@@ -114,6 +114,7 @@ SaveManager::SaveManager() {
     coreSectionIDsByName["scenes"] = SECTION_ID_SCENES;
     coreSectionIDsByName["trackerData"] = SECTION_ID_TRACKER_DATA;
     coreSectionIDsByName["archipelagoData"] = SECTION_ID_ARCHIPELAGO;
+    coreSectionIDsByName["rogueLike"] = SECTION_ID_ROGUELIKE;
     AddLoadFunction("base", 1, LoadBaseVersion1);
     AddLoadFunction("base", 2, LoadBaseVersion2);
     AddLoadFunction("base", 3, LoadBaseVersion3);
@@ -122,6 +123,8 @@ SaveManager::SaveManager() {
 
     AddLoadFunction("randomizer", 1, LoadRandomizer);
     AddSaveFunction("randomizer", 1, SaveRandomizer, true, SECTION_PARENT_NONE);
+    AddLoadFunction("rogueLike", 1, LoadRogueLike);
+    AddSaveFunction("rogueLike", 1, SaveRogueLike, true, SECTION_PARENT_NONE);
 
     AddInitFunction(InitFileImpl);
 
@@ -414,6 +417,36 @@ void SaveManager::SaveRandomizer(SaveContext* saveContext, int sectionID, bool f
     });
 }
 
+void SaveManager::LoadRogueLike() {
+    if (gSaveContext.ship.quest.id != QUEST_ROGUELIKE) {
+        return;
+    }
+
+    SaveManager::Instance->LoadData("difficulty", gSaveContext.ship.quest.data.rogueLike.difficulty);
+    SaveManager::Instance->LoadData("lastActivity", gSaveContext.ship.quest.data.rogueLike.lastActivity);
+    SaveManager::Instance->LoadData("xp", gSaveContext.ship.quest.data.rogueLike.xp);
+
+    SaveManager::Instance->LoadArray("stats", ARRAY_COUNT(gSaveContext.ship.quest.data.rogueLike.stats), [&](size_t i) {
+        u32 value = 0;
+        SaveManager::Instance->LoadData("", value);
+        gSaveContext.ship.quest.data.rogueLike.stats[i] = value;
+    });
+}
+
+void SaveManager::SaveRogueLike(SaveContext* saveContext, int sectionID, bool fullSave) {
+    if (saveContext->ship.quest.id != QUEST_ROGUELIKE) {
+        return;
+    }
+
+    SaveManager::Instance->SaveData("difficulty", saveContext->ship.quest.data.rogueLike.difficulty);
+    SaveManager::Instance->SaveData("lastActivity", saveContext->ship.quest.data.rogueLike.lastActivity);
+    SaveManager::Instance->SaveData("xp", saveContext->ship.quest.data.rogueLike.xp);
+
+    SaveManager::Instance->SaveArray("stats", ARRAY_COUNT(saveContext->ship.quest.data.rogueLike.stats), [&](size_t i) {
+        SaveManager::Instance->SaveData("", saveContext->ship.quest.data.rogueLike.stats[i]);
+    });
+}
+
 // Init() here is an extension of InitSram, and thus not truly an initializer for SaveManager itself. don't put any
 // class initialization stuff here
 void SaveManager::Init() {
@@ -624,6 +657,11 @@ void SaveManager::InitMeta(int fileNum) {
     // in which case we don't actually require a vanilla OTR.
     fileMetaInfo[fileNum].requiresOriginal =
         !IS_MASTER_QUEST && (!IS_RANDO || randoContext->GetDungeons()->CountMQ() < 12);
+
+    if (IS_ROGUELIKE) { // IDK
+        fileMetaInfo[fileNum].requiresMasterQuest = false;
+        fileMetaInfo[fileNum].requiresOriginal = false;
+    }
 
     fileMetaInfo[fileNum].buildVersionMajor = gSaveContext.ship.stats.buildVersionMajor;
     fileMetaInfo[fileNum].buildVersionMinor = gSaveContext.ship.stats.buildVersionMinor;
@@ -2150,6 +2188,9 @@ void SaveManager::LoadBaseVersion4() {
     SaveManager::Instance->LoadData("dogParams", gSaveContext.dogParams);
     SaveManager::Instance->LoadData("filenameLanguage", gSaveContext.ship.filenameLanguage);
     SaveManager::Instance->LoadData("maskMemory", gSaveContext.ship.maskMemory);
+
+    // Ugh..
+    SaveManager::Instance->LoadData("questId", gSaveContext.ship.quest.id);
 }
 
 void SaveManager::SaveBase(SaveContext* saveContext, int sectionID, bool fullSave) {
@@ -2318,6 +2359,9 @@ void SaveManager::SaveBase(SaveContext* saveContext, int sectionID, bool fullSav
     SaveManager::Instance->SaveData("dogParams", saveContext->dogParams);
     SaveManager::Instance->SaveData("filenameLanguage", saveContext->ship.filenameLanguage);
     SaveManager::Instance->SaveData("maskMemory", saveContext->ship.maskMemory);
+
+    // Ugh..
+    SaveManager::Instance->SaveData("questId", gSaveContext.ship.quest.id);
 }
 
 // Load a string into a char array based on size and ensuring it is null terminated when overflowed
@@ -2427,6 +2471,7 @@ void SaveManager::CopyZeldaFile(int from, int to) {
     fileMetaInfo[to].filenameLanguage = fileMetaInfo[from].filenameLanguage;
     SohUtils::CopyStringToCharArray(fileMetaInfo[to].buildVersion, fileMetaInfo[from].buildVersion,
                                     ARRAY_COUNT(fileMetaInfo[to].buildVersion));
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnCopyFile>(from, to);
 }
 
 void SaveManager::DeleteZeldaFile(int fileNum) {

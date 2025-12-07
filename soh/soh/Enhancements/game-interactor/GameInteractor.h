@@ -68,6 +68,7 @@ typedef enum {
 extern "C" {
 #endif
 uint8_t GameInteractor_NoUIActive();
+void GameInteractor_SetNoUIActive(uint8_t state);
 GILinkSize GameInteractor_GetLinkSize();
 void GameInteractor_SetLinkSize(GILinkSize size);
 uint8_t GameInteractor_InvisibleLinkActive();
@@ -107,6 +108,22 @@ void GameInteractor_SetTriforceHuntCreditsWarpActive(uint8_t state);
 #else
 #pragma message("Compiling without <source_location> support, the Hook Debugger will not be available")
 #endif
+
+struct GIEventNone {};
+
+struct GIEventGiveItem {
+    // Whether or not to show the get item cutscene. If true and the player is in the air, the
+    // player will instead be frozen for a few seconds. If this is true you _must_ call
+    // CustomMessage::SetActiveCustomMessage in the giveItem function otherwise you'll just see a blank message.
+    bool showGetItemCutscene;
+    // Arbitrary s16 that can be accessed from within the give/draw functions with CUSTOM_ITEM_PARAM
+    s16 param;
+    // These are run in the context of an item00 actor. This isn't super important but can be useful in some cases
+    ActorFunc giveItem;
+    ActorFunc drawItem;
+};
+
+typedef std::variant<GIEventNone, GIEventGiveItem> GIEvent;
 
 typedef uint32_t HOOK_ID;
 
@@ -160,6 +177,33 @@ struct HookInfo {
             body;                                                                       \
             va_end(args);                                                               \
         })
+#define COND_HOOK(hookType, condition, body)                                                     \
+    {                                                                                            \
+        static HOOK_ID hookId = 0;                                                               \
+        GameInteractor::Instance->UnregisterGameHook<GameInteractor::hookType>(hookId);          \
+        hookId = 0;                                                                              \
+        if (condition) {                                                                         \
+            hookId = GameInteractor::Instance->RegisterGameHook<GameInteractor::hookType>(body); \
+        }                                                                                        \
+    }
+#define COND_ID_HOOK(hookType, id, condition, body)                                                       \
+    {                                                                                                     \
+        static HOOK_ID hookId = 0;                                                                        \
+        GameInteractor::Instance->UnregisterGameHookForID<GameInteractor::hookType>(hookId);              \
+        hookId = 0;                                                                                       \
+        if (condition) {                                                                                  \
+            hookId = GameInteractor::Instance->RegisterGameHookForID<GameInteractor::hookType>(id, body); \
+        }                                                                                                 \
+    }
+#define COND_VB_SHOULD(id, condition, body)                                                           \
+    {                                                                                                 \
+        static HOOK_ID hookId = 0;                                                                    \
+        GameInteractor::Instance->UnregisterGameHookForID<GameInteractor::OnVanillaBehavior>(hookId); \
+        hookId = 0;                                                                                   \
+        if (condition) {                                                                              \
+            hookId = REGISTER_VB_SHOULD(id, body);                                                    \
+        }                                                                                             \
+    }
 
 #define COND_HOOK(hookType, condition, body)                                                     \
     {                                                                                            \
@@ -193,6 +237,8 @@ class GameInteractor {
   public:
     static GameInteractor* Instance;
 
+    void RegisterOwnHooks();
+
     // Game State
     class State {
       public:
@@ -224,6 +270,10 @@ class GameInteractor {
     static GameInteractionEffectQueryResult CanApplyEffect(GameInteractionEffectBase* effect);
     static GameInteractionEffectQueryResult ApplyEffect(GameInteractionEffectBase* effect);
     static GameInteractionEffectQueryResult RemoveEffect(RemovableGameInteractionEffect* effect);
+
+    // EventQueue
+    std::vector<GIEvent> events = {};
+    GIEvent currentEvent = GIEventNone();
 
     // Game Hooks
     HOOK_ID nextHookId = 1;

@@ -8,6 +8,7 @@
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
 
 #include <string.h>
+#include "soh/Enhancements/Holiday/Archez.h"
 
 #define FLAGS                                                                                 \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
@@ -3194,6 +3195,10 @@ s32 BossTw_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* 
         }
     }
 
+    if (limbIndex == 14) {
+        SkipOverrideNextLimb();
+    }
+
     return false;
 }
 
@@ -3608,6 +3613,10 @@ s32 BossTw_TwinrovaOverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList,
 
     if (this->unk_5F8 != 0 && ((limbIndex == 34) || (limbIndex == 40))) {
         *dList = NULL;
+    }
+
+    if (limbIndex == 34 || limbIndex == 40) {
+        SkipOverrideNextLimb();
     }
 
     CLOSE_DISPS(play->state.gfxCtx);

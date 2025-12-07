@@ -3,6 +3,7 @@
 #include "objects/gameplay_field_keep/gameplay_field_keep.h"
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
 #include "soh/ResourceManagerHelpers.h"
+#include "assets/objects/gameplay_keep/gameplay_keep.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE)
 
@@ -520,7 +521,7 @@ void EnOkuta_ProjectileFly(EnOkuta* this, PlayState* play) {
                 f32 temp_f20;
                 f32 temp_f22;
                 s32 i;
-                for (s16 i = 0; i < ARRAY_COUNT(sEffectScales); i++) {
+                /*for (s16 i = 0; i < ARRAY_COUNT(sEffectScales); i++) {
                     phi_s0 += 10000;
 
                     temp_f20 = Rand_ZeroOne() * 5.0f;
@@ -547,12 +548,14 @@ void EnOkuta_ProjectileFly(EnOkuta* this, PlayState* play) {
                     EffectSsKakera_Spawn(play, &pos, &velocity, &this->actor.world.pos, gravity, phi_v0, 30, 5, 0,
                                          sEffectScales[i] / 5, 3, 0, 70, 1, OBJECT_GAMEPLAY_FIELD_KEEP,
                                          gSilverRockFragmentsDL);
-                }
+                }*/
+                EffectSsIcePiece_SpawnBurst(play, &this->actor.world.pos, this->actor.scale.x / 10);
             } else {
                 EffectSsHahen_SpawnBurst(play, &pos, 6.0f, 0, 1, 2, 15, 7, 10, gOctorokProjectileDL);
             }
 
-            SoundSource_PlaySfxAtFixedWorldPos(play, &this->actor.world.pos, 20, NA_SE_EN_OCTAROCK_ROCK);
+            // SoundSource_PlaySfxAtFixedWorldPos(play, &this->actor.world.pos, 20, NA_SE_EN_OCTAROCK_ROCK);
+            SoundSource_PlaySfxAtFixedWorldPos(play, &this->actor.world.pos, 20, NA_SE_PL_ICE_BROKEN);
             Actor_Kill(&this->actor);
         }
     } else if (this->timer == -300) {
@@ -764,16 +767,30 @@ void EnOkuta_Draw(Actor* thisx, PlayState* play) {
     } else {
         OPEN_DISPS(play->state.gfxCtx);
 
-        if (CVarGetInteger(CVAR_ENHANCEMENT("NewDrops"), 0) != 0) {
+        // if (CVarGetInteger(CVAR_ENHANCEMENT("NewDrops"), 0) != 0) {
+        //     Gfx_SetupDL_25Opa(play->state.gfxCtx);
+        //     gSPSegment(POLY_OPA_DISP++, 0x08,
+        //                Gfx_TwoTexScroll(play->state.gfxCtx, 0, 1 * (play->state.frames * 6),
+        //                                 1 * (play->state.frames * 6), 32, 32, 1, 1 * (play->state.frames * 6),
+        //                                 1 * (play->state.frames * 6), 32, 32));
+        //     Matrix_Scale(7.0f, 7.0f, 7.0f, MTXMODE_APPLY);
+        //     Matrix_RotateX(thisx->home.rot.z * (M_PI / 0x8000), MTXMODE_APPLY);
+        //     gSPMatrix(POLY_OPA_DISP++, MATRIX_NEWMTX(play->state.gfxCtx), G_MTX_MODELVIEW | G_MTX_LOAD);
+        //     gSPDisplayList(POLY_OPA_DISP++, gSilverRockDL);
+        if ((CVarGetInteger(CVAR_ENHANCEMENT("NewDrops"), 0) != 0) || CVarGetInteger(CVAR_GENERAL("LetItSnow"), 0)) {
             Gfx_SetupDL_25Opa(play->state.gfxCtx);
+            f32 scale = 12.0f;
+
             gSPSegment(POLY_OPA_DISP++, 0x08,
-                       Gfx_TwoTexScroll(play->state.gfxCtx, 0, 1 * (play->state.frames * 6),
-                                        1 * (play->state.frames * 6), 32, 32, 1, 1 * (play->state.frames * 6),
-                                        1 * (play->state.frames * 6), 32, 32));
-            Matrix_Scale(7.0f, 7.0f, 7.0f, MTXMODE_APPLY);
-            Matrix_RotateX(thisx->home.rot.z * (M_PI / 0x8000), MTXMODE_APPLY);
-            gSPMatrix(POLY_OPA_DISP++, MATRIX_NEWMTX(play->state.gfxCtx), G_MTX_MODELVIEW | G_MTX_LOAD);
-            gSPDisplayList(POLY_OPA_DISP++, gSilverRockDL);
+                       Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, (0 - 1) % 128, 32, 32, 1, 0, (1 * -2) % 128, 32, 32));
+
+            Matrix_RotateX(thisx->home.rot.z * 9.58738e-05f, MTXMODE_APPLY);
+            Matrix_Translate(0.0f, -445.946f, 0.0f, MTXMODE_APPLY);
+            Matrix_Scale(scale, scale, scale, MTXMODE_APPLY);
+
+            gSPMatrix(POLY_OPA_DISP++, MATRIX_NEWMTX(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            gDPSetEnvColor(POLY_OPA_DISP++, 0, 50, 100, 255);
+            gSPDisplayList(POLY_OPA_DISP++, gEffIceFragment3DL);
         } else {
             Matrix_Mult(&play->billboardMtxF, MTXMODE_APPLY);
             Matrix_RotateZ(this->actor.home.rot.z * (M_PI / 0x8000), MTXMODE_APPLY);

@@ -9,6 +9,9 @@
 #include "overlays/actors/ovl_En_Bom/z_en_bom.h"
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
 #include "soh/ResourceManagerHelpers.h"
+#include "soh_assets.h"
+
+#include "soh/Enhancements/Holiday/Archez.h"
 
 #define FLAGS                                                                                 \
     (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | \
@@ -952,6 +955,21 @@ void EnAm_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, 
     if ((limbIndex == 1) && (this->unk_264 != 0)) {
         EnAm_TransformSwordHitbox(&this->dyna.actor, play);
     }
+
+    if (CVarGetInteger("gHoliday.Visual.Hats", 0)) {
+        if (limbIndex == 4) {
+            OPEN_DISPS(play->state.gfxCtx);
+            Matrix_Push();
+            Matrix_RotateZYX(0, 0, -2657, MTXMODE_APPLY);
+            Matrix_Translate(4000.0f, 1148.649f, 0.0f, MTXMODE_APPLY);
+            Matrix_Scale(1.655f, 1.655f, 1.655f, MTXMODE_APPLY);
+            gDPSetEnvColor(POLY_OPA_DISP++, 255, 255, 0, 255);
+            gSPMatrix(POLY_OPA_DISP++, MATRIX_NEWMTX(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            gSPDisplayList(POLY_OPA_DISP++, gPaperCrownGenericDL);
+            Matrix_Pop();
+            CLOSE_DISPS(play->state.gfxCtx);
+        }
+    }
 }
 
 static Vec3f sIcePosOffsets[] = {
@@ -969,6 +987,7 @@ void EnAm_Draw(Actor* thisx, PlayState* play) {
 
     Gfx_SetupDL_25Opa(play->state.gfxCtx);
     gDPSetEnvColor(POLY_OPA_DISP++, 0, 0, 0, this->textureBlend);
+    SkipOverrideNextSkeleton();
     SkelAnime_DrawSkeletonOpa(play, &this->skelAnime, NULL, EnAm_PostLimbDraw, this);
 
     if (this->iceTimer != 0) {

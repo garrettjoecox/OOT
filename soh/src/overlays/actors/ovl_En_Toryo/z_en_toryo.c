@@ -9,6 +9,7 @@
 #include "soh/OTRGlobals.h"
 #include "soh/ResourceManagerHelpers.h"
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
+#include "soh_assets.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
@@ -107,6 +108,12 @@ void EnToryo_Init(Actor* thisx, PlayState* play) {
             break;
         case SCENE_KAKARIKO_VILLAGE:
             if ((LINK_AGE_IN_YEARS == YEARS_CHILD) && IS_DAY) {
+                if (CVarGetInteger(CVAR_GENERAL("LetItSnow"), 0)) {
+                    this->actor.world.pos.x = 756.0;
+                    this->actor.world.pos.y = 80.0;
+                    this->actor.world.pos.z = 1378.0;
+                    this->actor.shape.rot.y = 32534;
+                }
                 this->stateFlags |= 2;
             }
             break;
@@ -414,5 +421,17 @@ void EnToryo_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* ro
         case 15:
             Matrix_MultVec3f(&sMultVec, &this->actor.focus.pos);
             break;
+    }
+
+    if (limbIndex == 15 && CVarGetInteger("gHoliday.Visual.Hats", 0)) {
+        OPEN_DISPS(play->state.gfxCtx);
+        Matrix_Push();
+        Matrix_RotateZYX(-23691, 664, -2879, MTXMODE_APPLY);
+        Matrix_Translate(810.811f, -243.243f, 270.27f, MTXMODE_APPLY);
+        Matrix_Scale(1.216f, 1.216f, 1.216f, MTXMODE_APPLY);
+        gSPMatrix(POLY_OPA_DISP++, MATRIX_NEWMTX(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        gSPDisplayList(POLY_OPA_DISP++, gSantaHatGenericDL);
+        Matrix_Pop();
+        CLOSE_DISPS(play->state.gfxCtx);
     }
 }

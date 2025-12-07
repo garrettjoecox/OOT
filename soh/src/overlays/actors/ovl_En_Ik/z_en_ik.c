@@ -10,6 +10,9 @@
 #include "vt.h"
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
 #include "soh/ResourceManagerHelpers.h"
+#include "soh_assets.h"
+
+#include "soh/Enhancements/Holiday/Archez.h"
 
 #define FLAGS ACTOR_FLAG_UPDATE_CULLING_DISABLED
 
@@ -850,6 +853,11 @@ s32 EnIk_OverrideLimbDraw3(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* p
             *dList = NULL;
         }
     }
+
+    if (limbIndex == 17) {
+        SkipOverrideNextLimb();
+    }
+
     return false;
 }
 
@@ -945,6 +953,19 @@ void EnIk_PostLimbDraw3(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot,
                 gSPDisplayList(POLY_XLU_DISP++, object_ik_DL_016CD8);
             }
             break;
+    }
+
+    if (CVarGetInteger("gHoliday.Visual.Hats", 0)) {
+        if (limbIndex == 11) {
+            Matrix_Push();
+            Matrix_RotateZYX(0, 0, -15056, MTXMODE_APPLY);
+            Matrix_Translate(824.324f, 472.973f, 0.0f, MTXMODE_APPLY);
+            Matrix_Scale(0.845f, 0.845f, 0.845f, MTXMODE_APPLY);
+            gDPSetEnvColor(POLY_OPA_DISP++, 255, 100, 100, 255);
+            gSPMatrix(POLY_OPA_DISP++, MATRIX_NEWMTX(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            gSPDisplayList(POLY_OPA_DISP++, gPaperCrownGenericDL);
+            Matrix_Pop();
+        }
     }
 
     CLOSE_DISPS(play->state.gfxCtx);
@@ -1181,6 +1202,10 @@ s32 EnIk_OverrideLimbDraw2(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* p
         }
     }
 
+    if (limbIndex == 17) {
+        SkipOverrideNextLimb();
+    }
+
     return 0;
 }
 
@@ -1223,6 +1248,20 @@ void EnIk_PostLimbDraw2(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot,
             }
         } break;
     }
+
+    if (CVarGetInteger("gHoliday.Visual.Hats", 0)) {
+        if (limbIndex == 11) {
+            Matrix_Push();
+            Matrix_RotateZYX(0, 0, -15056, MTXMODE_APPLY);
+            Matrix_Translate(824.324f, 472.973f, 0.0f, MTXMODE_APPLY);
+            Matrix_Scale(0.845f, 0.845f, 0.845f, MTXMODE_APPLY);
+            gDPSetEnvColor(POLY_OPA_DISP++, 255, 100, 100, 255);
+            gSPMatrix(POLY_OPA_DISP++, MATRIX_NEWMTX(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            gSPDisplayList(POLY_OPA_DISP++, gPaperCrownGenericDL);
+            Matrix_Pop();
+        }
+    }
+
     CLOSE_DISPS(gfxCtx);
 }
 
@@ -1328,6 +1367,7 @@ s32 EnIk_OverrideLimbDraw1(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* p
             if (curFrame < 120.0f) {
                 *dList = NULL;
             } else {
+                SkipOverrideNextLimb();
                 func_80A76E2C(this, play, pos);
             }
             break;
@@ -1366,6 +1406,19 @@ void EnIk_PostLimbDraw1(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot,
             gSPMatrix(POLY_XLU_DISP++, MATRIX_NEWMTX(gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
             gSPDisplayList(POLY_XLU_DISP++, object_ik_DL_016CD8);
             break;
+    }
+
+    if (CVarGetInteger("gHoliday.Visual.Hats", 0)) {
+        if (limbIndex == 11) {
+            Matrix_Push();
+            Matrix_RotateZYX(0, 0, -15056, MTXMODE_APPLY);
+            Matrix_Translate(824.324f, 472.973f, 0.0f, MTXMODE_APPLY);
+            Matrix_Scale(0.845f, 0.845f, 0.845f, MTXMODE_APPLY);
+            gDPSetEnvColor(POLY_OPA_DISP++, 255, 100, 100, 255);
+            gSPMatrix(POLY_OPA_DISP++, MATRIX_NEWMTX(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            gSPDisplayList(POLY_OPA_DISP++, gPaperCrownGenericDL);
+            Matrix_Pop();
+        }
     }
 
     CLOSE_DISPS(gfxCtx);

@@ -588,6 +588,14 @@ typedef enum {
     // true
     // ```
     // #### `args`
+    // - None
+    VB_GANONDORF_DECIDE_TO_FIGHT,
+
+    // #### `result`
+    // ```c
+    // true
+    // ```
+    // #### `args`
     // - `*EnGe2`
     VB_GERUDO_GUARD_SET_ACTION_AFTER_TALK,
 
@@ -1763,6 +1771,14 @@ typedef enum {
 
     // #### `result`
     // ```c
+    // actor.params & 1) == ROCK_SMALL
+    // ```
+    // #### `args`
+    // - `*EnIshi`
+    VB_ROCK_DROP_ITEM,
+
+    // #### `result`
+    // ```c
     // true
     // ```
     // #### `args`
@@ -2257,6 +2273,16 @@ typedef enum {
     // true
     // ```
     // #### `args`
+    // - `*Actor`
+    // - `u8` (damageEffect)
+    // - `u8` (damage)
+    VB_APPLY_DAMAGE_TO_ACTOR,
+
+    // #### `result`
+    // ```c
+    // true
+    // ```
+    // #### `args`
     // - `*EnRr`
     VB_LIKE_LIKE_GRAB_PLAYER,
 
@@ -2381,6 +2407,18 @@ typedef enum {
     // - `*Player`
     // - `*Color_RGB8`
     VB_APPLY_TUNIC_COLOR,
+
+    // #### `result`
+    // ```c
+    // true
+    // ```
+    // #### `args`
+    // - `*int32_t` // ItemID
+    VB_USE_ITEM,
+
+    VB_DRAW_SKEL_LIMB,
+    VB_DRAW_SKEL_FLEX_LIMB,
+    VB_PLAYER_ROLL,
 
 } GIVanillaBehavior;
 

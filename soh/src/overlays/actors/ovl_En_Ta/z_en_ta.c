@@ -10,6 +10,7 @@
 #include "soh/OTRGlobals.h"
 #include "soh/ResourceManagerHelpers.h"
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
+#include "soh_assets.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY)
 
@@ -1214,6 +1215,18 @@ void EnTa_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, 
 
     if (limbIndex == 15) {
         Matrix_MultVec3f(&D_80B16E7C, &this->actor.focus.pos);
+    }
+
+    if (limbIndex == 15 && CVarGetInteger("gHoliday.Visual.Hats", 0)) {
+        OPEN_DISPS(play->state.gfxCtx);
+        Matrix_Push();
+        Matrix_RotateZYX(11955, -1993, 221, MTXMODE_APPLY);
+        Matrix_Translate(1081.081f, -108.108f, -270.270f, MTXMODE_APPLY);
+        Matrix_Scale(1.554f, 1.554f, 1.554f, MTXMODE_APPLY);
+        gSPMatrix(POLY_OPA_DISP++, MATRIX_NEWMTX(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        gSPDisplayList(POLY_OPA_DISP++, gSantaHatGenericDL);
+        Matrix_Pop();
+        CLOSE_DISPS(play->state.gfxCtx);
     }
 }
 

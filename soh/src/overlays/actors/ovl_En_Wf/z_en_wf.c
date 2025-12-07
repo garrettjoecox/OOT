@@ -10,6 +10,7 @@
 #include "objects/object_wf/object_wf.h"
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
 #include "soh/ResourceManagerHelpers.h"
+#include "soh_assets.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
@@ -1427,6 +1428,19 @@ void EnWf_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, 
             this->bodyPartsPos[bodyPartIndex].y = bodyPartPos.y;
             this->bodyPartsPos[bodyPartIndex].z = bodyPartPos.z;
         }
+    }
+
+    if (limbIndex == 17 && CVarGetInteger("gHoliday.Visual.Hats", 0)) {
+        OPEN_DISPS(play->state.gfxCtx);
+        Matrix_Push();
+        Matrix_RotateZYX(0, 0, -18377, MTXMODE_APPLY);
+        Matrix_Translate(729.73f, 1243.243f, 0.0f, MTXMODE_APPLY);
+        Matrix_Scale(0.743f, 0.743f, 0.743f, MTXMODE_APPLY);
+        gDPSetEnvColor(POLY_OPA_DISP++, 255, 0, 0, 255);
+        gSPMatrix(POLY_OPA_DISP++, MATRIX_NEWMTX(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        gSPDisplayList(POLY_OPA_DISP++, gPaperCrownGenericDL);
+        Matrix_Pop();
+        CLOSE_DISPS(play->state.gfxCtx);
     }
 }
 

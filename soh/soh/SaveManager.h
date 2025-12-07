@@ -174,6 +174,8 @@ class SaveManager {
 
     static void LoadRandomizer();
     static void SaveRandomizer(SaveContext* saveContext, int sectionID, bool fullSave);
+    static void LoadRogueLike();
+    static void SaveRogueLike(SaveContext* saveContext, int sectionID, bool fullSave);
 
     static void LoadBaseVersion1();
     static void LoadBaseVersion2();

@@ -8,6 +8,9 @@
 #include "objects/object_sk2/object_sk2.h"
 #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
 #include "soh/ResourceManagerHelpers.h"
+#include "soh_assets.h"
+
+#include "soh/Enhancements/Holiday/Archez.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
@@ -1844,6 +1847,10 @@ s32 EnTest_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* 
         *dList = NULL;
     }
 
+    if (limbIndex == STALFOS_LIMB_SWORD || limbIndex == STALFOS_LIMB_SHIELD) {
+        SkipOverrideNextLimb();
+    }
+
     return false;
 }
 
@@ -1949,6 +1956,18 @@ void EnTest_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot
             this->bodyPartsPos[bodyPart].y = sp50.y;
             this->bodyPartsPos[bodyPart].z = sp50.z;
         }
+    }
+
+    if (limbIndex == 11 && CVarGetInteger("gHoliday.Visual.Hats", 0)) {
+        OPEN_DISPS(play->state.gfxCtx);
+        Matrix_Push();
+        Matrix_RotateZYX(-10849, 0, -5314, MTXMODE_APPLY);
+        Matrix_Translate(513.514f, 283.784f, 554.054f, MTXMODE_APPLY);
+        Matrix_Scale(1.203f, 1.203f, 1.203f, MTXMODE_APPLY);
+        gSPMatrix(POLY_OPA_DISP++, MATRIX_NEWMTX(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        gSPDisplayList(POLY_OPA_DISP++, gSantaHatGenericDL);
+        Matrix_Pop();
+        CLOSE_DISPS(play->state.gfxCtx);
     }
 }
 
