@@ -2275,17 +2275,17 @@ void Environment_FillScreen(GraphicsContext* gfxCtx, u8 red, u8 green, u8 blue, 
 }
 
 Color_RGB8 sSandstormPrimColors[] = {
-    { 210, 210, 210 },
-    { 255, 255, 255 },
-    { 225, 225, 225 },
-    { 105, 105, 105 },
+    { 210, 156, 85 },
+    { 255, 200, 100 },
+    { 225, 160, 50 },
+    { 105, 90, 40 },
 };
 
 Color_RGB8 sSandstormEnvColors[] = {
-    { 155, 155, 155 },
-    { 200, 200, 200 },
-    { 170, 170, 170 },
-    { 50, 50, 50 },
+    { 155, 106, 35 },
+    { 200, 150, 50 },
+    { 170, 110, 0 },
+    { 50, 40, 0 },
 };
 
 u16 previousPatchedSandstormScreenSize = 0;
@@ -2323,6 +2323,31 @@ void Environment_DrawSandstorm(PlayState* play, u8 sandstormState) {
     u16 sp92;
 
     Environment_PatchSandstorm(play);
+
+    if (CVarGetInteger("gHoliday.Visual.SnowingWeather", 0)) {
+        // Prim colors
+        sSandstormPrimColors[0] = (Color_RGB8){ 210, 210, 210 };
+        sSandstormPrimColors[1] = (Color_RGB8){ 255, 255, 255 };
+        sSandstormPrimColors[2] = (Color_RGB8){ 225, 225, 225 };
+        sSandstormPrimColors[3] = (Color_RGB8){ 105, 105, 105 };
+
+        // Env colors
+        sSandstormEnvColors[0] = (Color_RGB8){ 155, 155, 155 };
+        sSandstormEnvColors[1] = (Color_RGB8){ 200, 200, 200 };
+        sSandstormEnvColors[2] = (Color_RGB8){ 170, 170, 170 };
+        sSandstormEnvColors[3] = (Color_RGB8){ 50, 50, 50 };
+    } else {
+        // Restore vanilla colors when the CVAR is off
+        sSandstormPrimColors[0] = (Color_RGB8){ 210, 156, 85 };
+        sSandstormPrimColors[1] = (Color_RGB8){ 255, 200, 100 };
+        sSandstormPrimColors[2] = (Color_RGB8){ 225, 160, 50 };
+        sSandstormPrimColors[3] = (Color_RGB8){ 105, 90, 40 };
+
+        sSandstormEnvColors[0] = (Color_RGB8){ 155, 106, 35 };
+        sSandstormEnvColors[1] = (Color_RGB8){ 200, 150, 50 };
+        sSandstormEnvColors[2] = (Color_RGB8){ 170, 110, 0 };
+        sSandstormEnvColors[3] = (Color_RGB8){ 50, 40, 0 };
+    }
 
     switch (sandstormState) {
         case SANDSTORM_ACTIVE:

@@ -142,6 +142,14 @@ static const std::unordered_map<int32_t, const char*> enemyRandomizerModes = {
     { ENEMY_RANDOMIZER_RANDOM_SEEDED, "Random (Seeded)" },
 };
 
+#define TELEPORT_MODE_SIMPLE 0
+#define TELEPORT_MODE_ADVANCED 1
+
+static const std::unordered_map<int32_t, const char*> teleportTrapModes = {
+    { TELEPORT_MODE_SIMPLE, "Simple" },
+    { TELEPORT_MODE_ADVANCED, "Advanced" },
+};
+
 void SohMenu::AddMenuEnhancements() {
     // Add Enhancements Menu
     AddMenuEntry("Enhancements", CVAR_SETTING("Menu.EnhancementsSidebarSection"));
@@ -1611,6 +1619,22 @@ void SohMenu::AddMenuEnhancements() {
         .CVar(CVAR_ENHANCEMENT("ExtraTraps.Teleport"))
         .PreFunc(
             [](WidgetInfo& info) { info.isHidden = CVarGetInteger(CVAR_ENHANCEMENT("ExtraTraps.Enabled"), 0) == 0; });
+
+    AddWidget(path, "Teleport Trap Mode", WIDGET_CVAR_COMBOBOX)
+        .CVar(CVAR_ENHANCEMENT("ExtraTraps.TeleportMode"))
+        .Options(
+            ComboboxOptions()
+                .DefaultIndex(TELEPORT_MODE_SIMPLE)
+                .ComboMap(teleportTrapModes)
+                .Tooltip("Controls how Teleport Traps choose their destination:\n\n"
+                         " - Simple: Uses the standard warp song / Link's House destinations.\n"
+                         " - Advanced: Teleports to a random entrance from a large pool of exits, "
+                         "including overworld exits, interiors, and boss doors.\n"))
+        .PreFunc([](WidgetInfo& info) {
+            const bool trapsOn = CVarGetInteger(CVAR_ENHANCEMENT("ExtraTraps.Enabled"), 0) != 0;
+            const bool tpOn = CVarGetInteger(CVAR_ENHANCEMENT("ExtraTraps.Teleport"), 0) != 0;
+            info.isHidden = !trapsOn || !tpOn;
+        });
 
     path.column = SECTION_COLUMN_2;
     AddWidget(path, "Enemy Randomizer", WIDGET_CVAR_COMBOBOX)

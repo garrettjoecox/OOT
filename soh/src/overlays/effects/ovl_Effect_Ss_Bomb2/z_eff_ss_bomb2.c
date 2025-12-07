@@ -174,23 +174,47 @@ void EffectSsBomb2_Update(PlayState* play, u32 index, EffectSs* this) {
         this->rDepth += 2.0f;
     }
 
-    if ((this->life < 23) && (this->life > 13)) {
-        divisor = this->life - 13;
-        this->rPrimColorR = func_80027DD4(this->rPrimColorR, 255, divisor);
-        this->rPrimColorG = func_80027DD4(this->rPrimColorG, 255, divisor);
-        this->rPrimColorB = func_80027DD4(this->rPrimColorB, 255, divisor);
-        this->rPrimColorA = func_80027DD4(this->rPrimColorA, 255, divisor);
-        this->rEnvColorR = func_80027DD4(this->rEnvColorR, 255, divisor);
-        this->rEnvColorG = func_80027DD4(this->rEnvColorG, 255, divisor);
-        this->rEnvColorB = func_80027DD4(this->rEnvColorB, 255, divisor);
-    } else if ((this->life < 14) && (this->life > -1)) {
-        divisor = this->life + 1;
-        this->rPrimColorR = func_80027DD4(this->rPrimColorR, 255, divisor);
-        this->rPrimColorG = func_80027DD4(this->rPrimColorG, 255, divisor);
-        this->rPrimColorB = func_80027DD4(this->rPrimColorB, 255, divisor);
-        this->rPrimColorA = func_80027DD4(this->rPrimColorA, 255, divisor);
-        this->rEnvColorR = func_80027DD4(this->rEnvColorR, 255, divisor);
-        this->rEnvColorG = func_80027DD4(this->rEnvColorG, 255, divisor);
-        this->rEnvColorB = func_80027DD4(this->rEnvColorB, 255, divisor);
+    if (CVarGetInteger("gHoliday.Visual.SnowingWeather", 0)) {
+        // Snowy / white bomb effect
+        if ((this->life < 23) && (this->life > 13)) {
+            divisor = this->life - 13;
+            this->rPrimColorR = func_80027DD4(this->rPrimColorR, 255, divisor);
+            this->rPrimColorG = func_80027DD4(this->rPrimColorG, 255, divisor);
+            this->rPrimColorB = func_80027DD4(this->rPrimColorB, 255, divisor);
+            this->rPrimColorA = func_80027DD4(this->rPrimColorA, 255, divisor);
+            this->rEnvColorR = func_80027DD4(this->rEnvColorR, 255, divisor);
+            this->rEnvColorG = func_80027DD4(this->rEnvColorG, 255, divisor);
+            this->rEnvColorB = func_80027DD4(this->rEnvColorB, 255, divisor);
+        } else if ((this->life < 14) && (this->life > -1)) {
+            divisor = this->life + 1;
+            this->rPrimColorR = func_80027DD4(this->rPrimColorR, 255, divisor);
+            this->rPrimColorG = func_80027DD4(this->rPrimColorG, 255, divisor);
+            this->rPrimColorB = func_80027DD4(this->rPrimColorB, 255, divisor);
+            this->rPrimColorA = func_80027DD4(this->rPrimColorA, 255, divisor);
+            this->rEnvColorR = func_80027DD4(this->rEnvColorR, 255, divisor);
+            this->rEnvColorG = func_80027DD4(this->rEnvColorG, 255, divisor);
+            this->rEnvColorB = func_80027DD4(this->rEnvColorB, 255, divisor);
+        }
+    } else {
+        // Vanilla bomb colors
+        if ((this->life < 23) && (this->life > 13)) {
+            divisor = this->life - 13;
+            this->rPrimColorR = func_80027DD4(this->rPrimColorR, 255, divisor);
+            this->rPrimColorG = func_80027DD4(this->rPrimColorG, 255, divisor);
+            this->rPrimColorB = func_80027DD4(this->rPrimColorB, 150, divisor);
+            this->rPrimColorA = func_80027DD4(this->rPrimColorA, 255, divisor);
+            this->rEnvColorR = func_80027DD4(this->rEnvColorR, 150, divisor);
+            this->rEnvColorG = func_80027DD4(this->rEnvColorG, 0, divisor);
+            this->rEnvColorB = func_80027DD4(this->rEnvColorB, 0, divisor);
+        } else if ((this->life < 14) && (this->life > -1)) {
+            divisor = this->life + 1;
+            this->rPrimColorR = func_80027DD4(this->rPrimColorR, 50, divisor);
+            this->rPrimColorG = func_80027DD4(this->rPrimColorG, 50, divisor);
+            this->rPrimColorB = func_80027DD4(this->rPrimColorB, 50, divisor);
+            this->rPrimColorA = func_80027DD4(this->rPrimColorA, 150, divisor);
+            this->rEnvColorR = func_80027DD4(this->rEnvColorR, 10, divisor);
+            this->rEnvColorG = func_80027DD4(this->rEnvColorG, 10, divisor);
+            this->rEnvColorB = func_80027DD4(this->rEnvColorB, 10, divisor);
+        }
     }
 }
