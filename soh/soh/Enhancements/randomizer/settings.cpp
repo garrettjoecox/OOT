@@ -122,6 +122,7 @@ void Settings::CreateOptions() {
     OPT_U8(RSK_SLEEPING_WATERFALL, "Sleeping Waterfall", {"Closed", "Open"}, OptionCategory::Setting, CVAR_RANDOMIZER_SETTING("SleepingWaterfall"), mOptionDescriptions[RSK_SLEEPING_WATERFALL]);
     OPT_U8(RSK_JABU_OPEN, "Jabu-Jabu", {"Closed", "Open"}, OptionCategory::Setting, CVAR_RANDOMIZER_SETTING("JabuJabu"), mOptionDescriptions[RSK_JABU_OPEN]);
     OPT_BOOL(RSK_LOCK_OVERWORLD_DOORS, "Lock Overworld Doors", CVAR_RANDOMIZER_SETTING("LockOverworldDoors"), mOptionDescriptions[RSK_LOCK_OVERWORLD_DOORS]);
+    OPT_BOOL(RSK_RANDOM_LOCKED_DOORS, "Randomize Locked Doors", CVAR_RANDOMIZER_SETTING("RandomLockedDoors"), mOptionDescriptions[RSK_RANDOM_LOCKED_DOORS]);
     OPT_U8(RSK_GERUDO_FORTRESS, "Fortress Carpenters", {"Normal", "Fast", "Free"}, OptionCategory::Setting, CVAR_RANDOMIZER_SETTING("FortressCarpenters"), mOptionDescriptions[RSK_GERUDO_FORTRESS]);
     OPT_U8(RSK_RAINBOW_BRIDGE, "Rainbow Bridge", {"Vanilla", "Always open", "Stones", "Medallions", "Dungeon rewards", "Dungeons", "Tokens", "Greg"}, OptionCategory::Setting, CVAR_RANDOMIZER_SETTING("RainbowBridge"), mOptionDescriptions[RSK_RAINBOW_BRIDGE], WidgetType::Combobox, RO_BRIDGE_VANILLA, false, IMFLAG_NONE);
     OPT_U8(RSK_RAINBOW_BRIDGE_STONE_COUNT, "Bridge Stone Count", {NumOpts(0, 4)}, OptionCategory::Setting, CVAR_RANDOMIZER_SETTING("StoneCount"), "", WidgetType::Slider, 3, true);
@@ -1204,6 +1205,7 @@ void Settings::CreateOptions() {
                                                                      &mOptions[RSK_SLEEPING_WATERFALL],
                                                                      &mOptions[RSK_JABU_OPEN],
                                                                      &mOptions[RSK_LOCK_OVERWORLD_DOORS],
+                                                                     &mOptions[RSK_RANDOM_LOCKED_DOORS],
                                                                  },
                                                                  WidgetContainerType::COLUMN);
     mOptionGroups[RSG_WORLD_IMGUI] = OptionGroup::SubGroup("World Settings",
@@ -1482,6 +1484,7 @@ void Settings::CreateOptions() {
                                                                &mOptions[RSK_SLEEPING_WATERFALL],
                                                                &mOptions[RSK_JABU_OPEN],
                                                                &mOptions[RSK_LOCK_OVERWORLD_DOORS],
+                                                               &mOptions[RSK_RANDOM_LOCKED_DOORS],
                                                                &mOptions[RSK_GERUDO_FORTRESS],
                                                                &mOptions[RSK_RAINBOW_BRIDGE],
                                                                &mOptions[RSK_RAINBOW_BRIDGE_STONE_COUNT],

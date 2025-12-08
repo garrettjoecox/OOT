@@ -1627,7 +1627,7 @@ void SohMenu::AddMenuEnhancements() {
                 .DefaultIndex(TELEPORT_MODE_SIMPLE)
                 .ComboMap(teleportTrapModes)
                 .Tooltip("Controls how Teleport Traps choose their destination:\n\n"
-                         " - Simple: Uses the standard warp song / Link's House destinations.\n"
+                         " - Simple: Uses the standard warp song, Link's House, and Temple of Time.\n"
                          " - Advanced: Teleports to a random entrance from a large pool of exits, "
                          "including overworld exits, interiors, and boss doors.\n"))
         .PreFunc([](WidgetInfo& info) {

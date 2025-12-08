@@ -6242,6 +6242,7 @@ typedef enum {
     RSK_SHUFFLE_SONG_FAIRIES,
     RSK_LOCK_OVERWORLD_DOORS,
     RSK_SHUFFLE_GRASS,
+    RSK_RANDOM_LOCKED_DOORS,
     RSK_MAX
 } RandomizerSettingKey;
 

@@ -46,6 +46,8 @@ void Settings::CreateOptionDescriptions() {
                                          "Open - Jabu-Jabu's mouth opens without the need for a fish.";
     mOptionDescriptions[RSK_LOCK_OVERWORLD_DOORS] =
         "Add locks to all wooden overworld doors, requiring specific small keys to open them";
+    mOptionDescriptions[RSK_RANDOM_LOCKED_DOORS] =
+        "Shuffles which doors are locked within dungeons. *There is NO Logic made for this and therefore could lead to unbeatable seeds*";
     mOptionDescriptions[RSK_STARTING_AGE] =
         "Choose which age Link will start as.\n\n"
         "Starting as adult means you start with the Master Sword in your inventory.\n"

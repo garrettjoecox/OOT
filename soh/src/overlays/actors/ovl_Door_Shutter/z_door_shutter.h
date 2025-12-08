@@ -58,4 +58,6 @@ typedef struct DoorShutter {
     /* 0x0174 */ DoorShutterActionFunc actionFunc;
 } DoorShutter; // size = 0x0178
 
+void DoorShutter_SetupType(DoorShutter* DoorShutter, PlayState* play);
+
 #endif

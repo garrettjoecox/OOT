@@ -758,6 +758,7 @@ void Context::ParseArchipelagoOptions() {
     mOptions[RSK_SHUFFLE_BEAN_FAIRIES].Set(slotData["shuffle_bean_fairies"]);
     mOptions[RSK_SHUFFLE_SONG_FAIRIES].Set(slotData["shuffle_song_fairies"]);
     mOptions[RSK_LOCK_OVERWORLD_DOORS].Set(slotData["lock_overworld_doors"]);
+    mOptions[RSK_RANDOM_LOCKED_DOORS].Set(slotData["random_locked_doors"]);
     mOptions[RSK_SHUFFLE_GRASS].Set(slotData["shuffle_grass"]);
     mOptions[RSK_SHUFFLE_TREES].Set(slotData["shuffle_trees"]);
 }

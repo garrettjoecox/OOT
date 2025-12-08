@@ -10,6 +10,7 @@
 #include "soh/Enhancements/randomizer/3drando/random.hpp"
 #include "soh/Enhancements/randomizer/hook_handlers.h"
 #include "soh/Enhancements/Holiday/Holiday.hpp"
+#include "soh/Enhancements/randomizer/randomizer.h"
 
 #include "src/overlays/actors/ovl_En_Bb/z_en_bb.h"
 #include "src/overlays/actors/ovl_En_Dekubaba/z_en_dekubaba.h"
@@ -24,7 +25,6 @@
 #include "src/overlays/actors/ovl_En_Tp/z_en_tp.h"
 #include "src/overlays/actors/ovl_En_Firefly/z_en_firefly.h"
 #include "src/overlays/actors/ovl_En_Xc/z_en_xc.h"
-#include "src/overlays/actors/ovl_Door_Shutter/z_door_shutter.h"
 #include "src/overlays/actors/ovl_Door_Gerudo/z_door_gerudo.h"
 #include "src/overlays/actors/ovl_En_Elf/z_en_elf.h"
 #include "soh_assets.h"
@@ -37,6 +37,8 @@ extern "C" {
 #include "soh/cvar_prefixes.h"
 #include "variables.h"
 #include "functions.h"
+#include "src/overlays/actors/ovl_En_Door/z_en_door.h"
+#include "src/overlays/actors/ovl_Door_Shutter/z_door_shutter.h"
 
 extern SaveContext gSaveContext;
 extern PlayState* gPlayState;
@@ -525,6 +527,131 @@ void RegisterSnowballs() {
         }
     });
 }
+
+#define DOOR_TYPE_MASK 0x0380
+#define SWITCH_FLAG_MASK 0x003F
+
+typedef struct {
+    std::vector<s32> DoorsVector;
+    std::set<s32> DoorsSet;
+    std::unordered_map<s32, s32> LockedDoors;
+} SceneDoor;
+
+std::unordered_map<s32, SceneDoor> SceneDoors = {
+    { SCENE_FOREST_TEMPLE,
+      { { 63, 1087, 2111, 3135, 4159, 5824, 8319, 9343, 10367, 12415, 13439, 14465, 15423, 17471, 23615, 26306, 27331,
+          28356 } } },
+    { SCENE_FIRE_TEMPLE, { { -28515, -30569, 17471, 16447, 13375, 15423,  14494, 6296, 27711, 18495, 21659, 19610,
+                             28735,  22591,  23615, 5279,  7231,  -31681, 9369,  8255, 11327, 10303, 12351 } } },
+    { SCENE_WATER_TEMPLE, { { 8325, 9345, 10370, 11327, 13439, 14470, 16447, 18559, 20543, 21641 } } },
+    { SCENE_SHADOW_TEMPLE,
+      { { 127, 1151, 2111, 3225, 4246, 5183, 6271, 7231, 8343, 9368, 11327, 12351, 13439, 14399, 15487, 16511,
+          17557 } } },
+    { SCENE_SPIRIT_TEMPLE,
+      { { 63, 3789, 6234, 7257, 9950, 10367, 11391, 13375, 15068, 16474, 18559, 19583, 21211, 22229, 26751 } } },
+    { SCENE_BOTTOM_OF_THE_WELL, { { 1087, 2203, 3229, 4252, 5183, 6271 } } },
+    { SCENE_GERUDO_TRAINING_GROUND,
+      { { 4133, 16074, 17091, 15041, 14025, 18116, 19141, 20166, 21191, 22231, 5183, 6207, 7231, 9294, 8345 } } },
+    { SCENE_INSIDE_GANONS_CASTLE, { { 2111, 3806, 8255, 9279, 10303, 11327, 12351, 16447, 20189 } } }
+};
+
+// Rando option-driven Random Locked Doors
+
+static void OnRandomLockedDoorsLoadGame(int32_t fileNum) {
+    // Only do anything if the rando option is on
+    if (!IS_RANDO || !RAND_GET_OPTION(RSK_RANDOM_LOCKED_DOORS)) {
+        return;
+    }
+
+    for (auto& scene : SceneDoors) {
+        scene.second.LockedDoors.clear();
+
+        uint32_t finalSeed =
+            scene.first + (IS_RANDO ? Rando::Context::GetInstance()->GetSeed() : gSaveContext.ship.stats.fileCreatedAt);
+
+        Random_Init(finalSeed);
+
+        std::vector<s32> Flags;
+        for (auto& door : scene.second.DoorsVector) {
+            scene.second.DoorsSet.insert(door);
+
+            if (((door >> 7 & 7) == DOOR_LOCKED) || ((door >> 6 & 0xF) == SHUTTER_KEY_LOCKED)) {
+                Flags.push_back(door & SWITCH_FLAG_MASK);
+            }
+        }
+
+        while (!Flags.empty()) {
+            s32 RandomDoor = RandomElement(scene.second.DoorsVector);
+            if (!scene.second.LockedDoors.contains(RandomDoor)) {
+                scene.second.LockedDoors[RandomDoor] = Flags.back();
+                Flags.pop_back();
+            }
+        }
+    }
+}
+
+static void OnRandomLockedDoorsActorInit(void* refActor) {
+    if (!IS_RANDO || !RAND_GET_OPTION(RSK_RANDOM_LOCKED_DOORS)) {
+        return;
+    }
+
+    Actor* actor = static_cast<Actor*>(refActor);
+
+    if (actor->id != ACTOR_EN_DOOR && actor->id != ACTOR_DOOR_SHUTTER) {
+        return;
+    }
+    if (!SceneDoors.contains(gPlayState->sceneNum)) {
+        return;
+    }
+
+    s32 DoorParamsCopy = actor->params;
+
+    auto& sceneInfo = SceneDoors[gPlayState->sceneNum];
+
+    if (sceneInfo.LockedDoors.contains(actor->params)) {
+        actor->params = (actor->params & ~DOOR_TYPE_MASK) | (DOOR_LOCKED << 7);
+        actor->params &= ~SWITCH_FLAG_MASK;
+        actor->params |= (sceneInfo.LockedDoors[DoorParamsCopy] & SWITCH_FLAG_MASK);
+
+        if (actor->id == ACTOR_EN_DOOR) {
+            EnDoor* doorActor = static_cast<EnDoor*>(refActor);
+            doorActor->actionFunc = EnDoor_SetupType;
+        } else {
+            DoorShutter* shutterActor = static_cast<DoorShutter*>(refActor);
+            shutterActor->actionFunc = DoorShutter_SetupType;
+            shutterActor->doorType = SHUTTER_KEY_LOCKED;
+            shutterActor->unk_16F = 0;
+
+            if (!Flags_GetSwitch(gPlayState, shutterActor->dyna.actor.params & 0x3F)) {
+                shutterActor->unk_16E = 10;
+            } else {
+                shutterActor->unk_16E = 0;
+            }
+        }
+    } else if (sceneInfo.DoorsSet.contains(actor->params)) {
+        actor->params = (actor->params & ~DOOR_TYPE_MASK) | (DOOR_ROOMLOAD << 7);
+
+        if (actor->id == ACTOR_EN_DOOR) {
+            EnDoor* doorActor = static_cast<EnDoor*>(refActor);
+            doorActor->actionFunc = EnDoor_SetupType;
+        } else {
+            DoorShutter* shutterActor = static_cast<DoorShutter*>(refActor);
+            shutterActor->actionFunc = DoorShutter_SetupType;
+            shutterActor->doorType = DOOR_ROOMLOAD;
+            shutterActor->unk_16F = 0;
+            shutterActor->unk_16E = 0;
+        }
+    }
+}
+
+void RegisterRandomLockedDoors() {
+    bool shouldRegister = IS_RANDO && RAND_GET_OPTION(RSK_RANDOM_LOCKED_DOORS);
+
+    COND_HOOK(OnLoadGame, shouldRegister, OnRandomLockedDoorsLoadGame);
+    COND_HOOK(OnActorInit, shouldRegister, OnRandomLockedDoorsActorInit);
+}
+
+static RegisterShipInitFunc initFunc(RegisterRandomLockedDoors, { "IS_RANDO" });
 
 void InitMods() {
     RandomizerRegisterHooks();
