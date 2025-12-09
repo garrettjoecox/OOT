@@ -344,9 +344,22 @@ extern "C" void ResourceMgr_PatchGfxByName(const char* path, const char* patchNa
     // }
 
     // Do not patch custom assets as they most likely do not have the same instructions as authentic assets
-    // if (res->GetInitData()->IsCustom) {
-    //    return;
-    //}
+    if (res->GetInitData()->IsCustom) {
+        return;
+    }
+
+    Gfx* gfx = (Gfx*)&res->Instructions[index];
+
+    if (!originalGfx.contains(path) || !originalGfx[path].contains(patchName)) {
+        originalGfx[path][patchName] = { index, *gfx };
+    }
+
+    *gfx = instruction;
+}
+
+extern "C" void ResourceMgr_PatchCustomGfxByName(const char* path, const char* patchName, int index, Gfx instruction) {
+    auto res = std::static_pointer_cast<Fast::DisplayList>(
+        Ship::Context::GetInstance()->GetResourceManager()->LoadResource(path));
 
     Gfx* gfx = (Gfx*)&res->Instructions[index];
 

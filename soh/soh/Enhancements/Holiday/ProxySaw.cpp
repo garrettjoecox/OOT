@@ -26,6 +26,7 @@ extern "C" {
 #include "scenes/overworld/spot15/spot15_room_0.h"
 
 void ResourceMgr_PatchGfxByName(const char* path, const char* patchName, int index, Gfx instruction);
+void ResourceMgr_PatchCustomGfxByName(const char* path, const char* patchName, int index, Gfx instruction);
 void ResourceMgr_UnpatchGfxByName(const char* path, const char* patchName);
 
 extern PlayState* gPlayState;
@@ -422,7 +423,7 @@ static void RegisterMenu() {
     SohGui::mSohMenu->AddWidget(path, "Present Chests", WIDGET_CVAR_CHECKBOX)
         .CVar("gHoliday.Visual.PresentChests")
         .Options(UIWidgets::CheckboxOptions().Tooltip("Treasure chests will use present textures."));
-    SohGui::mSohMenu->AddWidget(path, "Orniment Triforce Pieces", WIDGET_CVAR_CHECKBOX)
+    SohGui::mSohMenu->AddWidget(path, "Ornament Triforce Pieces", WIDGET_CVAR_CHECKBOX)
         .CVar("gHoliday.Visual.HolidayPieces")
         .Options(
             UIWidgets::CheckboxOptions().Tooltip("Replace Triforce pieces with festive holiday ornaments. *To see "
@@ -441,15 +442,15 @@ static void RegisterMenu() {
         ResourceMgr_UnpatchGfxByName(path, name);                   \
     }
 
-#define PATCH_TRIFORCE_WRAPPER(path, baseName, cvar, index, holidayDL)                                       \
-    do {                                                                                                     \
-        if (CVarGetInteger(cvar, 0)) {                                                                       \
-            ResourceMgr_PatchGfxByName(path, baseName "Call", index, gsSPDisplayListOTRFilePath(holidayDL)); \
-            ResourceMgr_PatchGfxByName(path, baseName "End", (index) + 1, gsSPEndDisplayList());             \
-        } else {                                                                                             \
-            ResourceMgr_UnpatchGfxByName(path, baseName "Call");                                             \
-            ResourceMgr_UnpatchGfxByName(path, baseName "End");                                              \
-        }                                                                                                    \
+#define PATCH_TRIFORCE_WRAPPER(path, baseName, cvar, index, holidayDL)                                             \
+    do {                                                                                                           \
+        if (CVarGetInteger(cvar, 0)) {                                                                             \
+            ResourceMgr_PatchCustomGfxByName(path, baseName "Call", index, gsSPDisplayListOTRFilePath(holidayDL)); \
+            ResourceMgr_PatchCustomGfxByName(path, baseName "End", (index) + 1, gsSPEndDisplayList());             \
+        } else {                                                                                                   \
+            ResourceMgr_UnpatchGfxByName(path, baseName "Call");                                                   \
+            ResourceMgr_UnpatchGfxByName(path, baseName "End");                                                    \
+        }                                                                                                          \
     } while (0)
 
 static void PatchTriforcePieces(void) {
