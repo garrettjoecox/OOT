@@ -691,8 +691,8 @@ void Play_Init(GameState* thisx) {
                     GET_PLAYER(play)->actor.world.pos.z, 0, 0, 0, 1, true);
     }
 
-    if (play->sceneNum == SCENE_KAKARIKO_VILLAGE) {
-        Actor_Spawn(&play->actorCtx, play, gEnChristmasTreeId, -734, 0, 420, 0, 0, 0, 0, true);
+    if (play->sceneNum == SCENE_KAKARIKO_VILLAGE && CVarGetInteger(CVAR_GENERAL("LetItSnow"), 0)) {
+        Actor_Spawn(&play->actorCtx, play, gEnChristmasTreeId, -545, 0, 404, 0, 0, 0, 0, true);
     }
 
     Actor_Spawn(&play->actorCtx, play, gEnChristmasDecoId, 0, 0, 0, 0, 0, 0, 0, true);

@@ -1352,11 +1352,6 @@ void EnKo_Draw(Actor* thisx, PlayState* play) {
     EnKo* this = (EnKo*)thisx;
     Color_RGBA8 tunicColor = sModelInfo[ENKO_TYPE].tunicColor;
 
-    // Overwrite to red tunic as default for Holidays in Hyrule build
-    tunicColor.r = 255;
-    tunicColor.g = 0;
-    tunicColor.b = 0;
-
     Color_RGBA8 bootsColor = sModelInfo[ENKO_TYPE].bootsColor;
 
     if (CVarGetInteger(CVAR_COSMETIC("NPC.Kokiri.Changed"), 0)) {

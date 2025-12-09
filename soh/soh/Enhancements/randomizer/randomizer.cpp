@@ -4847,39 +4847,83 @@ CustomMessage Randomizer::GetRupeeMessage(u16 rupeeTextId) {
     return messageEntry;
 }
 
+// Normal Triforce text
+static const CustomMessage kTriforcePieceMessages_Normal[NUM_TRIFORCE_PIECE_MESSAGES] = {
+    { "You found a %yTriforce Piece%w!&%g[[current]]%w down, %c[[remaining]]%w to go. It's a start!",
+      "Ein %yTriforce-Splitter%w! Du hast&%g[[current]]%w von %c[[required]]%w gefunden. Es ist ein&Anfang!",
+      "Vous trouvez un %yFragment de la&Triforce%w! Vous en avez %g[[current]]%w, il en&reste %c[[remaining]]%w à "
+      "trouver. C'est un début!" },
+
+    { "You found a %yTriforce Piece%w!&%g[[current]]%w down, %c[[remaining]]%w to go. Progress!",
+      "Ein %yTriforce-Splitter%w! Du hast&%g[[current]]%w von %c[[required]]%w gefunden. Es geht voran!",
+      "Vous trouvez un %yFragment de la&Triforce%w! Vous en avez %g[[current]]%w, il en&reste %c[[remaining]]%w à "
+      "trouver. Ça avance!" },
+
+    { "You found a %yTriforce Piece%w!&%g[[current]]%w down, %c[[remaining]]%w to go. Over half-way&there!",
+      "Ein %yTriforce-Splitter%w! Du hast&schon %g[[current]]%w von %c[[required]]%w gefunden. Schon&über die Hälfte!",
+      "Vous trouvez un %yFragment de la&Triforce%w! Vous en avez %g[[current]]%w, il en&reste %c[[remaining]]%w à "
+      "trouver. Il en reste un&peu moins que la moitié!" },
+
+    { "You found a %yTriforce Piece%w!&%g[[current]]%w down, %c[[remaining]]%w to go. Almost done!",
+      "Ein %yTriforce-Splitter%w! Du hast&schon %g[[current]]%w von %c[[required]]%w gefunden. Fast&geschafft!",
+      "Vous trouvez un %yFragment de la&Triforce%w! Vous en avez %g[[current]]%w, il en&reste %c[[remaining]]%w à "
+      "trouver. C'est presque&terminé!" },
+
+    { "You completed the %yTriforce of&Courage%w! %gGG%w!",
+      "Das %yTriforce des Mutes%w! Du hast&alle Splitter gefunden. %gGut gemacht%w!",
+      "Vous avez complété la %yTriforce&du Courage%w! %gFélicitations%w!" },
+
+    { "You found a spare %yTriforce Piece%w!&You only needed %c[[required]]%w, but you have %g[[current]]%w!",
+      "Ein übriger %yTriforce-Splitter%w! Du&hast nun %g[[current]]%w von %c[[required]]%w nötigen gefunden.",
+      "Vous avez trouvé un %yFragment de&Triforce%w en plus! Vous n'aviez besoin&que de %c[[required]]%w, mais vous en "
+      "avez %g[[current]]%w en&tout!" },
+};
+
+// Holiday / Ornament text
+static const CustomMessage kTriforcePieceMessages_Holiday[NUM_TRIFORCE_PIECE_MESSAGES] = {
+    { "You found a %yChristmas Ornament%w!&%g[[current]]%w down, %c[[remaining]]%w to go. It's a start!",
+      "Ein %yChristmas Ornament%w! Du hast&%g[[current]]%w von %c[[required]]%w gefunden. Es ist ein&Anfang!",
+      "Vous trouvez un %yChristmas Ornament%w! Vous en avez %g[[current]]%w, il en&reste %c[[remaining]]%w à "
+      "trouver. C'est un début!" },
+
+    { "You found a %yChristmas Ornament%w!&%g[[current]]%w down, %c[[remaining]]%w to go. Progress!",
+      "Ein %yChristmas Ornament%w! Du hast&%g[[current]]%w von %c[[required]]%w gefunden. Es geht voran!",
+      "Vous trouvez un %yChristmas Ornament%w! Vous en avez %g[[current]]%w, il en&reste %c[[remaining]]%w à "
+      "trouver. Ça avance!" },
+
+    { "You found a %yChristmas Ornament%w!&%g[[current]]%w down, %c[[remaining]]%w to go. Over half-way&there!",
+      "Ein %yChristmas Ornament%w! Du hast&schon %g[[current]]%w von %c[[required]]%w gefunden. Schon&über die "
+      "Hälfte!",
+      "Vous trouvez un %yChristmas Ornament%w! Vous en avez %g[[current]]%w, il en&reste %c[[remaining]]%w à "
+      "trouver. Il en reste un&peu moins que la moitié!" },
+
+    { "You found a %yChristmas Ornament%w!&%g[[current]]%w down, %c[[remaining]]%w to go. Almost done!",
+      "Ein %yChristmas Ornament%w! Du hast&schon %g[[current]]%w von %c[[required]]%w gefunden. Fast&geschafft!",
+      "Vous trouvez un %yChristmas Ornament%w! Vous en avez %g[[current]]%w, il en&reste %c[[remaining]]%w à "
+      "trouver. C'est presque&terminé!" },
+
+    { "You found all of the %yChristmas&Ornaments%w! Visit the %gChristmas&tree%w in Kakariko Village!",
+      "Das %yTriforce des Mutes%w! Du hast&alle Splitter gefunden. %gGut gemacht%w!",
+      "Vous avez complété la %yTriforce&du Courage%w! %gFélicitations%w!" },
+
+    { "You found a spare %yChristmas Ornament%w!&You only needed %c[[required]]%w, but you have %g[[current]]%w!",
+      "Noch ein %yChristmas Ornament%w! Du&brauchtest nur %c[[required]]%w, hast jetzt aber %g[[current]]%w!",
+      "Vous avez trouvé un %yFragment de&Triforce%w en plus! Vous n'aviez besoin&que de %c[[required]]%w, mais "
+      "vous en avez %g[[current]]%w en&tout!" },
+};
+
+
 void CreateTriforcePieceMessages() {
-    CustomMessage TriforcePieceMessages[NUM_TRIFORCE_PIECE_MESSAGES] = {
+    // Pick which table to use based on the HolidayPieces CVar
+    const CustomMessage* src = CVarGetInteger("gHoliday.Visual.HolidayPieces", 0) ? kTriforcePieceMessages_Holiday
+                                                                                  : kTriforcePieceMessages_Normal;
 
-        { "You found a %yChristmas Ornament%w!&%g[[current]]%w down, %c[[remaining]]%w to go. It's a start!",
-          "Ein %yChristmas Ornament%w! Du hast&%g[[current]]%w von %c[[required]]%w gefunden. Es ist ein&Anfang!",
-          "Vous trouvez un %yChristmas Ornament%w! Vous en avez %g[[current]]%w, il en&reste %c[[remaining]]%w à "
-          "trouver. C'est un début!" },
+    CustomMessage TriforcePieceMessages[NUM_TRIFORCE_PIECE_MESSAGES];
 
-        { "You found a %yChristmas Ornament%w!&%g[[current]]%w down, %c[[remaining]]%w to go. Progress!",
-          "Ein %yChristmas Ornament%w! Du hast&%g[[current]]%w von %c[[required]]%w gefunden. Es geht voran!",
-          "Vous trouvez un %yChristmas Ornament%w! Vous en avez %g[[current]]%w, il en&reste %c[[remaining]]%w à "
-          "trouver. Ça avance!" },
+    for (int i = 0; i < NUM_TRIFORCE_PIECE_MESSAGES; ++i) {
+        TriforcePieceMessages[i] = src[i];
+    }
 
-        { "You found a %yChristmas Ornament%w!&%g[[current]]%w down, %c[[remaining]]%w to go. Over half-way&there!",
-          "Ein %yChristmas Ornament%w! Du hast&schon %g[[current]]%w von %c[[required]]%w gefunden. Schon&über die "
-          "Hälfte!",
-          "Vous trouvez un %yChristmas Ornament%w! Vous en avez %g[[current]]%w, il en&reste %c[[remaining]]%w à "
-          "trouver. Il en reste un&peu moins que la moitié!" },
-
-        { "You found a %yChristmas Ornament%w!&%g[[current]]%w down, %c[[remaining]]%w to go. Almost done!",
-          "Ein %yChristmas Ornament%w! Du hast&schon %g[[current]]%w von %c[[required]]%w gefunden. Fast&geschafft!",
-          "Vous trouvez un %yChristmas Ornament%w! Vous en avez %g[[current]]%w, il en&reste %c[[remaining]]%w à "
-          "trouver. C'est presque&terminé!" },
-
-        { "You found all of the %yChristmas&Ornaments%w! Visit the %gChristmas&tree%w in Kakariko Village!",
-          "Das %yTriforce des Mutes%w! Du hast&alle Splitter gefunden. %gGut gemacht%w!",
-          "Vous avez complété la %yTriforce&du Courage%w! %gFélicitations%w!" },
-
-        { "You found a spare %yChristmas Ornament%w!&You only needed %c[[required]]%w, but you have %g[[current]]%w!",
-          "Noch ein %yChristmas Ornament%w! Du&brauchtest nur %c[[required]]%w, hast jetzt aber %g[[current]]%w!",
-          "Vous avez trouvé un %yFragment de&Triforce%w en plus! Vous n'aviez besoin&que de %c[[required]]%w, mais "
-          "vous en avez %g[[current]]%w en&tout!" },
-    };
     CustomMessageManager* customMessageManager = CustomMessageManager::Instance;
     customMessageManager->AddCustomMessageTable(Randomizer::triforcePieceMessageTableID);
     for (unsigned int i = 0; i <= (NUM_TRIFORCE_PIECE_MESSAGES - 1); i++) {

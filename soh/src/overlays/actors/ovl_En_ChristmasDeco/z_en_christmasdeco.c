@@ -7,6 +7,9 @@
 #include "z_en_christmasdeco.h"
 #include "soh_assets.h"
 
+#define CVAR(v) "gHoliday.Visual." v
+
+
 void EnChristmasDeco_Init(Actor* thisx, PlayState* play);
 void EnChristmasDeco_Destroy(Actor* thisx, PlayState* play);
 void EnChristmasDeco_Update(Actor* thisx, PlayState* play);
@@ -26,6 +29,10 @@ void EnChristmasDeco_Update(Actor* thisx, PlayState* play) {
 }
 
 void EnChristmasDeco_Draw(Actor* thisx, PlayState* play) {
+    if (!CVarGetInteger(CVAR("SnowingWeather"), 0)) {
+        return;
+    }
+
     float decoSize = 10.0f;
 
     OPEN_DISPS(play->state.gfxCtx);
@@ -37,7 +44,6 @@ void EnChristmasDeco_Draw(Actor* thisx, PlayState* play) {
     gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx, (char*)__FILE__, __LINE__),
               G_MTX_MODELVIEW | G_MTX_LOAD);
 
-    // Assertion Halt in Debug mode, switch to Release when testing.
     if (play->sceneNum == SCENE_KAKARIKO_VILLAGE) {
         gSPDisplayList(POLY_OPA_DISP++, (Gfx*)gKakarikoDecorDL);
         if (LINK_IS_CHILD) {

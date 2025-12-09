@@ -102,7 +102,12 @@ void Anchor::HandlePacket_GiveItem(nlohmann::json payload) {
                 Rando::StaticData::RetrieveItem((RandomizerGet)getItemEntry.getItemId).GetName().english;
 
             if ((RandomizerGet)getItemEntry.getItemId == RG_TRIFORCE_PIECE) {
-                itemName = "a Christmas Ornament";
+                if (CVarGetInteger("gHoliday.Visual.HolidayPieces", 0)) {
+
+                    itemName = "a Christmas Ornament";
+                } else {
+                    itemName = "Triforce Piece";
+                }
             }
 
             Notification::Emit({

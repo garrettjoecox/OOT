@@ -1,6 +1,7 @@
 #include "Holiday.hpp"
 #include <libultraship/libultraship.h>
 #include "soh/SohGui/UIWidgets.hpp"
+#include "soh/SohGui/ImGuiUtils.h"
 #include "soh/Enhancements/game-interactor/GameInteractor.h"
 #include "objects/object_dog/object_dog.h"
 #include "soh/frame_interpolation.h"
@@ -8,7 +9,7 @@
 #include "soh/Enhancements/randomizer/location_access.h"
 #include "soh/Enhancements/randomizer/entrance.h"
 #include <set>
-
+#include "soh_assets.h"
 #include "objects/gameplay_field_keep/gameplay_field_keep.h"
 #include "objects/object_md/object_md.h"
 #include "src/overlays/actors/ovl_Door_Ana/z_door_ana.h"
@@ -408,11 +409,11 @@ static void RegisterMenu() {
     path.sidebarName = "Visual";
     path.column = SECTION_COLUMN_1;
 
-    SohGui::mSohMenu->AddWidget(path, "Snow Everywhere", WIDGET_CVAR_CHECKBOX)
+    SohGui::mSohMenu->AddWidget(path, "Snow Everywhere/Decor", WIDGET_CVAR_CHECKBOX)
         .CVar("gHoliday.Visual.SnowingWeather")
         .Options(
             UIWidgets::CheckboxOptions().Tooltip("Enables the snow fall effect in all areas, colors trees and paths "
-                                                 "white. Best paired with the official holiday texture pack."));
+                                                 "white, and adds decor to Kak and Temple of Time. Best paired with the official holiday texture pack."));
 
     SohGui::mSohMenu->AddWidget(path, "Festive Hats", WIDGET_CVAR_CHECKBOX)
         .CVar("gHoliday.Visual.Hats")
@@ -421,7 +422,16 @@ static void RegisterMenu() {
     SohGui::mSohMenu->AddWidget(path, "Present Chests", WIDGET_CVAR_CHECKBOX)
         .CVar("gHoliday.Visual.PresentChests")
         .Options(UIWidgets::CheckboxOptions().Tooltip("Treasure chests will use present textures."));
+    SohGui::mSohMenu->AddWidget(path, "Orniment Triforce Pieces", WIDGET_CVAR_CHECKBOX)
+        .CVar("gHoliday.Visual.HolidayPieces")
+        .Options(UIWidgets::CheckboxOptions().Tooltip("Replace Triforce pieces with festive holiday ornaments. *To see changes in the item tracker, you must close and reopen the game"));
+    SohGui::mSohMenu->AddWidget(path, "Let It Snow", WIDGET_CVAR_CHECKBOX)
+        .CVar(CVAR_GENERAL("LetItSnow"))
+        .Options(UIWidgets::CheckboxOptions()
+                     .Tooltip("Makes snow fall, changes chest texture colors to red and green, etc, for "
+                              "December holidays.\nWill reset on restart outside of December 23-25."));
 }
+
 
 #define PATCH_GFX(path, name, cvar, index, instruction)             \
     if (CVarGetInteger(cvar, 0)) {                                  \
@@ -429,6 +439,49 @@ static void RegisterMenu() {
     } else {                                                        \
         ResourceMgr_UnpatchGfxByName(path, name);                   \
     }
+
+#define PATCH_TRIFORCE_WRAPPER(path, baseName, cvar, index, holidayDL)                                       \
+    do {                                                                                                     \
+        if (CVarGetInteger(cvar, 0)) {                                                                       \
+            ResourceMgr_PatchGfxByName(path, baseName "Call", index, gsSPDisplayListOTRFilePath(holidayDL)); \
+            ResourceMgr_PatchGfxByName(path, baseName "End", (index) + 1, gsSPEndDisplayList());             \
+        } else {                                                                                             \
+            ResourceMgr_UnpatchGfxByName(path, baseName "Call");                                             \
+            ResourceMgr_UnpatchGfxByName(path, baseName "End");                                              \
+        }                                                                                                    \
+    } while (0)
+
+static void PatchTriforcePieces(void) {
+    const char* cvar = "gHoliday.Visual.HolidayPieces";
+
+    // index 0 is assumed to be safe – adjust if needed after you inspect the DLs
+    PATCH_TRIFORCE_WRAPPER(gTriforcePiece0DL, "HolidayPiece0", cvar, 0, gHolidayPiece0DL);
+    PATCH_TRIFORCE_WRAPPER(gTriforcePiece1DL, "HolidayPiece1", cvar, 0, gHolidayPiece1DL);
+    PATCH_TRIFORCE_WRAPPER(gTriforcePiece2DL, "HolidayPiece2", cvar, 0, gHolidayPiece2DL);
+    PATCH_TRIFORCE_WRAPPER(gTriforcePieceCompletedDL, "HolidayPieceC", cvar, 0, gHolidayPieceCompletedDL);
+}
+
+extern std::map<uint32_t, ItemMapEntry> triforcePieceMapping;
+
+static void Holiday_UpdateTriforcePieceTexture() {
+    auto it = triforcePieceMapping.find(RG_TRIFORCE_PIECE);
+    if (it == triforcePieceMapping.end()) {
+        return;
+    }
+
+    if (CVarGetInteger("gHoliday.Visual.HolidayPieces", 0)) {
+        // Use ornament texture
+        it->second.texturePath = gHolidayPieceTex;
+    } else {
+        // Use normal Triforce texture
+        it->second.texturePath = gTriforcePieceTex;
+    }
+}
+
+// Re-run whenever the CVar changes
+static RegisterShipInitFunc sHolidayTriforcePieceTexture(Holiday_UpdateTriforcePieceTexture,
+                                                         { "gHoliday.Visual.HolidayPieces" });
+
 
 static void PatchTrees() {
     PATCH_GFX(object_wood02_DL_007968, "Tree1", "gHoliday.Visual.SnowingWeather", 17,
@@ -487,3 +540,5 @@ static RegisterShipInitFunc initFuncTrees(PatchTrees, { "gHoliday.Visual.Snowing
 static RegisterShipInitFunc initFunc(OnConfigurationChanged, { CVAR("Snowballs"), CVAR("Icebergs"),
                                                                CVAR("DownTheRabbitHole"), CVAR("SuperBonk") });
 static RegisterMenuInitFunc menuInitFunc(RegisterMenu);
+
+static RegisterShipInitFunc sTriforcePiecesInit(PatchTriforcePieces, { "gHoliday.Visual.HolidayPieces" });

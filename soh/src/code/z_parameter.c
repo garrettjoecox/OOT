@@ -4952,7 +4952,7 @@ void Interface_DrawAmmoCount(PlayState* play, s16 button, s16 alpha) {
         }
 
         ammo = AMMO(i);
-        if (CVarGetInteger("gHoliday.lilDavid.BombArrows.Active", 0) &&
+        if (CVarGetInteger("gHoliday.Gameplay.BombArrows.Active", 0) &&
             gSaveContext.equips.buttonItems[button] == ITEM_BOW && AMMO(ITEM_BOMB) != 0 &&
             AMMO(ITEM_BOMB) < AMMO(ITEM_BOW)) {
             ammo = AMMO(ITEM_BOMB);
@@ -4970,7 +4970,7 @@ void Interface_DrawAmmoCount(PlayState* play, s16 button, s16 alpha) {
                 ammo = 0;
             }
         } else if (gSaveContext.equips.buttonItems[button] == ITEM_BOW &&
-                   CVarGetInteger("gHoliday.lilDavid.BombArrows.Active", 0)) {
+                   CVarGetInteger("gHoliday.Gameplay.BombArrows.Active", 0)) {
             if (AMMO(ITEM_BOMB) != 0 && ammo == MIN(CUR_CAPACITY(UPG_QUIVER), CUR_CAPACITY(UPG_BOMB_BAG))) {
                 gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 120, 255, 0, alpha);
             }
@@ -5594,7 +5594,7 @@ void Interface_Draw(PlayState* play) {
             gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, interfaceCtx->cLeftAlpha);
             gDPSetCombineMode(OVERLAY_DISP++, G_CC_MODULATERGBA_PRIM, G_CC_MODULATERGBA_PRIM);
             if (gSaveContext.equips.buttonItems[1] == ITEM_BOW &&
-                CVarGetInteger("gHoliday.lilDavid.BombArrows.Active", 0)) {
+                CVarGetInteger("gHoliday.Gameplay.BombArrows.Active", 0)) {
                 Interface_DrawItemIconTexture(play, gItemIcons[ITEM_BOMB], 1);
             }
             Interface_DrawItemIconTexture(play, gItemIcons[gSaveContext.equips.buttonItems[1]], 1);
@@ -5611,7 +5611,7 @@ void Interface_Draw(PlayState* play) {
             gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, interfaceCtx->cDownAlpha);
             gDPSetCombineMode(OVERLAY_DISP++, G_CC_MODULATERGBA_PRIM, G_CC_MODULATERGBA_PRIM);
             if (gSaveContext.equips.buttonItems[2] == ITEM_BOW &&
-                CVarGetInteger("gHoliday.lilDavid.BombArrows.Active", 0)) {
+                CVarGetInteger("gHoliday.Gameplay.BombArrows.Active", 0)) {
                 Interface_DrawItemIconTexture(play, gItemIcons[ITEM_BOMB], 2);
             }
             Interface_DrawItemIconTexture(play, gItemIcons[gSaveContext.equips.buttonItems[2]], 2);
@@ -5628,7 +5628,7 @@ void Interface_Draw(PlayState* play) {
             gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, interfaceCtx->cRightAlpha);
             gDPSetCombineMode(OVERLAY_DISP++, G_CC_MODULATERGBA_PRIM, G_CC_MODULATERGBA_PRIM);
             if (gSaveContext.equips.buttonItems[3] == ITEM_BOW &&
-                CVarGetInteger("gHoliday.lilDavid.BombArrows.Active", 0)) {
+                CVarGetInteger("gHoliday.Gameplay.BombArrows.Active", 0)) {
                 Interface_DrawItemIconTexture(play, gItemIcons[ITEM_BOMB], 3);
             }
             Interface_DrawItemIconTexture(play, gItemIcons[gSaveContext.equips.buttonItems[3]], 3);
@@ -5698,7 +5698,7 @@ void Interface_Draw(PlayState* play) {
                 gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, interfaceCtx->dpadUpAlpha);
                 gDPSetCombineMode(OVERLAY_DISP++, G_CC_MODULATERGBA_PRIM, G_CC_MODULATERGBA_PRIM);
                 if (gSaveContext.equips.buttonItems[4] == ITEM_BOW &&
-                    CVarGetInteger("gHoliday.lilDavid.BombArrows.Active", 0)) {
+                    CVarGetInteger("gHoliday.Gameplay.BombArrows.Active", 0)) {
                     Interface_DrawItemIconTexture(play, gItemIcons[ITEM_BOMB], 4);
                 }
                 Interface_DrawItemIconTexture(play, gItemIcons[gSaveContext.equips.buttonItems[4]], 4);
@@ -5713,7 +5713,7 @@ void Interface_Draw(PlayState* play) {
                 gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, interfaceCtx->dpadDownAlpha);
                 gDPSetCombineMode(OVERLAY_DISP++, G_CC_MODULATERGBA_PRIM, G_CC_MODULATERGBA_PRIM);
                 if (gSaveContext.equips.buttonItems[5] == ITEM_BOW &&
-                    CVarGetInteger("gHoliday.lilDavid.BombArrows.Active", 0)) {
+                    CVarGetInteger("gHoliday.Gameplay.BombArrows.Active", 0)) {
                     Interface_DrawItemIconTexture(play, gItemIcons[ITEM_BOMB], 5);
                 }
                 Interface_DrawItemIconTexture(play, gItemIcons[gSaveContext.equips.buttonItems[5]], 5);
@@ -5728,7 +5728,7 @@ void Interface_Draw(PlayState* play) {
                 gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, interfaceCtx->dpadLeftAlpha);
                 gDPSetCombineMode(OVERLAY_DISP++, G_CC_MODULATERGBA_PRIM, G_CC_MODULATERGBA_PRIM);
                 if (gSaveContext.equips.buttonItems[6] == ITEM_BOW &&
-                    CVarGetInteger("gHoliday.lilDavid.BombArrows.Active", 0)) {
+                    CVarGetInteger("gHoliday.Gameplay.BombArrows.Active", 0)) {
                     Interface_DrawItemIconTexture(play, gItemIcons[ITEM_BOMB], 6);
                 }
                 Interface_DrawItemIconTexture(play, gItemIcons[gSaveContext.equips.buttonItems[6]], 6);
@@ -5743,7 +5743,7 @@ void Interface_Draw(PlayState* play) {
                 gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, interfaceCtx->dpadRightAlpha);
                 gDPSetCombineMode(OVERLAY_DISP++, G_CC_MODULATERGBA_PRIM, G_CC_MODULATERGBA_PRIM);
                 if (gSaveContext.equips.buttonItems[7] == ITEM_BOW &&
-                    CVarGetInteger("gHoliday.lilDavid.BombArrows.Active", 0)) {
+                    CVarGetInteger("gHoliday.Gameplay.BombArrows.Active", 0)) {
                     Interface_DrawItemIconTexture(play, gItemIcons[ITEM_BOMB], 7);
                 }
                 Interface_DrawItemIconTexture(play, gItemIcons[gSaveContext.equips.buttonItems[7]], 7);

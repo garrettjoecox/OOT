@@ -209,9 +209,9 @@ Color_RGBA8 ColorRGBA8(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
     colors were darker than the gDPSetPrimColor. You will see many more examples of this below in the `ApplyOrResetCustomGfxPatches` method
 */
 static std::map<std::string, CosmeticOption> cosmeticOptions = {
-    COSMETIC_OPTION("Link.KokiriTunic",             "Kokiri Tunic",             COSMETICS_GROUP_LINK,         ColorRGBA8(255,   0,   0, 255), false, true, false),
-    COSMETIC_OPTION("Link.GoronTunic",              "Goron Tunic",              COSMETICS_GROUP_LINK,         ColorRGBA8(255,   0,   0, 255), false, true, false),
-    COSMETIC_OPTION("Link.ZoraTunic",               "Zora Tunic",               COSMETICS_GROUP_LINK,         ColorRGBA8(255,   0,   0, 255), false, true, false),
+    COSMETIC_OPTION("Link.KokiriTunic",             "Kokiri Tunic",             COSMETICS_GROUP_LINK,         ColorRGBA8( 30, 105,  27, 255), false, true, false),
+    COSMETIC_OPTION("Link.GoronTunic",              "Goron Tunic",              COSMETICS_GROUP_LINK,         ColorRGBA8(100,  20,   0, 255), false, true, false),
+    COSMETIC_OPTION("Link.ZoraTunic",               "Zora Tunic",               COSMETICS_GROUP_LINK,         ColorRGBA8( 0,   60, 100, 255), false, true, false),
     COSMETIC_OPTION("Link.Hair",                    "Hair",                     COSMETICS_GROUP_LINK,         ColorRGBA8(255, 173,  27, 255), false, true, true),
     COSMETIC_OPTION("Link.Linen",                   "Linen",                    COSMETICS_GROUP_LINK,         ColorRGBA8(255, 255, 255, 255), false, true, true),
     COSMETIC_OPTION("Link.Boots",                   "Boots",                    COSMETICS_GROUP_LINK,         ColorRGBA8( 93,  44,  18, 255), false, true, true),
@@ -450,7 +450,7 @@ static std::map<std::string, CosmeticOption> cosmeticOptions = {
     COSMETIC_OPTION("NPC.Dog1",                     "Dog 1",                    COSMETICS_GROUP_NPC,          ColorRGBA8(255, 255, 200, 255), false, true, true),
     COSMETIC_OPTION("NPC.Dog2",                     "Dog 2",                    COSMETICS_GROUP_NPC,          ColorRGBA8(150, 100,  50, 255), false, true, true),
     COSMETIC_OPTION("NPC.GoldenSkulltula",          "Golden Skulltula",         COSMETICS_GROUP_NPC,          ColorRGBA8(255, 255, 255, 255), false, true, false),
-    COSMETIC_OPTION("NPC.Kokiri",                   "Kokiri",                   COSMETICS_GROUP_NPC,          ColorRGBA8(255,   0,   0, 255), false, true, false),
+    COSMETIC_OPTION("NPC.Kokiri",                   "Kokiri",                   COSMETICS_GROUP_NPC,          ColorRGBA8(  0, 130,  70, 255), false, true, false),
     COSMETIC_OPTION("NPC.Gerudo",                   "Gerudo",                   COSMETICS_GROUP_NPC,          ColorRGBA8( 90,   0, 140, 255), false, true, false),
     COSMETIC_OPTION("NPC.MetalTrap",                "Metal Trap",               COSMETICS_GROUP_NPC,          ColorRGBA8(255, 255, 255, 255), false, true, true),
     COSMETIC_OPTION("NPC.IronKnuckles",             "Iron Knuckles",            COSMETICS_GROUP_NPC,          ColorRGBA8(245, 255, 205, 255), false, true, false),

@@ -578,8 +578,11 @@ void ArchipelagoClient::OnItemGiven(uint32_t rc, GetItemEntry gi, uint8_t isGiSk
 
             std::string itemName = std::string(gSaveContext.ship.quest.data.archipelago.locations[rc].itemName);
 
-            if (itemName == "Triforce Piece") {
-                itemName = "a Christmas Ornament";
+            if (CVarGetInteger("gHoliday.Visual.HolidayPieces", 0)) {
+
+                if (itemName == "Triforce Piece") {
+                    itemName = "a Christmas Ornament";
+                }
             }
 
             Notification::Emit(

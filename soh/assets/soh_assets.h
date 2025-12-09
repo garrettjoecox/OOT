@@ -101,6 +101,18 @@ static const ALIGN_ASSET(2) char gTriforcePiece2DL[] = dgTriforcePiece2DL;
 #define dgTriforcePieceCompletedDL "__OTR__objects/object_triforce_completed/gTriforcePieceCompletedDL"
 static const ALIGN_ASSET(2) char gTriforcePieceCompletedDL[] = dgTriforcePieceCompletedDL;
 
+#define dgHolidayPiece0DL "__OTR__objects/object_holiday_piece_0/gHolidayPiece0DL"
+static const ALIGN_ASSET(2) char gHolidayPiece0DL[] = dgHolidayPiece0DL;
+
+#define dgHolidayPiece1DL "__OTR__objects/object_holiday_piece_1/gHolidayPiece1DL"
+static const ALIGN_ASSET(2) char gHolidayPiece1DL[] = dgHolidayPiece1DL;
+
+#define dgHolidayPiece2DL "__OTR__objects/object_holiday_piece_2/gHolidayPiece2DL"
+static const ALIGN_ASSET(2) char gHolidayPiece2DL[] = dgHolidayPiece2DL;
+
+#define dgHolidayPieceCompletedDL "__OTR__objects/object_holiday_completed/gHolidayPieceCompletedDL"
+static const ALIGN_ASSET(2) char gHolidayPieceCompletedDL[] = dgHolidayPieceCompletedDL;
+
 #define dgBossSoulSkullDL "__OTR__objects/object_boss_soul/gGIBossSoulSkullDL"
 static const ALIGN_ASSET(2) char gBossSoulSkullDL[] = dgBossSoulSkullDL;
 
@@ -448,6 +460,9 @@ static const ALIGN_ASSET(2) char gTriforcePieceTex[] = dgTriforcePiece;
 
 #define dgWTriforcePiece "__OTR__textures/parameter_static/gWTriforcePiece"
 static const ALIGN_ASSET(2) char gWTriforcePieceTex[] = dgWTriforcePiece;
+
+#define dgHolidayPiece "__OTR__textures/parameter_static/gHolidayPiece"
+static const ALIGN_ASSET(2) char gHolidayPieceTex[] = dgHolidayPiece;
 
 #define dgSplitEntrance "__OTR__textures/parameter_static/gSplitEntrance"
 static const ALIGN_ASSET(2) char gSplitEntranceTex[] = dgSplitEntrance;

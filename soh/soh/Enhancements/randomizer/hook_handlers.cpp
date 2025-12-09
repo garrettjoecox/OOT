@@ -1182,8 +1182,10 @@ void RandomizerOnVanillaBehaviorHandler(GIVanillaBehavior id, bool* should, va_l
                                 break;
                         }
 
-                        if ((RandomizerGet)item00->itemEntry.getItemId == RG_TRIFORCE_PIECE) {
-                            itemName = "a Christmas Ornament";
+                        if (CVarGetInteger("gHoliday.Visual.HolidayPieces", 0)) {
+                            if ((RandomizerGet)item00->itemEntry.getItemId == RG_TRIFORCE_PIECE) {
+                                itemName = "a Christmas Ornament";
+                            }
                         }
 
                         Notification::Emit({

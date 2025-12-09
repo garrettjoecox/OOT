@@ -344,9 +344,9 @@ extern "C" void ResourceMgr_PatchGfxByName(const char* path, const char* patchNa
     // }
 
     // Do not patch custom assets as they most likely do not have the same instructions as authentic assets
-    if (res->GetInitData()->IsCustom) {
-        return;
-    }
+    //if (res->GetInitData()->IsCustom) {
+    //    return;
+    //}
 
     Gfx* gfx = (Gfx*)&res->Instructions[index];
 
