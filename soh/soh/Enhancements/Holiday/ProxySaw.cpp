@@ -411,9 +411,9 @@ static void RegisterMenu() {
 
     SohGui::mSohMenu->AddWidget(path, "Snow Everywhere/Decor", WIDGET_CVAR_CHECKBOX)
         .CVar("gHoliday.Visual.SnowingWeather")
-        .Options(
-            UIWidgets::CheckboxOptions().Tooltip("Enables the snow fall effect in all areas, colors trees and paths "
-                                                 "white, and adds decor to Kak and Temple of Time. Best paired with the official holiday texture pack."));
+        .Options(UIWidgets::CheckboxOptions().Tooltip(
+            "Enables the snow fall effect in all areas, colors trees and paths "
+            "white, and adds decor to Kak and Temple of Time. Best paired with the official holiday texture pack."));
 
     SohGui::mSohMenu->AddWidget(path, "Festive Hats", WIDGET_CVAR_CHECKBOX)
         .CVar("gHoliday.Visual.Hats")
@@ -424,14 +424,15 @@ static void RegisterMenu() {
         .Options(UIWidgets::CheckboxOptions().Tooltip("Treasure chests will use present textures."));
     SohGui::mSohMenu->AddWidget(path, "Orniment Triforce Pieces", WIDGET_CVAR_CHECKBOX)
         .CVar("gHoliday.Visual.HolidayPieces")
-        .Options(UIWidgets::CheckboxOptions().Tooltip("Replace Triforce pieces with festive holiday ornaments. *To see changes in the item tracker, you must close and reopen the game"));
+        .Options(
+            UIWidgets::CheckboxOptions().Tooltip("Replace Triforce pieces with festive holiday ornaments. *To see "
+                                                 "changes in the item tracker, you must close and reopen the game"));
     SohGui::mSohMenu->AddWidget(path, "Let It Snow", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_GENERAL("LetItSnow"))
-        .Options(UIWidgets::CheckboxOptions()
-                     .Tooltip("Makes snow fall, changes chest texture colors to red and green, etc, for "
-                              "December holidays.\nWill reset on restart outside of December 23-25."));
+        .Options(UIWidgets::CheckboxOptions().Tooltip(
+            "Makes snow fall, changes chest texture colors to red and green, etc, for "
+            "December holidays.\nWill reset on restart outside of December 23-25."));
 }
-
 
 #define PATCH_GFX(path, name, cvar, index, instruction)             \
     if (CVarGetInteger(cvar, 0)) {                                  \
@@ -481,7 +482,6 @@ static void Holiday_UpdateTriforcePieceTexture() {
 // Re-run whenever the CVar changes
 static RegisterShipInitFunc sHolidayTriforcePieceTexture(Holiday_UpdateTriforcePieceTexture,
                                                          { "gHoliday.Visual.HolidayPieces" });
-
 
 static void PatchTrees() {
     PATCH_GFX(object_wood02_DL_007968, "Tree1", "gHoliday.Visual.SnowingWeather", 17,

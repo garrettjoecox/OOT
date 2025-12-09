@@ -4912,7 +4912,6 @@ static const CustomMessage kTriforcePieceMessages_Holiday[NUM_TRIFORCE_PIECE_MES
       "vous en avez %g[[current]]%w en&tout!" },
 };
 
-
 void CreateTriforcePieceMessages() {
     // Pick which table to use based on the HolidayPieces CVar
     const CustomMessage* src = CVarGetInteger("gHoliday.Visual.HolidayPieces", 0) ? kTriforcePieceMessages_Holiday

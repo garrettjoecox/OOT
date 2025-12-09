@@ -1018,15 +1018,15 @@ void* sMouthTextures[] = {
 };
 #endif
 
- //Original colors
- Color_RGB8 sTunicColors[] = {
+// Original colors
+Color_RGB8 sTunicColors[] = {
     { 30, 105, 27 },
     { 100, 20, 0 },
     { 0, 60, 100 },
 };
 
 // Overwrite to red tunic as default for Holidays in Hyrule build
-//Color_RGB8 sTunicColors[] = {
+// Color_RGB8 sTunicColors[] = {
 //    { 255, 0, 0 },
 //    { 255, 0, 0 },
 //    { 255, 0, 0 },

@@ -1622,14 +1622,13 @@ void SohMenu::AddMenuEnhancements() {
 
     AddWidget(path, "Teleport Trap Mode", WIDGET_CVAR_COMBOBOX)
         .CVar(CVAR_ENHANCEMENT("ExtraTraps.TeleportMode"))
-        .Options(
-            ComboboxOptions()
-                .DefaultIndex(TELEPORT_MODE_SIMPLE)
-                .ComboMap(teleportTrapModes)
-                .Tooltip("Controls how Teleport Traps choose their destination:\n\n"
-                         " - Simple: Uses the standard warp song, Link's House, and Temple of Time.\n"
-                         " - Advanced: Teleports to a random entrance from a large pool of exits, "
-                         "including overworld exits, interiors, and boss doors.\n"))
+        .Options(ComboboxOptions()
+                     .DefaultIndex(TELEPORT_MODE_SIMPLE)
+                     .ComboMap(teleportTrapModes)
+                     .Tooltip("Controls how Teleport Traps choose their destination:\n\n"
+                              " - Simple: Uses the standard warp song, Link's House, and Temple of Time.\n"
+                              " - Advanced: Teleports to a random entrance from a large pool of exits, "
+                              "including overworld exits, interiors, and boss doors.\n"))
         .PreFunc([](WidgetInfo& info) {
             const bool trapsOn = CVarGetInteger(CVAR_ENHANCEMENT("ExtraTraps.Enabled"), 0) != 0;
             const bool tpOn = CVarGetInteger(CVAR_ENHANCEMENT("ExtraTraps.Teleport"), 0) != 0;

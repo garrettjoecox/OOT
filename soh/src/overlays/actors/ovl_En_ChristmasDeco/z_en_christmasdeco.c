@@ -9,7 +9,6 @@
 
 #define CVAR(v) "gHoliday.Visual." v
 
-
 void EnChristmasDeco_Init(Actor* thisx, PlayState* play);
 void EnChristmasDeco_Destroy(Actor* thisx, PlayState* play);
 void EnChristmasDeco_Update(Actor* thisx, PlayState* play);
