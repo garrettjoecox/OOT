@@ -140,6 +140,9 @@ class Settings {
      */
     void RandomizeAllSettings();
 
+    void LockAllOptions();
+    void UnlockAllOptions();
+
     static std::shared_ptr<Settings> GetInstance();
 
   private:

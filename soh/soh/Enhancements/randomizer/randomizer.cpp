@@ -4029,6 +4029,41 @@ void RandomizerSettingsWindow::DrawElement() {
     }
 
     ImGui::SameLine();
+
+#define CVAR_RANDO_LOCKS_ENABLED CVAR_SETTING("RandoLocksEnabled")
+
+    bool locksEnabled = CVarGetInteger(CVAR_RANDO_LOCKS_ENABLED, 0) != 0;
+
+    UIWidgets::CheckboxOptions lockToggleOpts =
+        UIWidgets::CheckboxOptions().Color(THEME_COLOR).Tooltip("Enable per-option locking of randomizer settings.");
+
+    if (UIWidgets::Checkbox("Enable Locks", &locksEnabled, lockToggleOpts)) {
+        CVarSetInteger(CVAR_RANDO_LOCKS_ENABLED, locksEnabled ? 1 : 0);
+        Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+    }
+
+    if (locksEnabled) {
+        ImGui::SameLine();
+
+        UIWidgets::ButtonOptions lockAllOptions =
+            UIWidgets::ButtonOptions().Size(ImVec2(160.f, 0.f)).Color(THEME_COLOR);
+        lockAllOptions.Disabled(disableEditingRandoSettings);
+        lockAllOptions.Tooltip("Lock every randomizer setting so randomization cannot modify them.");
+        if (UIWidgets::Button("Lock All", lockAllOptions)) {
+            mSettings->LockAllOptions();
+        }
+
+        ImGui::SameLine();
+        UIWidgets::ButtonOptions unlockAllOptions =
+            UIWidgets::ButtonOptions().Size(ImVec2(160.f, 0.f)).Color(THEME_COLOR);
+        unlockAllOptions.Disabled(disableEditingRandoSettings);
+        unlockAllOptions.Tooltip("Unlock every setting so randomization may modify them again.");
+        if (UIWidgets::Button("Unlock All", unlockAllOptions)) {
+            mSettings->UnlockAllOptions();
+        }
+    }
+
+    ImGui::SameLine();
     if (!CVarGetInteger(CVAR_RANDOMIZER_SETTING("DontGenerateSpoiler"), 0)) {
         std::string spoilerfilepath = CVarGetString(CVAR_GENERAL("SpoilerLog"), "");
         ImGui::Text("Spoiler File: %s", spoilerfilepath.c_str());

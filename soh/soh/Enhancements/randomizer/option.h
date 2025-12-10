@@ -315,6 +315,14 @@ class Option {
     uint8_t GetValueFromText(std::string text);
     void SetContextIndexFromText(std::string text);
 
+    bool IsLocked() const {
+        return mLocked;
+    }
+
+    void SetLocked(bool locked) {
+        mLocked = locked;
+    }
+
   protected:
     Option(size_t key_, std::string name_, std::vector<std::string> options_, OptionCategory category_,
            std::string cvarName_, std::string description_, WidgetType widgetType_, uint8_t defaultOption_,
@@ -341,6 +349,7 @@ class Option {
     bool disabled = false;
     std::string disabledText;
     std::unordered_map<std::string, uint8_t> optionsTextToVar = {};
+    bool mLocked = false;
 };
 
 class LocationOption : public Option {

@@ -163,9 +163,9 @@ void Settings::CreateOptions() {
     OPT_U8(RSK_BOMBCHU_BAG, "Bombchu Bag", {"None", "Single Bag", "Progressive Bags"}, OptionCategory::Setting, CVAR_RANDOMIZER_SETTING("BombchuBag"), mOptionDescriptions[RSK_BOMBCHU_BAG], WidgetType::Combobox, RO_BOMBCHU_BAG_NONE);
     OPT_U8(RSK_ENABLE_BOMBCHU_DROPS, "Bombchu Drops", {"No", "Yes"}, OptionCategory::Setting, CVAR_RANDOMIZER_SETTING("EnableBombchuDrops"), mOptionDescriptions[RSK_ENABLE_BOMBCHU_DROPS], WidgetType::Combobox, RO_AMMO_DROPS_ON);
     // TODO: AmmoDrops and/or HeartDropRefill, combine with/separate Ammo Drops from Bombchu Drops?
-    OPT_BOOL(RSK_TRIFORCE_HUNT, "Ornament Hunt", CVAR_RANDOMIZER_SETTING("TriforceHunt"), mOptionDescriptions[RSK_TRIFORCE_HUNT], IMFLAG_NONE);
-    OPT_U8(RSK_TRIFORCE_HUNT_PIECES_TOTAL, "Ornament Hunt Total Pieces", {NumOpts(1, 100)}, OptionCategory::Setting, CVAR_RANDOMIZER_SETTING("TriforceHuntTotalPieces"), mOptionDescriptions[RSK_TRIFORCE_HUNT_PIECES_TOTAL], WidgetType::Slider, 29, false, IMFLAG_NONE);
-    OPT_U8(RSK_TRIFORCE_HUNT_PIECES_REQUIRED, "Ornament Hunt Required Pieces", {NumOpts(1, 100)}, OptionCategory::Setting, CVAR_RANDOMIZER_SETTING("TriforceHuntRequiredPieces"), mOptionDescriptions[RSK_TRIFORCE_HUNT_PIECES_REQUIRED], WidgetType::Slider, 19);
+    OPT_BOOL(RSK_TRIFORCE_HUNT, "Triforce Hunt", CVAR_RANDOMIZER_SETTING("TriforceHunt"), mOptionDescriptions[RSK_TRIFORCE_HUNT], IMFLAG_NONE);
+    OPT_U8(RSK_TRIFORCE_HUNT_PIECES_TOTAL, "Triforce Hunt Total Pieces", {NumOpts(1, 100)}, OptionCategory::Setting, CVAR_RANDOMIZER_SETTING("TriforceHuntTotalPieces"), mOptionDescriptions[RSK_TRIFORCE_HUNT_PIECES_TOTAL], WidgetType::Slider, 29, false, IMFLAG_NONE);
+    OPT_U8(RSK_TRIFORCE_HUNT_PIECES_REQUIRED, "Triforce Hunt Required Pieces", {NumOpts(1, 100)}, OptionCategory::Setting, CVAR_RANDOMIZER_SETTING("TriforceHuntRequiredPieces"), mOptionDescriptions[RSK_TRIFORCE_HUNT_PIECES_REQUIRED], WidgetType::Slider, 19);
     OPT_U8(RSK_MQ_DUNGEON_RANDOM, "MQ Dungeon Setting", {"None", "Set Number", "Random", "Selection Only"}, OptionCategory::Setting, CVAR_RANDOMIZER_SETTING("MQDungeons"), mOptionDescriptions[RSK_MQ_DUNGEON_RANDOM], WidgetType::Combobox, RO_MQ_DUNGEONS_NONE, true, IMFLAG_NONE);
     OPT_U8(RSK_MQ_DUNGEON_COUNT, "MQ Dungeon Count", {NumOpts(0, 12)}, OptionCategory::Setting, CVAR_RANDOMIZER_SETTING("MQDungeonCount"), "", WidgetType::Slider, 12, true, IMFLAG_NONE);
     OPT_BOOL(RSK_MQ_DUNGEON_SET, "Set Dungeon Quests", {"Off", "On"}, OptionCategory::Setting, CVAR_RANDOMIZER_SETTING("MQDungeonsSelection"), mOptionDescriptions[RSK_MQ_DUNGEON_SET], WidgetType::Checkbox, false, false, IMFLAG_NONE);
@@ -3031,6 +3031,11 @@ void Settings::RandomizeAllSettings() {
         auto key = static_cast<RandomizerSettingKey>(i);
         Option& option = mOptions[key];
 
+        // NEW: do not randomize locked options
+        if (option.IsLocked()) {
+            continue;
+        }
+
         if (option.GetOptionCount() == 0) {
             continue;
         }
@@ -3047,6 +3052,29 @@ void Settings::RandomizeAllSettings() {
     UpdateOptionProperties();
 
     Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+}
+
+void Settings::LockAllOptions() {
+    for (int i = 0; i < RSK_MAX; ++i) {
+        auto key = static_cast<RandomizerSettingKey>(i);
+        Option& option = mOptions[key];
+
+        // Optional: only lock “real” settings
+        if (!option.GetCVarName().empty()) {
+            option.SetLocked(true);
+        }
+    }
+}
+
+void Settings::UnlockAllOptions() {
+    for (int i = 0; i < RSK_MAX; ++i) {
+        auto key = static_cast<RandomizerSettingKey>(i);
+        Option& option = mOptions[key];
+
+        if (!option.GetCVarName().empty()) {
+            option.SetLocked(false);
+        }
+    }
 }
 
 std::shared_ptr<Settings> Settings::GetInstance() {

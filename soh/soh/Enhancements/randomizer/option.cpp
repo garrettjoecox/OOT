@@ -125,9 +125,30 @@ bool Option::IsCategory(const OptionCategory category) const {
     return category == this->category;
 }
 
+constexpr float LOCK_CHECKBOX_OFFSET_X = 20.0f;
+constexpr float LOCK_CHECKBOX_OFFSET_Y = 0.0f;
+
+constexpr float LOCK_COMBO_OFFSET_X = 0.0f;
+constexpr float LOCK_COMBO_OFFSET_Y = -18.0f;
+
+constexpr float LOCK_SLIDER_OFFSET_X = 0.0f;
+constexpr float LOCK_SLIDER_OFFSET_Y = -20.0f;
+
+constexpr float LOCK_LOGIC_RULES_OFFSET_X = 4.0f;
+constexpr float LOCK_LOGIC_RULES_OFFSET_Y = 0.0f;
+
+#define CVAR_RANDO_LOCKS_ENABLED CVAR_SETTING("RandoLocksEnabled")
+
+inline bool LocksEnabled() {
+    return CVarGetInteger(CVAR_RANDO_LOCKS_ENABLED, 0) != 0;
+}
+
 bool Option::RenderImGui() {
     bool changed = false;
-    ImGui::BeginGroup();
+
+    ImGui::BeginGroup(); // make widget+lock behave as a single item to the outside
+
+    // 1. Draw the original widget exactly as normal
     switch (widgetType) {
         case WidgetType::Checkbox:
             changed = RenderCheckbox();
@@ -139,6 +160,73 @@ bool Option::RenderImGui() {
             changed = RenderSlider();
             break;
     }
+
+    // 2. Add lock icon (if this option has a CVar)
+    if (!cvarName.empty() && LocksEnabled()) {
+        bool locked = IsLocked();
+
+        // Safe ImGui APIs for last item rectangle
+        ImVec2 itemMin = ImGui::GetItemRectMin();
+        ImVec2 itemMax = ImGui::GetItemRectMax();
+        ImVec2 itemSize = ImGui::GetItemRectSize();
+
+        float iconSize = ImGui::GetTextLineHeight();
+        float textWidth = ImGui::CalcTextSize(name.c_str()).x;
+        float spacing = ImGui::GetStyle().ItemInnerSpacing.x;
+
+        ImVec2 cursorBackup = ImGui::GetCursorScreenPos();
+        ImVec2 iconPos{ itemMin.x, itemMin.y };
+
+        if (widgetType == WidgetType::Checkbox) {
+            // Checkbox: [box][space][label][space][lock]
+            float boxSize = iconSize;
+
+            iconPos.x = itemMin.x + boxSize + spacing + textWidth + spacing + LOCK_CHECKBOX_OFFSET_X;
+            iconPos.y = itemMin.y + (itemSize.y - iconSize) * 0.5f + LOCK_CHECKBOX_OFFSET_Y;
+
+        } else if (widgetType == WidgetType::Combobox) {
+            if (GetKey() == RSK_LOGIC_RULES) {
+                // Special case: Logic Rules combo – put lock to the RIGHT of the combo box
+                iconPos.x = itemMax.x + spacing + LOCK_LOGIC_RULES_OFFSET_X;
+                iconPos.y = itemMin.y + (itemSize.y - iconSize) * 0.5f + LOCK_LOGIC_RULES_OFFSET_Y;
+            } else {
+                // Default combo behaviour: lock relative to label
+                iconPos.x = itemMin.x + textWidth + spacing + LOCK_COMBO_OFFSET_X;
+                iconPos.y = itemMin.y + (itemSize.y - iconSize) * 0.5f + LOCK_COMBO_OFFSET_Y;
+            }
+
+        } else if (widgetType == WidgetType::Slider) {
+            // Slider: same idea, but separate tweakable offsets
+            iconPos.x = itemMin.x + textWidth + spacing + LOCK_SLIDER_OFFSET_X;
+            iconPos.y = itemMin.y + (itemSize.y - iconSize) * 0.5f + LOCK_SLIDER_OFFSET_Y;
+        }
+
+        // Move cursor to where the lock should go
+        ImGui::SetCursorScreenPos(iconPos);
+
+        // Draw icon-only lock button
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1, 1, 1, 0.15f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1, 1, 1, 0.25f));
+
+        std::string id = std::string(locked ? ICON_FA_LOCK : ICON_FA_UNLOCK) + "##lock_" + name;
+
+        if (ImGui::Button(id.c_str(), ImVec2(iconSize, iconSize))) {
+            locked = !locked;
+            SetLocked(locked);
+            changed = true;
+        }
+
+        ImGui::PopStyleColor(3);
+        ImGui::PopStyleVar();
+
+        UIWidgets::Tooltip("Lock this option so it isn't changed when randomizing settings.");
+
+        // Restore cursor so layout continues normally
+        ImGui::SetCursorScreenPos(cursorBackup);
+    }
+
     ImGui::EndGroup();
     return changed;
 }
@@ -192,13 +280,20 @@ Option::Option(size_t key_, std::string name_, std::vector<std::string> options_
 bool Option::RenderCheckbox() {
     bool changed = false;
     bool val = static_cast<bool>(CVarGetInteger(cvarName.c_str(), defaultOption));
+
     UIWidgets::CheckboxOptions widgetOptions = static_cast<UIWidgets::CheckboxOptions>(
         UIWidgets::CheckboxOptions().Color(THEME_COLOR).Tooltip(description.c_str()));
-    widgetOptions.disabled = disabled;
+
+    bool locksEnabled = LocksEnabled();
+    widgetOptions.disabled = disabled || (locksEnabled && mLocked);
+
     if (UIWidgets::Checkbox(name.c_str(), &val, widgetOptions)) {
-        CVarSetInteger(cvarName.c_str(), val);
-        changed = true;
-        Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+        // Only block changes if locks are enabled AND this option is locked
+        if (!(locksEnabled && mLocked)) {
+            CVarSetInteger(cvarName.c_str(), val);
+            changed = true;
+            Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+        }
     }
     return changed;
 }
@@ -212,17 +307,24 @@ bool Option::RenderCombobox() {
         changed = true;
         Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
     }
+
     UIWidgets::ComboboxOptions widgetOptions =
         UIWidgets::ComboboxOptions().Color(THEME_COLOR).Tooltip(description.c_str());
+
     if (this->GetKey() == RSK_LOGIC_RULES) {
         widgetOptions = widgetOptions.LabelPosition(UIWidgets::LabelPositions::None)
                             .ComponentAlignment(UIWidgets::ComponentAlignments::Right);
     }
-    widgetOptions.disabled = disabled;
+
+    bool locksEnabled = LocksEnabled();
+    widgetOptions.disabled = disabled || (locksEnabled && mLocked);
+
     if (UIWidgets::Combobox(name.c_str(), &selected, options, widgetOptions)) {
-        CVarSetInteger(cvarName.c_str(), static_cast<int>(selected));
-        changed = true;
-        Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+        if (!(locksEnabled && mLocked)) {
+            CVarSetInteger(cvarName.c_str(), static_cast<int>(selected));
+            changed = true;
+            Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+        }
     }
     return changed;
 }
@@ -234,6 +336,7 @@ bool Option::RenderSlider() {
         val = static_cast<int>(options.size()) - 1;
         changed = true;
     }
+
     UIWidgets::IntSliderOptions widgetOptions = UIWidgets::IntSliderOptions()
                                                     .Color(THEME_COLOR)
                                                     .Min(0)
@@ -241,7 +344,10 @@ bool Option::RenderSlider() {
                                                     .Tooltip(description.c_str())
                                                     .Format(options[val].c_str())
                                                     .DefaultValue(defaultOption);
-    widgetOptions.disabled = disabled;
+
+    bool locksEnabled = LocksEnabled();
+    widgetOptions.disabled = disabled || (locksEnabled && mLocked);
+
     if (UIWidgets::SliderInt(name.c_str(), &val, widgetOptions)) {
         changed = true;
     }
@@ -253,7 +359,8 @@ bool Option::RenderSlider() {
         val = static_cast<int>(options.size() - 1);
         changed = true;
     }
-    if (changed) {
+
+    if (changed && !(locksEnabled && mLocked)) {
         CVarSetInteger(cvarName.c_str(), val);
         Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
     }
