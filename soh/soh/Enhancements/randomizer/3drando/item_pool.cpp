@@ -578,6 +578,34 @@ void GenerateItemPool() {
         AddItemToMainPool(RG_PROGRESSIVE_SCALE);
     }
 
+    if (ctx->GetOption(RSK_SHUFFLE_ISG)) {
+        AddItemToMainPool(RG_ABILITY_ISG);
+    }
+    if (ctx->GetOption(RSK_SHUFFLE_OI)) {
+        AddItemToMainPool(RG_ABILITY_OI);
+    }
+    if (ctx->GetOption(RSK_SHUFFLE_QPA)) {
+        AddItemToMainPool(RG_ABILITY_QPA);
+    }
+    if (ctx->GetOption(RSK_SHUFFLE_HESS)) {
+        AddItemToMainPool(RG_ABILITY_HESS);
+    }
+    if (ctx->GetOption(RSK_SHUFFLE_SUPERSLIDE)) {
+        AddItemToMainPool(RG_ABILITY_SUPERSLIDE);
+    }
+    if (ctx->GetOption(RSK_SHUFFLE_HOVER)) {
+        AddItemToMainPool(RG_ABILITY_HOVER);
+    }
+    if (ctx->GetOption(RSK_SHUFFLE_EQUIP_SWAP)) {
+        AddItemToMainPool(RG_ABILITY_EQUIP_SWAP);
+    }
+    if (ctx->GetOption(RSK_SHUFFLE_GROUND_JUMP)) {
+        AddItemToMainPool(RG_ABILITY_GROUND_JUMP);
+    }
+    if (ctx->GetOption(RSK_SHUFFLE_WEIRDSHOT)) {
+        AddItemToMainPool(RG_ABILITY_WEIRDSHOT);
+    }
+
     if (ctx->GetOption(RSK_SHUFFLE_BEEHIVES)) {
         // 32 total beehive locations
         AddItemToPool(PendingJunkPool, RG_RED_RUPEE, 23);

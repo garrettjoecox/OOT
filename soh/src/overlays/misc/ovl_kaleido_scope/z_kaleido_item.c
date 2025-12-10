@@ -554,6 +554,8 @@ void KaleidoScope_DrawItemSelect(PlayState* play) {
                         pauseCtx->cursorX[PAUSE_ITEM] = cursorX;
                         pauseCtx->cursorY[PAUSE_ITEM] = cursorY;
                         moveCursorResult = 1;
+
+                        GameInteractor_ExecuteOnKaleidoMoveCursorFromSpecialPos(pauseCtx, &cursorItem);
                         break;
                     }
 
@@ -590,6 +592,8 @@ void KaleidoScope_DrawItemSelect(PlayState* play) {
                         pauseCtx->cursorX[PAUSE_ITEM] = cursorX;
                         pauseCtx->cursorY[PAUSE_ITEM] = cursorY;
                         moveCursorResult = 1;
+
+                        GameInteractor_ExecuteOnKaleidoMoveCursorFromSpecialPos(pauseCtx, &cursorItem);
                         break;
                     }
 

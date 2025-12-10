@@ -5684,7 +5684,7 @@ CustomMessage Randomizer::GetArchipelagoItemMessage(int16_t randomizerGet, uint3
 void Randomizer::CreateCustomMessages() {
     // RANDTODO: Translate into french and german and replace GIMESSAGE_UNTRANSLATED
     // with GIMESSAGE(getItemID, itemID, english, german, french).
-    const std::array<GetItemMessage, 112> getItemMessages = { {
+    const std::array<GetItemMessage, 120> getItemMessages = { {
         GIMESSAGE(RG_GREG_RUPEE, ITEM_MASK_GORON, "You found %gGreg%w!", "%gGreg%w! Du hast ihn wirklich gefunden!",
                   "Félicitation! Vous avez trouvé %gGreg%w!"),
         GIMESSAGE(RG_MASTER_SWORD, ITEM_SWORD_MASTER, "You found the %gMaster Sword%w!",
@@ -6008,6 +6008,25 @@ void Randomizer::CreateCustomMessages() {
         GIMESSAGE(RG_BRONZE_SCALE, ITEM_SCALE_SILVER, "You got the %rBronze Scale%w!&The power of buoyancy is yours!",
                   "Du hast die %rBronzene Schuppe%w&erhalten! Die Fähigkeit zu&Schwimmen ist nun dein!",
                   "Vous obtenez l'%rÉcaille de Bronze%w!&Le pouvoir de la flottabilité est&à vous!"),
+
+        GIMESSAGE(RG_ABILITY_ISG, ITEM_SWORD_MASTER, "You got %rISG%w!", "Du hast %rISG%w&erhalten!",
+                  "Vous obtenez %rISG%w!"),
+        GIMESSAGE(RG_ABILITY_OI, ITEM_OCARINA_TIME, "You got %rOI%w!", "Du hast %rOI%w&erhalten!",
+                  "Vous obtenez %rOI%w!"),
+        GIMESSAGE(RG_ABILITY_QPA, ITEM_BLUE_FIRE, "You got %rQPA%w!", "Du hast %rQPA%w&erhalten!",
+                  "Vous obtenez %rQPA%w!"),
+        GIMESSAGE(RG_ABILITY_HESS, ITEM_BOOTS_HOVER, "You got %rHESS%w!", "Du hast %rHESS%w&erhalten!",
+                  "Vous obtenez %rHESS%w!"),
+        GIMESSAGE(RG_ABILITY_SUPERSLIDE, ITEM_BOOTS_HOVER, "You got %rSuperslide%w!",
+                  "Du hast %rSuperslide%w&erhalten!", "Vous obtenez %rSuperslide%w!"),
+        GIMESSAGE(RG_ABILITY_HOVER, ITEM_BOOTS_HOVER, "You got %rHover%w!", "Du hast %rHover%w&erhalten!",
+                  "Vous obtenez %rHover%w!"),
+        GIMESSAGE(RG_ABILITY_EQUIP_SWAP, ITEM_DINS_FIRE, "You got %rEquip Swap%w!", "Du hast %rEquip Swap%w&erhalten!",
+                  "Vous obtenez %rEquip Swap%w!"),
+        GIMESSAGE(RG_ABILITY_GROUND_JUMP, ITEM_SHIELD_HYLIAN, "You got %rGround Jump%w!",
+                  "Du hast %rGround Jump%w&erhalten!", "Vous obtenez %rGround Jump%w!"),
+        GIMESSAGE(RG_ABILITY_WEIRDSHOT, ITEM_HOOKSHOT, "You got %rWeirdshot%w!", "Du hast %rWeirdshot%w&erhalten!",
+                  "Vous obtenez %rWeirdshot%w!"),
         GIMESSAGE(RG_FISHING_POLE, ITEM_FISHING_POLE, "You found a lost %rFishing Pole%w!&Time to hit the pond!",
                   "Du hast eine verlorene %rAngelrute%w&gefunden!&Zeit, im Teich&zu angeln!",
                   "Vous obtenez une %rCanne à pêche%w&perdue!&Il est temps d'aller à %gl'étang%w!"),
@@ -6201,6 +6220,15 @@ std::map<RandomizerGet, RandomizerInf> randomizerGetToRandInf = {
     { RG_BONGO_BONGO_SOUL, RAND_INF_BONGO_BONGO_SOUL },
     { RG_TWINROVA_SOUL, RAND_INF_TWINROVA_SOUL },
     { RG_GANON_SOUL, RAND_INF_GANON_SOUL },
+    { RG_ABILITY_ISG, RAND_INF_CAN_ISG },
+    { RG_ABILITY_OI, RAND_INF_CAN_OI },
+    { RG_ABILITY_QPA, RAND_INF_CAN_QPA },
+    { RG_ABILITY_HESS, RAND_INF_CAN_HESS },
+    { RG_ABILITY_SUPERSLIDE, RAND_INF_CAN_SUPERSLIDE },
+    { RG_ABILITY_HOVER, RAND_INF_CAN_HOVER },
+    { RG_ABILITY_EQUIP_SWAP, RAND_INF_CAN_EQUIP_SWAP },
+    { RG_ABILITY_GROUND_JUMP, RAND_INF_CAN_GROUND_JUMP },
+    { RG_ABILITY_WEIRDSHOT, RAND_INF_CAN_WEIRDSHOT },
 };
 
 extern "C" u16 Randomizer_Item_Give(PlayState* play, GetItemEntry giEntry) {

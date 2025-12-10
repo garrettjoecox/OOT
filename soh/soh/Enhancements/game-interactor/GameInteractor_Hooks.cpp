@@ -121,6 +121,26 @@ void GameInteractor_ExecuteOnCuccoOrChickenHatch() {
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnCuccoOrChickenHatch>();
 }
 
+void GameInteractor_ExecuteOnLinkAnimEnd(SkelAnime* skelAnime) {
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnLinkAnimEnd>(skelAnime);
+}
+
+void GameInteractor_ExecuteOnQPADamage(uint32_t* dmgFlags) {
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnQPADamage>(dmgFlags);
+}
+
+void GameInteractor_ExecuteOnESS() {
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnESS>();
+}
+
+void GameInteractor_ExecuteOnWaitForPutaway() {
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnWaitForPutaway>();
+}
+
+void GameInteractor_ExecuteOnAnimationSetLoadFrame(LinkAnimationHeader* animation, int32_t* frame) {
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnAnimationSetLoadFrame>(animation, frame);
+}
+
 void GameInteractor_ExecuteOnShopSlotChangeHooks(uint8_t cursorIndex, int16_t price) {
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnShopSlotChange>(cursorIndex, price);
 }
@@ -311,6 +331,10 @@ void GameInteractor_ExecuteOnInterfaceUpdate() {
 
 void GameInteractor_ExecuteOnKaleidoscopeUpdate(int16_t inDungeonScene) {
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnKaleidoscopeUpdate>(inDungeonScene);
+}
+
+void GameInteractor_ExecuteOnKaleidoMoveCursorFromSpecialPos(PauseContext* pauseCtx, uint16_t* cursorItem) {
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnKaleidoMoveCursorFromSpecialPos>(pauseCtx, cursorItem);
 }
 
 // MARK: - Main Menu

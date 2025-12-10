@@ -71,6 +71,12 @@ extern void EnGe1_Wait_Archery(EnGe1* enGe1, PlayState* play);
 extern void EnGe1_SetAnimationIdle(EnGe1* enGe1);
 extern void EnGe1_SetAnimationIdle(EnGe1* enGe1);
 extern void EnGe2_SetupCapturePlayer(EnGe2* enGe2, PlayState* play);
+extern void func_80832318(Player* player);
+extern void Player_SetupActionPreserveItemAction(PlayState* play, Player* player, PlayerActionFunc actionFunc,
+                                                 s32 flags);
+extern void Player_Action_Idle(Player* player, PlayState* play);
+extern s32 Player_DecelerateToZero(Player* player);
+extern s32 func_80834BD4(Player* player, PlayState* play);
 }
 
 bool LocMatchesQuest(Rando::Location loc) {
@@ -2471,6 +2477,14 @@ void RandomizerOnPlayerUpdateHandler() {
             GameInteractor::State::TriforceHuntPieceGiven = 0;
         }
     }
+    if (!Flags_GetRandomizerInf(RAND_INF_CAN_GROUND_JUMP)) {
+        if (GET_PLAYER(gPlayState)->stateFlags1 & PLAYER_STATE1_CARRYING_ACTOR &&
+            GET_PLAYER(gPlayState)->stateFlags1 & PLAYER_STATE1_SHIELDING) {
+            if (GET_PLAYER(gPlayState)->upperActionFunc == func_80834BD4 && GET_PLAYER(gPlayState)->heldActor == NULL) {
+                GET_PLAYER(gPlayState)->stateFlags1 &= ~PLAYER_STATE1_CARRYING_ACTOR;
+            }
+        }
+    }
 }
 
 void RandomizerOnSceneSpawnActorsHandler() {
@@ -2536,6 +2550,83 @@ uint32_t RandomizerReturnCurrentlyQueuedItem() {
     return (uint32_t)randomizerQueuedCheck;
 }
 
+void RandomizerOnLinkAnimEnd(SkelAnime* skelAnime) {
+    if (!Flags_GetRandomizerInf(RAND_INF_CAN_ISG)) {
+        Player* player = GET_PLAYER(gPlayState);
+
+        // Make sure we are only checking for the end of link's animation
+        // TODO: Use gPlayerAnim_link_normal_defense_kiru?
+        if (skelAnime == &player->skelAnime && player->meleeWeaponAnimation == PLAYER_MWA_STAB_1H) {
+            func_80832318(player);
+        }
+    }
+}
+
+void RandomizerShouldSkipForcePlayOcarina(bool* should) {
+
+    if (!Flags_GetRandomizerInf(RAND_INF_CAN_OI)) {
+        Player* player = GET_PLAYER(gPlayState);
+
+        if (player->itemAction != PLAYER_IA_OCARINA_FAIRY && player->itemAction != PLAYER_IA_OCARINA_OF_TIME) {
+            player->unk_6AD = 0;
+            Sfx_PlaySfxCentered(NA_SE_SY_ERROR);
+            Player_SetupActionPreserveItemAction(gPlayState, player, Player_Action_Idle, 0);
+            player->stateFlags1 &= ~PLAYER_STATE1_IN_CUTSCENE;
+            *should = true;
+        }
+    }
+}
+
+void RandomizerOnQPADamage(uint32_t* dmgFlags) {
+    if (!Flags_GetRandomizerInf(RAND_INF_CAN_QPA)) {
+        *dmgFlags = 0;
+    }
+}
+
+void RandomizerOnESS() {
+    if (!Flags_GetRandomizerInf(RAND_INF_CAN_HESS)) {
+        Player_DecelerateToZero(GET_PLAYER(gPlayState));
+    }
+}
+
+void RandomizerOnWaitForPutaway() {
+    if (!Flags_GetRandomizerInf(RAND_INF_CAN_SUPERSLIDE)) {
+        Player_DecelerateToZero(GET_PLAYER(gPlayState));
+    }
+}
+
+void RandomizerShouldHover(bool* should) {
+    if (!Flags_GetRandomizerInf(RAND_INF_CAN_HOVER)) {
+        *should = false;
+    }
+}
+
+void RandomizerOnKaleidoMoveCursorFromSpecialPos(PauseContext* pauseCtx, uint16_t* cursorItem) {
+    if (!Flags_GetRandomizerInf(RAND_INF_CAN_EQUIP_SWAP)) {
+        *cursorItem = PAUSE_ITEM_NONE;
+        // PAUSE_ITEM_NONE feels more accurate to intended behaviour, but alternative here also works
+        // *cursorItem = gSaveContext.inventory.items[pauseCtx->cursorPoint[PAUSE_ITEM]];
+    }
+}
+
+void RandomizerOnAnimationSetLoadFrame(LinkAnimationHeader* animation, int32_t* frame) {
+    if (!Flags_GetRandomizerInf(RAND_INF_CAN_WEIRDSHOT)) {
+        std::optional<const char*> animationName;
+
+        if (ResourceMgr_OTRSigCheck(reinterpret_cast<char*>(animation)) != 0) {
+            animationName = reinterpret_cast<const char*>(animation);
+            animation = reinterpret_cast<LinkAnimationHeader*>(ResourceMgr_LoadAnimByName(*animationName));
+        }
+
+        const auto playerAnimHeader =
+            static_cast<LinkAnimationHeader*>(SEGMENTED_TO_VIRTUAL(static_cast<void*>(animation)));
+
+        if (*frame < 0 || *frame >= playerAnimHeader->common.frameCount) {
+            *frame = 0;
+        }
+    }
+}
+
 void RandomizerRegisterHooks() {
     static uint32_t onFlagSetHook = 0;
     static uint32_t onSceneFlagSetHook = 0;
@@ -2555,6 +2646,12 @@ void RandomizerRegisterHooks() {
     static uint32_t onExitGameHook = 0;
     static uint32_t onKaleidoUpdateHook = 0;
     static uint32_t onCuccoOrChickenHatchHook = 0;
+    static uint32_t onLinkAnimEndHook = 0;
+    static uint32_t onQPADamageHook = 0;
+    static uint32_t onESSHook = 0;
+    static uint32_t onWaitForPutawayHook = 0;
+    static uint32_t onKaleidoMoveCursorFromSpecialPosHook = 0;
+    static uint32_t onAnimationSetLoadFrameHook = 0;
 
     static uint32_t fishsanityOnActorInitHook = 0;
     static uint32_t fishsanityOnActorUpdateHook = 0;
@@ -2590,6 +2687,14 @@ void RandomizerRegisterHooks() {
         GameInteractor::Instance->UnregisterGameHook<GameInteractor::OnExitGame>(onExitGameHook);
         GameInteractor::Instance->UnregisterGameHook<GameInteractor::OnKaleidoscopeUpdate>(onKaleidoUpdateHook);
         GameInteractor::Instance->UnregisterGameHook<GameInteractor::OnCuccoOrChickenHatch>(onCuccoOrChickenHatchHook);
+        GameInteractor::Instance->UnregisterGameHook<GameInteractor::OnLinkAnimEnd>(onLinkAnimEndHook);
+        GameInteractor::Instance->UnregisterGameHook<GameInteractor::OnQPADamage>(onQPADamageHook);
+        GameInteractor::Instance->UnregisterGameHook<GameInteractor::OnESS>(onESSHook);
+        GameInteractor::Instance->UnregisterGameHook<GameInteractor::OnWaitForPutaway>(onWaitForPutawayHook);
+        GameInteractor::Instance->UnregisterGameHook<GameInteractor::OnKaleidoMoveCursorFromSpecialPos>(
+            onKaleidoMoveCursorFromSpecialPosHook);
+        GameInteractor::Instance->UnregisterGameHook<GameInteractor::OnAnimationSetLoadFrame>(
+            onAnimationSetLoadFrameHook);
 
         GameInteractor::Instance->UnregisterGameHook<GameInteractor::OnActorInit>(fishsanityOnActorInitHook);
         GameInteractor::Instance->UnregisterGameHook<GameInteractor::OnActorUpdate>(fishsanityOnActorUpdateHook);
@@ -2616,6 +2721,7 @@ void RandomizerRegisterHooks() {
         onExitGameHook = 0;
         onKaleidoUpdateHook = 0;
         onCuccoOrChickenHatchHook = 0;
+        onLinkAnimEndHook = 0;
 
         fishsanityOnActorInitHook = 0;
         fishsanityOnActorUpdateHook = 0;
@@ -2671,6 +2777,27 @@ void RandomizerRegisterHooks() {
             RandomizerOnKaleidoscopeUpdateHandler);
         onCuccoOrChickenHatchHook = GameInteractor::Instance->RegisterGameHook<GameInteractor::OnCuccoOrChickenHatch>(
             RandomizerOnCuccoOrChickenHatch);
+        onLinkAnimEndHook = GameInteractor::Instance->RegisterGameHook<GameInteractor::OnLinkAnimEnd>(
+            [](SkelAnime* skelAnime) { RandomizerOnLinkAnimEnd(skelAnime); });
+        onQPADamageHook = GameInteractor::Instance->RegisterGameHook<GameInteractor::OnQPADamage>(
+            [](uint32_t* dmgFlags) { RandomizerOnQPADamage(dmgFlags); });
+        onESSHook = GameInteractor::Instance->RegisterGameHook<GameInteractor::OnESS>(RandomizerOnESS);
+        onWaitForPutawayHook =
+            GameInteractor::Instance->RegisterGameHook<GameInteractor::OnWaitForPutaway>(RandomizerOnWaitForPutaway);
+        onKaleidoMoveCursorFromSpecialPosHook =
+            GameInteractor::Instance->RegisterGameHook<GameInteractor::OnKaleidoMoveCursorFromSpecialPos>(
+                [](PauseContext* pauseCtx, uint16_t* cursorItem) {
+                    RandomizerOnKaleidoMoveCursorFromSpecialPos(pauseCtx, cursorItem);
+                });
+        onAnimationSetLoadFrameHook =
+            GameInteractor::Instance->RegisterGameHook<GameInteractor::OnAnimationSetLoadFrame>(
+                [](LinkAnimationHeader* animation, int32_t* frame) {
+                    RandomizerOnAnimationSetLoadFrame(animation, frame);
+                });
+
+        COND_VB_SHOULD(VB_SKIP_FORCE_PLAY_OCARINA, true, { RandomizerShouldSkipForcePlayOcarina(should); });
+
+        COND_VB_SHOULD(VB_HOVER_WITH_ISG, true, { RandomizerShouldHover(should); });
 
         COND_HOOK(GameInteractor::OnArchipelagoItemReceived, IS_ARCHIPELAGO, ArchipelagoOnReceiveItem);
         COND_HOOK(GameInteractor::OnRandomizerExternalCheck, IS_ARCHIPELAGO, RandomizerOnExternalCheckHandler)

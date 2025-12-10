@@ -61,11 +61,17 @@ DEFINE_HOOK(OnSaveFile, (int32_t fileNum, int32_t sectionID));
 DEFINE_HOOK(OnLoadFile, (int32_t fileNum));
 DEFINE_HOOK(OnCopyFile, (int32_t sourceFileNum, uint32_t destFileNum));
 DEFINE_HOOK(OnDeleteFile, (int32_t fileNum));
+DEFINE_HOOK(OnLinkAnimEnd, (SkelAnime * skelAnime));
+DEFINE_HOOK(OnQPADamage, (uint32_t * dmgFlags));
+DEFINE_HOOK(OnESS, ());
+DEFINE_HOOK(OnWaitForPutaway, ());
+DEFINE_HOOK(OnAnimationSetLoadFrame, (LinkAnimationHeader * animation, int32_t* frame));
 
 DEFINE_HOOK(OnDialogMessage, ());
 DEFINE_HOOK(OnPresentTitleCard, ());
 DEFINE_HOOK(OnInterfaceUpdate, ());
 DEFINE_HOOK(OnKaleidoscopeUpdate, (int16_t inDungeonScene));
+DEFINE_HOOK(OnKaleidoMoveCursorFromSpecialPos, (PauseContext * pauseCtx, uint16_t* cursorItem));
 
 DEFINE_HOOK(OnPresentFileSelect, ());
 DEFINE_HOOK(OnUpdateFileSelectSelection, (uint16_t optionIndex));
