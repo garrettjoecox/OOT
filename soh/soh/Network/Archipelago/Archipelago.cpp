@@ -49,11 +49,6 @@ bool ArchipelagoClient::StartClient() {
         apClient.reset();
     }
 
-    CVarSetInteger(CVAR_REMOTE_ANCHOR("RoomSettings.SyncItemsAndFlags"), 0);
-    if (Anchor::Instance->isConnected && Anchor::Instance->roomState.ownerClientId == Anchor::Instance->ownClientId) {
-        Anchor::Instance->SendPacket_UpdateRoomState();
-    }
-
     disconnecting = false;
     retries = 0;
     uri = CVarGetString(CVAR_REMOTE_ARCHIPELAGO("ServerAddress"), "localhost:38281");
@@ -393,6 +388,11 @@ void ArchipelagoClient::QueueExternalCheck(const int64_t apLocation) {
 bool ArchipelagoClient::IsConnected() {
     if (apClient == nullptr) {
         return false;
+    }
+
+    CVarSetInteger(CVAR_REMOTE_ANCHOR("RoomSettings.SyncItemsAndFlags"), 0);
+    if (Anchor::Instance->isConnected && Anchor::Instance->roomState.ownerClientId == Anchor::Instance->ownClientId) {
+        Anchor::Instance->SendPacket_UpdateRoomState();
     }
 
     return apClient->get_state() == APClient::State::SLOT_CONNECTED;

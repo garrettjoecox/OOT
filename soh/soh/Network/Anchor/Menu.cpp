@@ -195,19 +195,17 @@ void AnchorAdminMenu(WidgetInfo& info) {
                                     .Color(THEME_COLOR))) {
         anchor->SendPacket_UpdateRoomState();
     }
-    if (IS_ARCHIPELAGO) {
-        CVarSetInteger(CVAR_REMOTE_ANCHOR("RoomSettings.SyncItemsAndFlags"), 0);
+
+    if (ArchipelagoClient::GetInstance().IsConnected()) { // slot connected
         ImGui::BeginDisabled();
     }
 
     if (UIWidgets::CVarCheckbox("Sync Items & Flags", CVAR_REMOTE_ANCHOR("RoomSettings.SyncItemsAndFlags"),
                                 UIWidgets::CheckboxOptions().DefaultValue(true).Color(THEME_COLOR))) {
-        if (!IS_ARCHIPELAGO) {
-            anchor->SendPacket_UpdateRoomState();
-        }
+        anchor->SendPacket_UpdateRoomState();
     }
 
-    if (IS_ARCHIPELAGO) {
+    if (ArchipelagoClient::GetInstance().IsConnected()) { // slot connected
         ImGui::EndDisabled();
     }
 }
