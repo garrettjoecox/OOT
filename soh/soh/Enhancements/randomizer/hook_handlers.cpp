@@ -14,6 +14,7 @@
 #include "soh/Notification/Notification.h"
 #include "soh/SaveManager.h"
 #include "soh/Network/Archipelago/ArchipelagoConsoleWindow.h"
+#include "soh/frame_interpolation.h"
 
 extern "C" {
 #include "macros.h"
@@ -57,6 +58,7 @@ extern "C" {
 #include "src/overlays/actors/ovl_Fishing/z_fishing.h"
 #include "src/overlays/actors/ovl_En_Mk/z_en_mk.h"
 #include "draw.h"
+#include "objects/gameplay_keep/gameplay_keep.h"
 
 extern SaveContext gSaveContext;
 extern PlayState* gPlayState;
@@ -422,8 +424,6 @@ void RandomizerOnPlayerUpdateForRCQueueHandler() {
             !(rc == RC_SPIRIT_TEMPLE_SILVER_GAUNTLETS_CHEST && gPlayState->sceneNum == SCENE_DESERT_COLOSSUS) &&
             !(rc == RC_MARKET_BOMBCHU_BOWLING_FIRST_PRIZE && gPlayState->sceneNum == SCENE_BOMBCHU_BOWLING_ALLEY) &&
             !(rc == RC_MARKET_BOMBCHU_BOWLING_SECOND_PRIZE && gPlayState->sceneNum == SCENE_BOMBCHU_BOWLING_ALLEY) &&
-            // Always show ItemGet animation for ice traps
-            !(getItemEntry.modIndex == MOD_RANDOMIZER && getItemEntry.getItemId == RG_ICE_TRAP) &&
             // Always show ItemGet animation outside of randomizer to keep behaviour consistent in vanilla
             IS_RANDO &&
             (CVarGetInteger(CVAR_RANDOMIZER_ENHANCEMENT("TimeSavers.SkipGetItemAnimation"), SGIA_JUNK) == SGIA_ALL ||
@@ -563,6 +563,25 @@ void EnItem00_DrawRandomizedItem(EnItem00* enItem00, PlayState* play) {
         enItem00->actor.params != ITEM00_SOH_GIVE_ITEM_ENTRY) {
         randoItem = GET_ITEM_MYSTERY;
     }
+
+    if (enItem00->actor.params == ITEM00_SOH_GIVE_ITEM_ENTRY && randoItem.modIndex == MOD_RANDOMIZER && randoItem.getItemId == RG_ICE_TRAP) {
+        iceTrapScale = 0.8f;
+        OPEN_DISPS(play->state.gfxCtx);
+        Matrix_Push();
+        Gfx_SetupDL_25Xlu(play->state.gfxCtx);
+        gSPSegment(POLY_XLU_DISP++, 0x08,
+                   (uintptr_t)Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, (0 - play->gameplayFrames) % 128, 32, 32, 1, 0,
+                                    (play->gameplayFrames * -2) % 128, 32, 32));
+
+        Matrix_Translate(0.0f, -40.0f, 0.0f, MTXMODE_APPLY);
+        Matrix_Scale(iceTrapScale, iceTrapScale, iceTrapScale, MTXMODE_APPLY);
+        gSPMatrix(POLY_XLU_DISP++, MATRIX_NEWMTX(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        gDPSetEnvColor(POLY_XLU_DISP++, 0, 50, 100, 255);
+        gSPDisplayList(POLY_XLU_DISP++, (Gfx*)gEffIceFragment3DL);
+        Matrix_Pop();
+        CLOSE_DISPS(play->state.gfxCtx);
+    }
+
     func_8002EBCC(&enItem00->actor, play, 0);
     func_8002ED80(&enItem00->actor, play, 0);
     EnItem00_CustomItemsParticles(&enItem00->actor, play, randoItem);
