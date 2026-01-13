@@ -147,11 +147,27 @@ extern "C" void ValueViewer_SetupDraw() {
     CLOSE_DISPS(gGameState->gfxCtx);
 }
 
+static std::string lastAnimation = "";
+static std::vector<std::pair<std::string, uint32_t>> animationsPlayed;
+
 void RegisterValueViewerHooks() {
     COND_HOOK(OnGameFrameUpdate, CVAR_VALUE, []() { ValueViewer_SetupDraw(); });
+    COND_HOOK(OnPlayerUpdate, CVarGetInteger(CVAR_DEVELOPER_TOOLS("ValueViewerWatchAnimations"), 0), []() {
+        Player* player = GET_PLAYER(gPlayState);
+        if (player->skelAnime.animation != NULL) {
+            std::string animName = std::string((const char*)player->skelAnime.animation);
+            if (animName == lastAnimation) {
+                animationsPlayed.back().second++;
+            } else {
+                lastAnimation = animName;
+                animationsPlayed.push_back({ animName, 1 });
+            }
+        }
+    });
 }
 
-static RegisterShipInitFunc initFunc(RegisterValueViewerHooks, { CVAR_NAME });
+static RegisterShipInitFunc initFunc(RegisterValueViewerHooks,
+                                     { CVAR_NAME, CVAR_DEVELOPER_TOOLS("ValueViewerWatchAnimations") });
 
 void ValueViewerWindow::DrawElement() {
     ImGui::BeginDisabled(CVarGetInteger(CVAR_SETTING("DisableChanges"), 0));
@@ -277,6 +293,17 @@ void ValueViewerWindow::DrawElement() {
         ImGui::EndGroup();
     }
     ImGui::EndDisabled();
+
+    UIWidgets::CVarCheckbox("Watch animations", CVAR_DEVELOPER_TOOLS("ValueViewerWatchAnimations"),
+                            UIWidgets::CheckboxOptions().Color(THEME_COLOR));
+    ImGui::SameLine();
+    if (UIWidgets::Button("Clear", { .size = UIWidgets::Sizes::Inline })) {
+        animationsPlayed.clear();
+        lastAnimation = "";
+    }
+    for (const auto& [animName, count] : animationsPlayed) {
+        ImGui::Text("%s: %u", animName.c_str(), count);
+    }
 }
 
 void ValueViewerWindow::InitElement() {
