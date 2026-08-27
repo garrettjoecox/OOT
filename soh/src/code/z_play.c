@@ -17,6 +17,8 @@
 #include <time.h>
 #include <assert.h>
 
+#include "soh_assets.h"
+
 TransitionUnk sTrnsnUnk;
 s32 gTrnsnUnkState;
 VisMono gPlayVisMono;
@@ -1329,6 +1331,9 @@ void Play_Draw(PlayState* play) {
 
     OPEN_DISPS(gfxCtx);
 
+    gSPPushShader(POLY_OPA_DISP++, sFlatShader);
+    gSPPushShader(POLY_XLU_DISP++, sFlatShader);
+
     gSegments[4] = VIRTUAL_TO_PHYSICAL(play->objectCtx.status[play->objectCtx.mainKeepIndex].segment);
     gSegments[5] = VIRTUAL_TO_PHYSICAL(play->objectCtx.status[play->objectCtx.subKeepIndex].segment);
     gSegments[2] = VIRTUAL_TO_PHYSICAL(play->sceneSegment);
@@ -1631,6 +1636,9 @@ Play_Draw_skip:
     }
 
     Camera_Finish(GET_ACTIVE_CAM(play));
+
+    gSPPopShader(POLY_OPA_DISP++);
+    gSPPopShader(POLY_XLU_DISP++);
 
     CLOSE_DISPS(gfxCtx);
 
